@@ -366,7 +366,131 @@ body {
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: linear-gradient(160deg, rgba(22, 163, 74, 0.05), rgba(180, 83, 9, 0.04));
   padding: 1.5rem;
-  overflow: hidden;
+  /* 用 clip 而非 hidden：overflow:hidden 会把容器变成滚动容器，
+     导致内部 .about-pin-sticky 的 position:sticky 失效并整体下移 88px，
+     与下方章节列表重叠（iPad/手机端错行）。clip 只裁切不建滚动容器。 */
+  overflow: clip;
+}
+
+/* About 页统一布局（配合方案 B 全站加宽，消化两侧留白） */
+.about-hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-bottom: 2.5rem;
+  background: linear-gradient(120deg, #1f2937 0%, #374151 55%, #b45309 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.dark .about-hero-title {
+  background: linear-gradient(120deg, #f9fafb 0%, #d1d5db 55%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* pin 区加宽后的左右分栏：左侧 sticky 引言，右侧章节时间线 */
+.about-pin-wide {
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border: none;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.about-pin-wide .about-pin-sticky {
+  position: sticky;
+  top: 96px;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: linear-gradient(160deg, rgba(22, 163, 74, 0.05), rgba(180, 83, 9, 0.04));
+}
+
+.dark .about-pin-wide .about-pin-sticky {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(160deg, rgba(22, 163, 74, 0.09), rgba(180, 83, 9, 0.06));
+}
+
+.about-pin-wide .about-pin-chapters {
+  margin: 0;
+  padding: 0.25rem 0;
+}
+
+.about-pin-wide .about-pin-chapter {
+  position: relative;
+  padding: 1.1rem 1.25rem 1.1rem 2.75rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.dark .about-pin-wide .about-pin-chapter {
+  border-color: rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.about-pin-wide .about-pin-chapter:hover {
+  border-color: rgba(22, 163, 74, 0.45);
+  transform: translateX(3px);
+}
+
+.about-pin-wide .about-pin-dot {
+  position: absolute;
+  left: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.10);
+}
+
+/* About 页个人介绍：双栏网格（宽屏） */
+.about-bio-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .about-bio-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem 2.5rem;
+  }
+}
+
+.about-bio-col {
+  font-size: 1.05rem;
+  line-height: 1.9;
+}
+
+@media (min-width: 768px) {
+  .about-bio-col {
+    font-size: 1.1rem;
+  }
+}
+
+/* 移动端：About pin 退回单栏堆叠 */
+@media (max-width: 767px) {
+  .about-pin-wide {
+    display: block;
+  }
+  .about-pin-wide .about-pin-sticky {
+    position: static;
+    margin-bottom: 1.25rem;
+  }
+  .about-pin-wide .about-pin-chapter {
+    padding: 1rem 1.1rem 1rem 2.5rem;
+  }
 }
 
 .dark .about-pin {
