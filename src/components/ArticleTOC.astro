@@ -1,7 +1,7 @@
 ---
-// ArticleTOC v2 — 文章目录
+// ArticleTOC v3 — 文章目录
 // 单个组件根节点内同时包含：
-//   - 桌面（≥lg）：左侧 sticky 侧栏，随滚动高亮当前章节
+//   - 桌面（≥lg）：右侧 sticky 侧栏，随滚动高亮当前章节
 //   - 移动端 / 平板：文章顶部可折叠目录卡片（默认收起）
 // 两个变体通过 responsive class 切换显隐，页面只需渲染一份，避免重复 DOM id。
 //
@@ -22,7 +22,7 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
 ---
 
 <div class="article-toc-root">
-  <!-- 桌面端：左侧 sticky 目录栏（lg+ 显示；标题数 >= 2 时显示，JS 控制 .toc-hide） -->
+  <!-- 桌面端：右侧 sticky 目录栏（lg+ 显示；标题数 >= 2 时显示，JS 控制 .toc-hide） -->
   <nav id="article-toc-rail" class="article-toc-rail" aria-label={label}>
     <p class="article-toc-rail-label">
       <svg class="article-toc-list-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true">
@@ -53,6 +53,26 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
 
 <script>
   (function () {
+    // 收集桌面 + 移动端所有目录链接，供 setActive 统一高亮
+    var allLinks = [];
+
+    function setActive(activeId) {
+      allLinks.forEach(function (l) {
+        l.classList.toggle("active", l.dataset.tocId === activeId);
+      });
+    }
+
+    // 目标标题闪烁提示（点击目录后的明确反馈）
+    function flashHeading(el) {
+      if (!el) return;
+      el.classList.remove("toc-flash");
+      void el.offsetWidth; // 强制 reflow，保证动画可重播
+      el.classList.add("toc-flash");
+      setTimeout(function () {
+        el.classList.remove("toc-flash");
+      }, 1600);
+    }
+
     function initArticleTOC() {
       var rail = document.getElementById("article-toc-rail");
       var railList = document.getElementById("article-toc-rail-list");
@@ -65,7 +85,7 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
       var article = document.querySelector(".article-content");
       if (!article || !rail || !railList || !mobile || !mobileList) return;
 
-      // 无目录时把外层 .article-grid 退回单栏，避免左侧空出一列
+      // 无目录时把外层 .article-grid 退回单栏，避免右侧空出一列
       var grid = document.getElementById("article-grid");
 
       var headings = Array.prototype.slice.call(article.querySelectorAll("h2, h3"));
@@ -75,9 +95,14 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
         rail.classList.add("toc-hide");
         mobile.classList.add("hidden");
         if (grid) grid.classList.add("no-toc");
+        // 上一篇/下一篇导航同步退回整行（无目录时右侧不留空白列）
+        var prevnext = document.querySelector(".article-prevnext");
+        if (prevnext) prevnext.classList.add("no-toc");
         return;
       } else if (grid) {
         grid.classList.remove("no-toc");
+        var prevnext2 = document.querySelector(".article-prevnext");
+        if (prevnext2) prevnext2.classList.remove("no-toc");
       }
 
       // 为标题生成稳定锚点 id
@@ -119,6 +144,10 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
       buildList(railList);
       buildList(mobileList);
 
+      allLinks = Array.prototype.slice.call(railList.querySelectorAll(".article-toc-link")).concat(
+        Array.prototype.slice.call(mobileList.querySelectorAll(".article-toc-link"))
+      );
+
       rail.classList.remove("hidden");
       mobile.classList.remove("hidden");
 
@@ -140,18 +169,6 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
       }
 
       // 滚动高亮当前章节（桌面 + 移动端共用）
-      var links = Array.prototype.slice.call(railList.querySelectorAll(".article-toc-link"));
-      var mobileLinks = Array.prototype.slice.call(mobileList.querySelectorAll(".article-toc-link"));
-
-      function setActive(activeId) {
-        links.forEach(function (l) {
-          l.classList.toggle("active", l.dataset.tocId === activeId);
-        });
-        mobileLinks.forEach(function (l) {
-          l.classList.toggle("active", l.dataset.tocId === activeId);
-        });
-      }
-
       var observer = new IntersectionObserver(
         function (entries) {
           entries.forEach(function (entry) {
@@ -174,7 +191,7 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
     }
 
     // 事件委托：点击目录链接平滑滚动到目标（兼容动态创建的节点）
-    // 移动端点击后自动收起目录卡片
+    // 立即高亮 + 目标标题闪烁，保证短章节也有明确反馈；移动端点击后自动收起
     document.addEventListener("click", function (e) {
       var t = e.target;
       if (!t || !t.classList || !t.classList.contains("article-toc-link")) return;
@@ -185,6 +202,10 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
         e.preventDefault();
         target.scrollIntoView({ behavior: "smooth", block: "start" });
         history.replaceState(null, "", "#" + id);
+        // 立即高亮，不等 IntersectionObserver（短章节可能不会触发交叉回调）
+        setActive(id);
+        // 目标标题闪烁，明确"跳到了这里"
+        flashHeading(target);
         // 移动端：点击后收起目录卡片
         var mobile = document.getElementById("article-toc-mobile");
         var toggle = document.getElementById("article-toc-toggle");

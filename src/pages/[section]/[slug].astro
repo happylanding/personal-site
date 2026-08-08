@@ -96,17 +96,17 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
       )}
     </header>
 
-    <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)] lg:gap-10 xl:gap-14">
-      <!-- 左侧 sticky 目录（lg+ 显示 rail；移动端/平板显示折叠卡片，均由组件内响应式 class 控制） -->
-      <div class="min-w-0">
-        <ArticleTOC label={t("articles.toc")} countFormat={t("articles.tocCount")} />
-      </div>
-
+    <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14">
       <!-- 正文 -->
-      <div class="min-w-0">
+      <div class="min-w-0 order-1">
         <div class="prose dark:prose-invert article-content max-w-none">
           <Content />
         </div>
+      </div>
+
+      <!-- 右侧 sticky 目录（lg+ 显示 rail；移动端/平板显示折叠卡片，均由组件内响应式 class 控制） -->
+      <div class="min-w-0 order-2">
+        <ArticleTOC label={t("articles.toc")} countFormat={t("articles.tocCount")} />
       </div>
     </div>
 
@@ -198,34 +198,40 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
       />
     )}
 
-    <!-- 上一篇 / 下一篇 -->
-    <nav class="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4" data-reveal>
-      {prevArticle ? (
-        <a
-          href={lang === "en" ? `/en/${section}/${prevArticle.slug}` : `/${section}/${prevArticle.slug}`}
-          class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors"
-        >
-          <p class="text-xs text-black/30 dark:text-white/30 mb-1">← {lang === "en" ? "Older" : "上一篇"}</p>
-          <p class="text-sm font-medium group-hover:opacity-70 transition-opacity line-clamp-2">
-            {lang === "en" ? (prevArticle.data.titleEn || prevArticle.data.title) : prevArticle.data.title}
-          </p>
-        </a>
-      ) : (
-        <span></span>
-      )}
-      {nextArticle ? (
-        <a
-          href={lang === "en" ? `/en/${section}/${nextArticle.slug}` : `/${section}/${nextArticle.slug}`}
-          class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors sm:text-right"
-        >
-          <p class="text-xs text-black/30 dark:text-white/30 mb-1">{lang === "en" ? "Newer" : "下一篇"} →</p>
-          <p class="text-sm font-medium group-hover:opacity-70 transition-opacity line-clamp-2">
-            {lang === "en" ? (nextArticle.data.titleEn || nextArticle.data.title) : nextArticle.data.title}
-          </p>
-        </a>
-      ) : (
-        <span></span>
-      )}
+    <!-- 上一篇 / 下一篇：与正文列对齐（桌面端右侧留出与目录同宽的空白列） -->
+    <nav class="mt-12 article-prevnext" data-reveal>
+      <div class="lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14">
+        <div class="min-w-0 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {prevArticle ? (
+            <a
+              href={lang === "en" ? `/en/${section}/${prevArticle.slug}` : `/${section}/${prevArticle.slug}`}
+              class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors"
+            >
+              <p class="text-xs text-black/30 dark:text-white/30 mb-1">← {lang === "en" ? "Older" : "上一篇"}</p>
+              <p class="text-sm font-medium group-hover:opacity-70 transition-opacity line-clamp-2">
+                {lang === "en" ? (prevArticle.data.titleEn || prevArticle.data.title) : prevArticle.data.title}
+              </p>
+            </a>
+          ) : (
+            <span></span>
+          )}
+          {nextArticle ? (
+            <a
+              href={lang === "en" ? `/en/${section}/${nextArticle.slug}` : `/${section}/${nextArticle.slug}`}
+              class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors sm:text-right"
+            >
+              <p class="text-xs text-black/30 dark:text-white/30 mb-1">{lang === "en" ? "Newer" : "下一篇"} →</p>
+              <p class="text-sm font-medium group-hover:opacity-70 transition-opacity line-clamp-2">
+                {lang === "en" ? (nextArticle.data.titleEn || nextArticle.data.title) : nextArticle.data.title}
+              </p>
+            </a>
+          ) : (
+            <span></span>
+          )}
+        </div>
+        <!-- 占位列：桌面端与右侧目录栏对齐，保持导航与正文左对齐 -->
+        <div class="hidden lg:block article-prevnext-spacer" aria-hidden="true"></div>
+      </div>
     </nav>
 
   </article>
