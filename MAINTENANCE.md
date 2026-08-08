@@ -1,7 +1,7 @@
 # 个人网站维护文档
 
-> 最后更新：2026-08-08（P0 改造后）
-> 项目地址：`happylanding/personal-site` | 线上地址：https://galvinai.pages.dev
+> 最后更新：2026-08-08（P0 改造后 + 评审修正）
+> 项目地址：`happylanding/personal-site`（GitHub，Cloudflare 部署源）| 线上地址：https://galvinai.pages.dev
 > 开发镜像：`Galvin2026/personal-site`（CNB，方案 A）→ 同步回 GitHub → Cloudflare 自动部署
 
 ---
@@ -25,12 +25,12 @@
 
 ```
 src/
-├── components/          # 16 个 Astro 组件
+├── components/          # 15 个 Astro 组件
 │   ├── ArticleCard.astro       # 文章卡片（备用）
 │   ├── ArticleTOC.astro        # 文章内目录（h2/h3 自动收集 + 滚动高亮）
 │   ├── BackToTop.astro         # 回到顶部按钮
 │   ├── Breadcrumb.astro        # 面包屑导航
-│   ├── ColumnIcon.astro        # 专栏图标（insights/ai/tips/books/invest）
+│   ├── ColumnIcon.astro        # 专栏图标（insights/ai/tips/books）
 │   ├── Currently.astro         # 首页"正在做"模块
 │   ├── Footer.astro            # 页脚
 │   ├── Header.astro            # 顶部导航（含汉堡菜单）
@@ -192,6 +192,11 @@ Overlay 点击关闭逻辑简化。
 - ✅ 英文 tags 按 `tagsEn` 独立聚合
 - ✅ 根目录散文档归档进 `docs/`
 - ✅ `AGENT_OPS.md` 去除写死的 `D:/personal-site` 路径
+
+### 8.6 评审修正（2026-08-08）
+- ✅ sitemap 过滤隐藏路由 `/invest/`，避免搜索引擎收录不对外栏目
+- ✅ `MAINTENANCE.md` 组件数由 16 修正为 15，标注 GitHub/CNB 双仓库地址
+- ✅ `AGENT_OPS.md` section 列表改为 `insights/ai/tips/books`
 
 ---
 

@@ -2,6 +2,7 @@
 
 > 平台：CodeBuddy（无需额外注册/付费，已在用）
 > 适用场景：文章发布、栏目调整、样式优化、视觉交互改进
+> 开发仓库：`Galvin2026/personal-site`（CNB）→ 同步回 GitHub `happylanding/personal-site` → Cloudflare 自动部署
 
 ---
 
@@ -52,7 +53,7 @@ CodeBuddy 已经具备：读取项目文件、理解代码结构、编辑代码�
 智能体会自动：
 1. 扫描 `src/content/drafts/` 下所有 `.md` 文件
 2. 逐个分析内容，生成中英文 title/description/tags
-3. 建议合适的 section（insights/tips/books/invest）
+3. 建议合适的 section（insights/ai/tips/books）
 4. 展示完整的 frontmatter + 正文预览给你
 
 ### 第三步：审核确认
