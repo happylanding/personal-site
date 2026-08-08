@@ -44,7 +44,7 @@ const siteEntries = (await getCollection("sites", ({ data }) => !data.draft && !
           });
           return (
             <a
-              href={`/en/sites/${entry.slug}/`}
+              href={`/en/sites/${entry.id}/`}
               class="block p-5 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover-lift transition-all duration-300 group"
             >
               <div class="flex items-center gap-2 mb-2">

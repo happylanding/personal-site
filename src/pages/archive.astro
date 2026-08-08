@@ -37,7 +37,7 @@ const grouped = sorted.reduce<YearGroups>((acc, article) => {
               <div class="group" data-reveal>
                 <time class="text-xs text-black/30 dark:text-white/30 font-mono">{dateStr}</time>
                 <a
-                  href={lang === "en" ? `/en/${article.data.section}/${article.slug}` : `/${article.data.section}/${article.slug}`}
+                  href={lang === "en" ? `/en/${article.data.section}/${article.id}` : `/${article.data.section}/${article.id}`}
                   class="block mt-1"
                 >
                   <span class="text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/40 dark:text-white/40 mr-2 inline-flex items-center gap-1">

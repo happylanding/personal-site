@@ -17,7 +17,7 @@ const displayTitle = lang === "en" ? (article.data.titleEn || article.data.title
 const displayDesc = lang === "en" ? (article.data.descriptionEn || article.data.description) : article.data.description;
 const displayTags = lang === "en" ? (article.data.tagsEn?.length ? article.data.tagsEn : article.data.tags) : article.data.tags;
 const section = article.data.section;
-const sectionPath = lang === "en" ? `/en/${section}/${article.slug}` : `/${section}/${article.slug}`;
+const sectionPath = lang === "en" ? `/en/${section}/${article.id}` : `/${section}/${article.id}`;
 const dateStr = article.data.date.toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", {
   year: "numeric", month: "long", day: "numeric",
 });

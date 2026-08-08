@@ -38,7 +38,7 @@ const filtered = allArticles
         const title = lang === "en" ? (article.data.titleEn || article.data.title) : article.data.title;
         return (
           <a
-            href={lang === "en" ? `/en/${article.data.section}/${article.slug}` : `/${article.data.section}/${article.slug}`}
+            href={lang === "en" ? `/en/${article.data.section}/${article.id}` : `/${article.data.section}/${article.id}`}
             class="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-colors group"
           >
             <span class="text-sm group-hover:opacity-70 transition-opacity font-medium">{title}</span>

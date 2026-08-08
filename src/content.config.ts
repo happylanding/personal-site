@@ -1,7 +1,8 @@
 import { defineCollection, z } from "astro:content";
+import { glob } from "astro/loaders";
 
 const articlesCollection = defineCollection({
-  type: "content",
+  loader: glob({ pattern: "**/*.md", base: "./src/content/articles" }),
   schema: z.object({
     title: z.string(),
     titleEn: z.string().optional(),
@@ -51,12 +52,12 @@ const articlesCollection = defineCollection({
  * 也不会在草稿文件加入时触发校验错误。
  */
 const draftsCollection = defineCollection({
-  type: "content",
+  loader: glob({ pattern: "**/*.md", base: "./src/content/drafts" }),
   schema: z.object({}),
 });
 
 const sitesCollection = defineCollection({
-  type: "content",
+  loader: glob({ pattern: "**/*.md", base: "./src/content/sites" }),
   schema: z.object({
     title: z.string(),
     titleEn: z.string().optional(),
@@ -84,7 +85,7 @@ const sitesCollection = defineCollection({
  * - script  脚本工具（本地 CLI，站内下载 / 复制命令）
  */
 const toolsCollection = defineCollection({
-  type: "content",
+  loader: glob({ pattern: "**/*.md", base: "./src/content/tools" }),
   schema: z.object({
     title: z.string(),
     titleEn: z.string().optional(),
