@@ -7,6 +7,10 @@ import sitemap from "@astrojs/sitemap";
 export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      // 允许 CNB 云原生开发环境的端口预览代理域名（如 https://<business>-<port>.cnb.run）
+      allowedHosts: [".cnb.run", ".cnb.cool"],
+    },
   },
   site: "https://galvinai.pages.dev",
   integrations: [
