@@ -7,6 +7,7 @@ date: 2026-08-08
 tags: ["AI工具", "效率", "WPS"]
 tagsEn: ["AI Tools", "Productivity", "WPS"]
 section: ai
+ogImage: /images/ai-tools-practice/cover.png
 ---
 
 > 工具的价值不在"有没有"，而在"用没用起来"。这篇文章记录我最近高频使用 AI 效率工具的 5 个真实场景，以及每个场景里踩过的坑。

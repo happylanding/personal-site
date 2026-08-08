@@ -7,6 +7,7 @@ date: 2026-08-10
 tags: ["AI", "Vibe Coding", "实践"]
 tagsEn: ["AI", "Vibe Coding", "Hands-on"]
 section: ai
+ogImage: /images/ai-website-rebuild/cover.png
 ---
 
 > 这篇文章是 ai 栏目里最"实战"的一篇——因为它记录的，就是我现在正在进行的改造：一个不懂前端的人，如何用 AI 把一个"想要个人网站"的念头，变成上线运行的产品。
