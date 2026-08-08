@@ -11,6 +11,8 @@ const t = useTranslations(lang);
 
 const columns = ["insights", "ai", "tips", "books"] as const;
 const isCurrentSection = (s: string) => Astro.url.pathname.includes(`/${s}`);
+const toolsHref = lang === "en" ? "/en/tools/" : "/tools/";
+const isToolsPage = Astro.url.pathname.includes("/tools");
 ---
 
 <header class="sticky top-0 z-[70] w-full border-b border-black/10 dark:border-white/10 bg-white/80 dark:bg-black/80 backdrop-blur-md transition-colors duration-300">
@@ -80,7 +82,28 @@ const isCurrentSection = (s: string) => Astro.url.pathname.includes(`/${s}`);
                   </a>
                 );
               })}
-            </div>
+
+              {/* 工具箱：平级但视觉独立（分隔线 + 专属主题色） */}
+              <div class="mx-4 my-1.5 h-px bg-black/10 dark:bg-white/10"></div>
+              <a
+                href={toolsHref}
+                class={`block px-4 py-2.5 text-sm transition-colors ${
+                  isToolsPage
+                    ? "bg-black/5 dark:bg-white/5 font-semibold"
+                    : "hover:bg-black/5 dark:hover:bg-white/5"
+                }`}
+                style={isToolsPage ? { color: "#B45309" } : undefined}
+              >
+                <span
+                  class="inline-block w-1.5 h-1.5 rounded-full mr-2 align-middle"
+                  style={{ backgroundColor: "#B45309" }}
+                ></span>
+                <svg class="w-3.5 h-3.5 inline-block mr-1.5 align-middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:#B45309">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                {t("tools.name")}
+              </a>
           </div>
         </div>
 
@@ -179,6 +202,22 @@ const isCurrentSection = (s: string) => Astro.url.pathname.includes(`/${s}`);
             </a>
           );
         })}
+
+        {/* 工具箱（与栏目平级，专属主题色） */}
+        <a
+          href={toolsHref}
+          class="mobile-nav-item group"
+          style="transition-delay: 0.42s"
+        >
+          <span class="mobile-nav-icon">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:#B45309">
+              <polyline points="16 18 22 12 16 6"/>
+              <polyline points="8 6 2 12 8 18"/>
+            </svg>
+          </span>
+          <span class="mobile-nav-label" style={isToolsPage ? { color: "#B45309" } : undefined}>{t("tools.name")}</span>
+          <span class="mobile-nav-arrow opacity-0 group-hover:opacity-30 transition-opacity">→</span>
+        </a>
 
         <!-- divider: more -->
         <div class="mobile-nav-section-label" style="transition-delay: 0.44s">

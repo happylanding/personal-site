@@ -5,6 +5,7 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const isEn = lang === "en";
 const sitesHref = isEn ? "/en/sites/" : "/sites/";
+const toolsHref = isEn ? "/en/tools/" : "/tools/";
 ---
 
 <footer class="border-t border-black/10 dark:border-white/10 mt-20">
@@ -24,23 +25,44 @@ const sitesHref = isEn ? "/en/sites/" : "/sites/";
         </svg>
         <span class="hidden">收藏夹</span>
       </a>
+      <a
+        href={toolsHref}
+        id="tools-hidden-link"
+        class="inline-flex items-center text-black/25 dark:text-white/25 hover:text-black/50 dark:hover:text-white/50 transition-colors"
+        title="工具箱"
+        aria-label="工具箱"
+      >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/>
+          <polyline points="8 6 2 12 8 18"/>
+        </svg>
+        <span class="hidden">工具箱</span>
+      </a>
     </p>
   </div>
 </footer>
 
 <script>
-  // 键盘快捷键：按 g 再按 s 跳转收藏夹（低调入口，方便站主直接查阅）
+  // 键盘快捷键：按 g 再按 s 跳转收藏夹；按 t 直达工具箱（低调入口，方便站主快速取用）
   (function () {
     var buffer = "";
     var timer = -1;
-    var link = document.getElementById("sites-hidden-link");
-    if (!link) return;
+    var sitesLink = document.getElementById("sites-hidden-link");
+    var toolsLink = document.getElementById("tools-hidden-link");
 
     document.addEventListener("keydown", function (e) {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.isContentEditable)) return;
 
       var k = e.key.toLowerCase();
+
+      // 单键 t → 工具箱
+      if (k === "t" && toolsLink) {
+        e.preventDefault();
+        window.location.href = toolsLink.getAttribute("href");
+        return;
+      }
+
       if (k.length !== 1) return;
       buffer = (buffer + k).slice(-2);
       clearTimeout(timer);
@@ -48,9 +70,9 @@ const sitesHref = isEn ? "/en/sites/" : "/sites/";
         buffer = "";
       }, 800);
 
-      if (buffer === "gs") {
+      if (buffer === "gs" && sitesLink) {
         e.preventDefault();
-        window.location.href = link.getAttribute("href");
+        window.location.href = sitesLink.getAttribute("href");
       }
     });
   })();

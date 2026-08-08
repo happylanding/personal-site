@@ -1,0 +1,48 @@
+---
+// ToolIcon — 工具箱三类工具图标（线性风格，与 ColumnIcon 保持一致）
+// online 在线工具 = 冰蓝 #0E96E9 / app 自研小工具 = 墨绿 #16A34A / script 脚本工具 = 琥珀 #B45309
+import type { ToolType } from "../content/tools/config";
+
+export interface Props {
+  type: ToolType;
+  class?: string;
+}
+
+const { type, class: cls = "w-6 h-6" } = Astro.props;
+
+const COLORS: Record<ToolType, string> = {
+  online: "#0E96E9",
+  app: "#16A34A",
+  script: "#B45309",
+};
+const color = COLORS[type];
+---
+
+{
+  type === "online" && (
+    <svg class={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style={`color:${color}`}>
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+    </svg>
+  )
+}
+
+{
+  type === "app" && (
+    <svg class={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style={`color:${color}`}>
+      <rect x="5" y="3" width="14" height="18" rx="2"/>
+      <path d="M9 7h6"/>
+      <path d="M9 12h6"/>
+      <path d="M9 16h3"/>
+    </svg>
+  )
+}
+
+{
+  type === "script" && (
+    <svg class={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style={`color:${color}`}>
+      <polyline points="16 18 22 12 16 6"/>
+      <polyline points="8 6 2 12 8 18"/>
+    </svg>
+  )
+}
