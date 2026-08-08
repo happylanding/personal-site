@@ -100,6 +100,16 @@ export const ui = {
         "我关注 AI 如何改变我们的工作方式、WPS 等效率工具如何提升生产力、个人理财与投资如何帮助我们实现财务自由。",
         "如果你对以上话题也有兴趣，欢迎通过邮件或微信与我交流。",
       ],
+      pin: {
+        step: "My Story · 一段旅程",
+        quote: "从记录到成长，再到分享——每一步都在这里留下痕迹。",
+        chapters: [
+          "初识编程与互联网，开始构建自己的数字空间",
+          "深耕数字经济行业，探索 AI 与效率工具的边界",
+          "坚持阅读与写作，把思考沉淀成可复用的知识",
+          "与你相遇——欢迎来到我的世界",
+        ],
+      },
     },
     contact: {
       title: "联系方式",
@@ -260,6 +270,16 @@ export const ui = {
         "I'm interested in how AI reshapes our work, how tools like WPS boost productivity, and how personal finance leads to freedom.",
         "If these topics resonate with you, feel free to reach out via email or WeChat.",
       ],
+      pin: {
+        step: "My Story · A Journey",
+        quote: "From documenting to growing, then sharing — every step leaves a mark here.",
+        chapters: [
+          "First steps in coding & the web — building my own digital space",
+          "Deep dive into the digital economy — exploring AI & productivity tools",
+          "Committed to reading & writing — turning thoughts into reusable knowledge",
+          "Meeting you — welcome to my world",
+        ],
+      },
     },
     contact: {
       title: "Contact",

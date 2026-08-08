@@ -319,7 +319,8 @@ const grid = rows.length > 0 ? rows.slice(0, 4) : [];
           {lang === "en" ? "auto · from posts" : "自动 · 来自站内文章"}
         </span>
       </div>
-      <div class="text-sm">
+      <!-- 方案 A 升级：卡片内 4 行文字带交错延迟 + back.out 弹性逐个入场 -->
+      <div class="space-y-3 text-sm" data-reveal-stagger>
         {grid.map((row, i) => (
           <a
             href={row.href}

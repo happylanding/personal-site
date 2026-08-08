@@ -15,6 +15,22 @@ const t = useTranslations(lang);
   <section class="max-w-2xl" data-reveal>
     <h1 class="text-3xl font-serif font-bold mb-12">{t("about.title")}</h1>
 
+    <!-- 方案 C：About pin 叙事（CSS sticky 段落随滚动定格切换，每页仅 1 个 pin 区） -->
+    <div class="about-pin" aria-label="About story">
+      <div class="about-pin-sticky">
+        <span class="about-pin-step">{t("about.pin.step")}</span>
+        <p class="about-pin-quote">{t("about.pin.quote")}</p>
+      </div>
+      <ul class="about-pin-chapters">
+        {(t("about.pin.chapters") as string[]).map((c: string) => (
+          <li class="about-pin-chapter">
+            <span class="about-pin-dot" aria-hidden="true"></span>
+            <span>{c}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
     <div class="leading-relaxed text-base space-y-6">
       {t("about.bio").map((p: string) => (
         <p class="text-black/70 dark:text-white/70">{p}</p>

@@ -34,6 +34,74 @@ body {
   font-weight: 500;
 }
 
+/* ===== Hero parallax background (方案 B：只动背景装饰层) ===== */
+.hero-section {
+  /* 让装饰层相对于 Hero 定位 */
+}
+
+.hero-parallax {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 装饰层必须置于正文之下，正文内容相对 z-10 */
+.hero-section > *:not(.hero-parallax) {
+  position: relative;
+  z-index: 1;
+}
+
+.hp-glow {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(60px);
+  will-change: transform;
+}
+
+.hp-glow-1 {
+  width: 420px;
+  height: 420px;
+  left: -120px;
+  top: -140px;
+  background: radial-gradient(circle, rgba(22, 163, 74, 0.16), transparent 70%);
+}
+
+.hp-glow-2 {
+  width: 380px;
+  height: 380px;
+  right: -100px;
+  bottom: -120px;
+  background: radial-gradient(circle, rgba(180, 83, 9, 0.12), transparent 70%);
+}
+
+.hp-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, black 40%, transparent 100%);
+}
+
+.dark .hp-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+}
+
+/* 视差位移通过 JS 写入 transform；reduced-motion 时静止 */
+@media (prefers-reduced-motion: reduce) {
+  .hp-glow,
+  .hp-grid {
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
 /* ===== Scroll reveal (Effect A) ===== */
 [data-reveal] {
   opacity: 0;
@@ -126,16 +194,106 @@ body {
   }
 }
 
-/* ===== Stagger children if needed ===== */
+/* ===== Stagger children (方案 A 升级：交错 + back.out 弹性) ===== */
 [data-reveal-stagger] > * {
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  transform: translateY(28px) scale(0.97);
+  transition:
+    opacity 0.5s ease-out,
+    transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); /* back.out 弹性 */
+  transition-delay: calc(var(--reveal-index, 0) * 90ms);
+  will-change: opacity, transform;
 }
 
 [data-reveal-stagger] > *.revealed {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal-stagger] > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ===== About pin 叙事 (方案 C：CSS sticky，每页仅 1 个 pin) ===== */
+.about-pin {
+  margin: 0 0 3.5rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: linear-gradient(160deg, rgba(22, 163, 74, 0.05), rgba(180, 83, 9, 0.04));
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+.dark .about-pin {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(160deg, rgba(22, 163, 74, 0.09), rgba(180, 83, 9, 0.06));
+}
+
+.about-pin-sticky {
+  position: sticky;
+  top: 88px; /* 避开 sticky header */
+  z-index: 1;
+}
+
+.about-pin-step {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(22, 163, 74, 0.85);
+  margin-bottom: 0.6rem;
+}
+
+.about-pin-quote {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.8);
+  max-width: 34ch;
+}
+
+.dark .about-pin-quote {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.about-pin-chapters {
+  list-style: none;
+  margin: 2.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1.1rem;
+}
+
+.about-pin-chapter {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.dark .about-pin-chapter {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.about-pin-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  background: rgba(22, 163, 74, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-pin-sticky {
+    position: static;
+  }
 }
 
 /* ===== Hover micro-interactions (Effect B) ===== */
@@ -278,6 +436,38 @@ body {
   touch-action: pan-y;
   animation: pet-float 4s ease-in-out infinite;
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12));
+
+  /* 主题变体令牌：亮色默认（品牌绿） */
+  --pet-body: #16a34a;
+  --pet-dark: #15803d;
+  --pet-belly: #f0fdf4;
+  --pet-feet: #d97706;
+  --pet-blush: #fda4af;
+  --pet-outline: #14532d;
+  --pet-eye-bg: #ffffff;
+  --pet-pupil: #1c1917;
+  --pet-pupil-hi: #ffffff;
+  --pet-beak: #d97706;
+  --pet-beak-stroke: #92400e;
+  --pet-book: #7c3aed;
+  --pet-book-edge: #6d28d9;
+}
+
+/* 暗色变体：墨绿 + 暗金瞳孔 */
+.dark .pet {
+  --pet-body: #166534;
+  --pet-dark: #14532d;
+  --pet-belly: #052e16;
+  --pet-feet: #d97706;
+  --pet-blush: #9f1239;
+  --pet-outline: #bbf7d0;
+  --pet-eye-bg: #101418;
+  --pet-pupil: #fbbf24;
+  --pet-pupil-hi: #fff7ed;
+  --pet-beak: #f59e0b;
+  --pet-beak-stroke: #b45309;
+  --pet-book: #6d28d9;
+  --pet-book-edge: #4c1d95;
 }
 
 .pet:focus-visible {
@@ -304,6 +494,72 @@ body {
 
 .pet.dragging .pet-svg {
   transform: scale(1.12);
+}
+
+/* ===== 姿态（SVG 视觉升级） ===== */
+.pose-waving,
+.pose-reading,
+.pose-sleeping {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s;
+}
+
+.pose-waving[data-active="true"],
+.pose-reading[data-active="true"],
+.pose-sleeping[data-active="true"] {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 挥手：右翅膀轻轻摆动 */
+.pose-waving {
+  transform-origin: 150px 100px;
+  animation: pet-wave 2.2s ease-in-out infinite;
+}
+
+@keyframes pet-wave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-16deg);
+  }
+}
+
+/* 抱书：书脊微光 */
+.pose-reading rect {
+  stroke: var(--pet-book-edge);
+  stroke-width: 1.5;
+}
+
+/* 睡觉：Z 字浮动 */
+.pet-zzz {
+  fill: var(--pet-pupil);
+  opacity: 0;
+}
+
+.pose-sleeping[data-active="true"] .pet-zzz-big {
+  animation: pet-zzz-float 2.8s ease-in-out infinite;
+}
+
+.pose-sleeping[data-active="true"] .pet-zzz-small {
+  animation: pet-zzz-float 2.8s ease-in-out 0.6s infinite;
+}
+
+@keyframes pet-zzz-float {
+  0% {
+    opacity: 0;
+    transform: translate(0, 4px) scale(0.8);
+  }
+  35% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(8px, -14px) scale(1.15);
+  }
 }
 
 /* 呼吸浮动 */
@@ -388,5 +644,12 @@ body {
   }
   .pet-bubble {
     transition: opacity 0.15s ease;
+  }
+  .pose-waving {
+    animation: none;
+  }
+  .pose-sleeping .pet-zzz {
+    animation: none !important;
+    opacity: 1;
   }
 }

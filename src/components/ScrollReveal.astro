@@ -29,6 +29,70 @@
     }, 3000);
   }
 
+  // Stagger reveal（方案 A 升级）：容器进入视口时，子元素带交错延迟逐个弹性入场
+  function initStaggerReveal() {
+    const containers = document.querySelectorAll("[data-reveal-stagger]");
+    if (!containers.length) return;
+
+    const staggerObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const container = entry.target as HTMLElement;
+          const children = Array.from(container.children) as HTMLElement[];
+          // 先写入索引（供 CSS transition-delay 计算），下一帧再加 revealed 触发动画
+          children.forEach((child, i) => child.style.setProperty("--reveal-index", String(i)));
+          requestAnimationFrame(() => {
+            children.forEach((child) => child.classList.add("revealed"));
+          });
+          staggerObserver.unobserve(container);
+        });
+      },
+      // 容器出现 10% 即触发；超长容器用 threshold:0 配合底部 rootMargin 兜底
+      { threshold: 0.05, rootMargin: window.innerWidth < 768 ? "0px 0px -8% 0px" : "0px 0px -15% 0px" }
+    );
+
+    containers.forEach((el) => staggerObserver.observe(el));
+  }
+
+  // Hero parallax（方案 B）：只动背景装饰层（.hp-glow / .hp-grid），绝不动正文
+  function initHeroParallax() {
+    const hero = document.querySelector(".hero-section");
+    const layer = document.querySelector(".hero-parallax");
+    if (!hero || !layer) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+
+    const glow1 = layer.querySelector(".hp-glow-1");
+    const glow2 = layer.querySelector(".hp-glow-2");
+    const grid = layer.querySelector(".hp-grid");
+    if (!glow1 || !glow2 || !grid) return;
+
+    let rafParallax = false;
+    function updateParallax() {
+      rafParallax = false;
+      const rect = hero.getBoundingClientRect();
+      if (rect.bottom < 0 || rect.top > window.innerHeight) return; // 完全离开视口
+      // 以 hero 中心为基准，计算 -1 ~ 1 的滚动进度
+      const vh = window.innerHeight;
+      const progress = (rect.top + rect.height / 2 - vh / 2) / (vh + rect.height);
+      // 不同层级不同速率，制造景深（范围克制在 10% 内，避免晕动）
+      grid.style.transform = `translate3d(0, ${(progress * 40).toFixed(1)}px, 0)`;
+      glow1.style.transform = `translate3d(${(progress * -56).toFixed(1)}px, ${(progress * -30).toFixed(1)}px, 0)`;
+      glow2.style.transform = `translate3d(${(progress * 64).toFixed(1)}px, ${(progress * 36).toFixed(1)}px, 0)`;
+    }
+
+    function requestParallax() {
+      if (rafParallax) return;
+      rafParallax = true;
+      requestAnimationFrame(updateParallax);
+    }
+
+    window.addEventListener("scroll", requestParallax, { passive: true });
+    window.addEventListener("resize", requestParallax, { passive: true });
+    requestParallax();
+  }
+
   // Card 3D roll-in (oil 同款 card-roll-hitbox)
   function initRollCards() {
     const cards = document.querySelectorAll(".roll-card");
@@ -61,11 +125,15 @@
 
   // Run on initial page load
   initScrollReveal();
+  initStaggerReveal();
+  initHeroParallax();
   initRollCards();
 
   // Re-run on Astro View Transition navigations
   document.addEventListener("astro:page-load", () => {
     initScrollReveal();
+    initStaggerReveal();
+    initHeroParallax();
     initRollCards();
   });
 </script>
