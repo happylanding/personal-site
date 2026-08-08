@@ -26,20 +26,66 @@ const searchData = allArticles.map(function (post) {
     title: title,
     excerpt: excerpt || "",
     tags: (tags || []).join(" "),
+    tagsArr: tags || [],
     category: category,
     section: post.data.section,
     date: dateStr,
     href: href,
   };
 });
+
+// 搜索 UI 文案（直接传给前端 JS，避免运行时再判断语言）
+const searchUI = {
+  placeholder: t("search.placeholder"),
+  noResults: t("search.noResults"),
+  idleHint: t("search.idleHint"),
+  shortcut: t("search.shortcut"),
+  hintClose: t("search.hintClose"),
+  hintNav: t("search.hintNav"),
+  hintOpen: t("search.hintOpen"),
+  hintAll: t("search.hintAll"),
+  popTags: t("search.popTags"),
+  totalPosts: t("search.totalPosts"),
+  matched: t("search.matched"),
+  of: t("search.of"),
+  groupBy: t("search.groupBy"),
+  tryKeywords: t("search.tryKeywords"),
+  clear: t("search.clear"),
+};
+
+// 栏目名称（用于空态导航）
+const sectionNames = {
+  insights: t("columns.insights.name"),
+  ai: t("columns.ai.name"),
+  tips: t("columns.tips.name"),
+  books: t("columns.books.name"),
+  invest: t("columns.invest.name"),
+};
 ---
 
-<!-- Search trigger button -->
+<!-- ================= Trigger: 桌面搜索框 + 移动端图标 ================= -->
+<!-- 桌面端（lg+）：可见搜索框，更直观的搜索入口 -->
 <button
-  id="search-trigger"
+  id="search-trigger-desktop"
   type="button"
-  class="w-[42px] h-[42px] flex items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 dark:active:bg-white/10 transition-all duration-200"
-  aria-label={t("search.placeholder")}
+  class="hidden lg:flex items-center w-[200px] h-[42px] px-3 rounded-xl border border-black/10 dark:border-white/10 bg-transparent hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 dark:active:bg-white/10 transition-all duration-200 text-left"
+  aria-label={t("search.trigger")}
+>
+  <svg class="shrink-0 w-[15px] h-[15px] opacity-40 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" />
+  </svg>
+  <span class="flex-1 truncate text-[13px] text-black/40 dark:text-white/40">{t("search.placeholder")}</span>
+  <kbd class="shrink-0 ml-2 px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-[10px] font-mono text-black/40 dark:text-white/40">
+    ⌘K
+  </kbd>
+</button>
+
+<!-- 中等屏（md–lg）：图标按钮 -->
+<button
+  id="search-trigger-md"
+  type="button"
+  class="hidden md:flex lg:hidden w-[42px] h-[42px] items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 dark:active:bg-white/10 transition-all duration-200"
+  aria-label={t("search.trigger")}
   title={t("search.placeholder")}
 >
   <svg class="w-[18px] h-[18px] opacity-60" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
@@ -47,40 +93,56 @@ const searchData = allArticles.map(function (post) {
   </svg>
 </button>
 
-<!-- Search overlay -->
+<!-- 移动端：图标按钮 -->
+<button
+  id="search-trigger-mobile"
+  type="button"
+  class="md:hidden w-[42px] h-[42px] flex items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 dark:active:bg-white/10 transition-all duration-200"
+  aria-label={t("search.trigger")}
+  title={t("search.placeholder")}
+>
+  <svg class="w-[18px] h-[18px] opacity-60" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" />
+  </svg>
+</button>
+
+<!-- ================= 命令面板 Overlay ================= -->
 <div
   id="search-overlay"
-  class="fixed inset-0 z-[100] flex items-start justify-center pt-[max(1rem,calc(env(safe-area-inset-top,0px)+0.5rem))] sm:pt-[max(8vh,env(safe-area-inset-top,3rem))] opacity-0 pointer-events-none transition-opacity duration-200"
+  class="fixed inset-0 z-[100] flex items-start justify-center pt-[max(3rem,calc(env(safe-area-inset-top,0px)+2rem))] sm:pt-[max(12vh,env(safe-area-inset-top,0px)+2rem)] opacity-0 pointer-events-none transition-opacity duration-200"
   aria-hidden="true"
 >
   <!-- Backdrop -->
   <div id="search-backdrop" class="absolute inset-0 bg-black/30 dark:bg-black/60 backdrop-blur-sm"></div>
 
-  <!-- Search panel -->
+  <!-- Panel：Spotlight 风格，居中更宽 -->
   <div
     id="search-panel"
-    class="relative w-full max-w-lg mx-3 sm:mx-4 bg-white dark:bg-neutral-900 border border-black/10 dark:border-white/10 rounded-xl shadow-2xl transform scale-95 transition-transform duration-200 overflow-hidden"
+    class="relative w-full max-w-xl mx-3 sm:mx-4 bg-white dark:bg-neutral-900 border border-black/10 dark:border-white/10 rounded-2xl shadow-2xl transform scale-95 transition-transform duration-200 overflow-hidden"
   >
     <!-- Input bar -->
-    <form autocomplete="off" class="flex items-center px-3 sm:px-4 py-3 border-b border-black/5 dark:border-white/5">
-      <svg class="shrink-0 w-[18px] h-[18px] mr-2.5 opacity-40" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+    <form autocomplete="off" class="flex items-center px-4 sm:px-5 py-3.5 border-b border-black/5 dark:border-white/5">
+      <svg class="shrink-0 w-[18px] h-[18px] mr-3 opacity-40" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" />
       </svg>
       <input
         id="search-input"
         type="text"
         class="flex-1 bg-transparent border-none outline-none text-[15px] sm:text-base placeholder:text-black/30 dark:placeholder:text-white/30"
-        placeholder={t("search.placeholder")}
+        placeholder={searchUI.placeholder}
         autocomplete="off"
         enterkeyhint="search"
       />
-      <!-- close button -->
+      <span id="search-esc-hint" class="hidden sm:inline-block shrink-0 mr-2 px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-[10px] font-mono text-black/40 dark:text-white/40">
+        ESC
+      </span>
+      <!-- close / clear button -->
       <button
         id="search-close-btn"
         type="button"
         class="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 dark:active:bg-white/10 ml-1"
-        aria-label="关闭搜索"
-        title={t("search.close")}
+        aria-label={searchUI.clear}
+        title={searchUI.clear}
       >
         <svg class="w-4 h-4 opacity-40" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M18 6L6 18M6 6l12 12" />
@@ -88,7 +150,7 @@ const searchData = allArticles.map(function (post) {
       </button>
     </form>
 
-    <!-- Results area -->
+    <!-- Results area：静态容器与动态结果列表分离，避免 innerHTML 清空互相覆盖 -->
     <div id="search-results" class="max-h-[55dvh] sm:max-h-[60vh] overflow-y-auto overscroll-contain">
       <!-- Loading -->
       <div id="search-loading" class="hidden px-4 py-8 text-center text-sm opacity-50">
@@ -96,27 +158,32 @@ const searchData = allArticles.map(function (post) {
       </div>
       <!-- No results -->
       <div id="search-empty" class="hidden px-4 py-8 text-center text-sm opacity-50">
-        {t("search.noResults")}
+        {searchUI.noResults}
       </div>
-      <!-- Default hints -->
-      <div id="search-hints" class="px-4 py-4 text-xs opacity-40 space-y-1.5">
-        <div class="flex items-center gap-2"><kbd class="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-[10px]">ESC</kbd> {t("search.hintClose")}</div>
-        <div class="flex items-center gap-2"><kbd class="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-[10px]">↑↓</kbd> {t("search.hintNav")}</div>
-        <div class="flex items-center gap-2"><kbd class="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-[10px]">↵</kbd> {t("search.hintOpen")}</div>
-      </div>
-      <!-- Results: JavaScript 动态生成 -->
+      <!-- Default explore state：栏目导航 + 热门标签（JS 动态生成） -->
+      <div id="search-idle" class="px-4 py-4"></div>
+      <!-- Group tabs（JS 动态生成，有结果时显示） -->
+      <div id="search-tabs" class="hidden px-3 pt-3 pb-1 flex items-center gap-1.5 flex-wrap border-b border-black/5 dark:border-white/5"></div>
+      <!-- 动态结果列表：仅存放搜索结果项 -->
+      <div id="search-results-list"></div>
     </div>
 
     <!-- Footer -->
-    <div id="search-footer" class="px-4 py-2 border-t border-black/5 dark:border-white/5 text-[10px] opacity-40 text-center">
-      <span id="search-count">0</span><span id="search-count-suffix"></span>
+    <div id="search-footer" class="px-4 sm:px-5 py-2 border-t border-black/5 dark:border-white/5 text-[10px] opacity-40 flex items-center justify-between gap-3">
+      <span id="search-count-wrap" class="flex items-center gap-1.5 font-mono">
+        <span id="search-count"></span><span id="search-count-suffix"></span>
+      </span>
+      <span class="hidden sm:flex items-center gap-2.5">
+        <span class="flex items-center gap-1"><kbd class="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-[10px]">↑↓</kbd> {searchUI.hintNav}</span>
+        <span class="flex items-center gap-1"><kbd class="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-[10px]">↵</kbd> {searchUI.hintOpen}</span>
+      </span>
     </div>
   </div>
 </div>
 
-<style>
-  /* :global() required — "search-overlay-open" is added to <html> via JS, outside component scope */
-  :global(.search-overlay-open) {
+<style is:global>
+  /* "search-overlay-open" is added to <html> via JS, outside component scope */
+  .search-overlay-open {
     overflow: hidden;
   }
 
@@ -129,62 +196,90 @@ const searchData = allArticles.map(function (post) {
     transform: scale(1);
   }
 
-  /* result item */
+  /* ===== 结果项：精致卡片风格 ===== */
   .search-result-item {
-    display: block;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
     text-decoration: none;
     color: inherit;
-    padding: 0.75rem 1rem;
+    padding: 0.7rem 1rem 0.7rem 1.25rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.04);
     cursor: pointer;
-    transition: background-color 0.1s;
+    transition: background-color 0.12s ease, transform 0.12s ease;
     -webkit-tap-highlight-color: transparent;
   }
-  :global(.dark) .search-result-item {
+  .dark .search-result-item {
     border-color: rgba(255, 255, 255, 0.04);
   }
   .search-result-item:hover,
   .search-result-item.active {
     background-color: rgba(0, 0, 0, 0.04);
   }
-  :global(.dark) .search-result-item:hover,
-  :global(.dark) .search-result-item.active {
+  .dark .search-result-item:hover,
+  .dark .search-result-item.active {
     background-color: rgba(255, 255, 255, 0.04);
   }
 
+  /* 栏目图标徽章 */
+  .search-item-badge {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: rgba(0, 0, 0, 0.05);
+    color: rgba(0, 0, 0, 0.55);
+  }
+  .dark .search-item-badge {
+    background: rgba(255, 255, 255, 0.07);
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .search-item-badge svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .search-item-body {
+    min-width: 0;
+    flex: 1;
+  }
   .search-result-title {
-    font-weight: 500;
+    font-weight: 600;
     font-size: 0.9375rem;
     line-height: 1.4;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.15rem;
   }
   .search-result-title mark {
-    background-color: rgba(250, 204, 21, 0.3);
+    background-color: rgba(250, 204, 21, 0.35);
     color: inherit;
     border-radius: 2px;
     padding: 0 1px;
   }
-  :global(.dark) .search-result-title mark {
-    background-color: rgba(250, 204, 21, 0.25);
+  .dark .search-result-title mark {
+    background-color: rgba(250, 204, 21, 0.3);
   }
 
   .search-result-excerpt {
     font-size: 0.8125rem;
     opacity: 0.55;
-    line-height: 1.4;
+    line-height: 1.45;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
   .search-result-excerpt mark {
-    background-color: rgba(250, 204, 21, 0.3);
+    background-color: rgba(250, 204, 21, 0.35);
     color: inherit;
     border-radius: 2px;
     padding: 0 1px;
   }
-  :global(.dark) .search-result-excerpt mark {
-    background-color: rgba(250, 204, 21, 0.25);
+  .dark .search-result-excerpt mark {
+    background-color: rgba(250, 204, 21, 0.3);
   }
 
   .search-result-meta {
@@ -195,50 +290,163 @@ const searchData = allArticles.map(function (post) {
     flex-wrap: wrap;
     align-items: center;
     gap: 0.5rem;
+    font-family: var(--font-mono);
   }
 
-  .search-group-head {
+  /* ===== 分组 Tab ===== */
+  .search-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    color: rgba(0, 0, 0, 0.55);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .dark .search-tab {
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .search-tab:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+  .dark .search-tab:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .search-tab.active {
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+  }
+  .dark .search-tab.active {
+    background: rgba(255, 255, 255, 0.9);
+    color: #000;
+  }
+  .search-tab .tab-count {
+    font-size: 0.625rem;
+    opacity: 0.7;
+    font-family: var(--font-mono);
+  }
+
+  /* ===== 空态（idle）导航区 ===== */
+  .idle-block {
+    margin-bottom: 1.1rem;
+  }
+  .idle-block:last-child {
+    margin-bottom: 0;
+  }
+  .idle-title {
+    font-size: 0.6875rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.4;
+    font-family: var(--font-mono);
+    margin-bottom: 0.55rem;
+  }
+  .idle-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+  .idle-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: rgba(0, 0, 0, 0.6);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+  .dark .idle-chip {
+    border-color: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.62);
+  }
+  .idle-chip:hover {
+    border-color: rgba(180, 83, 9, 0.5);
+    color: #b45309;
+    background: rgba(180, 83, 9, 0.05);
+  }
+  .dark .idle-chip:hover {
+    color: #fbbf24;
+    background: rgba(245, 158, 11, 0.08);
+  }
+  .idle-chip .chip-num {
+    font-size: 0.625rem;
+    opacity: 0.5;
+    font-family: var(--font-mono);
+  }
+  .idle-chip svg {
+    width: 13px;
+    height: 13px;
+    opacity: 0.55;
+  }
+  .idle-tip {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.55rem 1rem 0.35rem;
-    font-size: 0.7rem;
-    letter-spacing: 0.05em;
-    opacity: 0.5;
-    text-transform: uppercase;
-    background-color: rgba(0, 0, 0, 0.02);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    font-size: 0.6875rem;
+    opacity: 0.4;
+    margin-top: 0.9rem;
   }
-  :global(.dark) .search-group-head {
-    background-color: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.05);
+  .idle-tip kbd {
+    padding: 0.15rem 0.45rem;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.05);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+  }
+  .dark .idle-tip kbd {
+    background: rgba(255, 255, 255, 0.08);
   }
 </style>
 
-<script define:vars={{ __idx: searchData }}>
+<script define:vars={{ __idx: searchData, __ui: searchUI, __sectionNames: sectionNames, __langPrefix: langPrefix }}>
   (function () {
     var index = __idx;
+    var ui = __ui;
+    var sectionNames = __sectionNames;
+    var langPrefix = __langPrefix;
     var isOpen = false;
     var activeIdx = -1;
-    var atTop = true;
+    var activeGroup = null; // null = 全部
     var debounceTimer = -1;
     var CLS_OPEN = "search-overlay-visible";
     var BODY_CLS = "search-overlay-open";
-    var SEARCH_QS = "q";
 
-    var trigger = document.getElementById("search-trigger");
+    var triggerDesktop = document.getElementById("search-trigger-desktop");
+    var triggerMd = document.getElementById("search-trigger-md");
+    var triggerMobile = document.getElementById("search-trigger-mobile");
     var overlay = document.getElementById("search-overlay");
     var backdrop = document.getElementById("search-backdrop");
     var panel = document.getElementById("search-panel");
     var input = document.getElementById("search-input");
     var closeBtn = document.getElementById("search-close-btn");
     var results = document.getElementById("search-results");
+    var resultsList = document.getElementById("search-results-list");
     var loadingEl = document.getElementById("search-loading");
     var emptyEl = document.getElementById("search-empty");
-    var hintsEl = document.getElementById("search-hints");
+    var idleEl = document.getElementById("search-idle");
+    var tabsEl = document.getElementById("search-tabs");
+    var countEl = document.getElementById("search-count");
+    var countSuffixEl = document.getElementById("search-count-suffix");
     var html = document.documentElement;
 
-    if (!trigger || !overlay || !input || !closeBtn || !results) return;
+    if (!triggerDesktop || !triggerMobile || !overlay || !input || !closeBtn || !results) return;
+
+    // ── 栏目图标 SVG（内联，JS 渲染用） ──
+    var SECTION_ICONS = {
+      insights: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2.67 0-5 2.16-5 5 0 1.26.46 2.5 1.18 3.47A8 8 0 0 0 12 22a8 8 0 0 0 3.82-11.53C16.54 9.5 17 8.26 17 7c0-2.84-2.33-5-5-5Z"/><path d="M10 17.5h4"/><path d="M11 15h2"/><line x1="12" y1="8" x2="12" y2="11"/></svg>',
+      ai: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8.5v7"/><path d="M8.5 12h7"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M2 12h2"/><path d="M20 12h2"/></svg>',
+      tips: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="12" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="12" cy="20" r="2"/><circle cx="20" cy="12" r="2"/><circle cx="8.34" cy="6.34" r="2"/><circle cx="15.66" cy="6.34" r="2"/><circle cx="8.34" cy="17.66" r="2"/><circle cx="15.66" cy="17.66" r="2"/></svg>',
+      books: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2Z"/><path d="M8 3v18"/><path d="M16 3v18"/><line x1="10" y1="8" x2="14" y2="8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>',
+      invest: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 14 6 9 10 13 14 7 18 10 22 6"/><circle cx="22" cy="6" r="1.5"/><path d="M2 18h20"/><circle cx="6" cy="18" r="1.5"/><circle cx="10" cy="18" r="1.5"/><circle cx="18" cy="18" r="1.5"/></svg>',
+    };
 
     // ── highlight match in text ──
     function highlight(text, q) {
@@ -252,13 +460,19 @@ const searchData = allArticles.map(function (post) {
       return (s || "").toLowerCase().replace(/\s+/g, " ").trim();
     }
 
-    // ── fuzzy match helper（字符跳跃宽松匹配，仅用于长词/长短语）──
+    // ── fuzzy match helper（字符跳跃宽松匹配，仅用于长词/长短语） ──
     function fuzzyMatch(text, word) {
       if (!word) return false;
       var t = norm(text);
       var w = norm(word);
       if (!w) return false;
-      if (t.indexOf(w) !== -1) return true;
+      // 中文词：子串命中即成立；英文词：整词边界命中
+      if (/[\u4e00-\u9fa5]/.test(w)) {
+        if (t.indexOf(w) !== -1) return true;
+      } else {
+        var reWord = new RegExp("(^|[^a-z0-9])" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "($|[^a-z0-9])");
+        if (reWord.test(t)) return true;
+      }
       // 中文按单字、英文按词拆，避免单字符噪声命中
       var pieces = /[\u4e00-\u9fa5]/.test(w) ? w.split("") : w.split(/\s+/).filter(Boolean);
       if (pieces.length < 2) return false;
@@ -269,32 +483,102 @@ const searchData = allArticles.map(function (post) {
       return qi === pieces.length;
     }
 
-    // ── exact / fuzzy helpers ──
     function hasExact(field, w) {
-      return norm(field).indexOf(norm(w)) !== -1;
+      var t = norm(field);
+      var word = norm(w);
+      if (!word) return false;
+      // 中文词：子串匹配（中文无空格边界，直接包含即命中）
+      if (/[\u4e00-\u9fa5]/.test(word)) {
+        return t.indexOf(word) !== -1;
+      }
+      // 英文/数字词：整词边界匹配，避免 "ai" 命中 "tailwind"、"data" 命中 "database"
+      // 前后均需为非字母数字（或字符串首尾）
+      var re = new RegExp("(^|[^a-z0-9])" + word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "($|[^a-z0-9])");
+      return re.test(t);
     }
     function hasFuzzy(field, w) {
       return fuzzyMatch(field, w);
     }
 
-    // ── search ──
+    // ── 栏目 / 标签统计（空态用） ──
+    function sectionCounts() {
+      var counts = {};
+      for (var i = 0; i < index.length; i++) {
+        var s = index[i].section;
+        counts[s] = (counts[s] || 0) + 1;
+      }
+      return counts;
+    }
+    function popularTags(limit) {
+      var map = {};
+      for (var i = 0; i < index.length; i++) {
+        var arr = index[i].tagsArr;
+        for (var j = 0; j < arr.length; j++) {
+          var tg = arr[j];
+          map[tg] = (map[tg] || 0) + 1;
+        }
+      }
+      var list = [];
+      for (var k in map) list.push({ tag: k, n: map[k] });
+      list.sort(function (a, b) { return b.n - a.n || a.tag.localeCompare(b.tag); });
+      return list.slice(0, limit);
+    }
+
+    // ── 空态渲染：栏目导航 + 热门标签 ──
+    function renderIdle() {
+      var counts = sectionCounts();
+      var order = ["insights", "ai", "tips", "books", "invest"];
+      var secHtml = '<div class="idle-block"><div class="idle-title">' + ui.groupBy + "</div><div class='idle-chips'>";
+      for (var i = 0; i < order.length; i++) {
+        var s = order[i];
+        if (!counts[s]) continue;
+        secHtml += '<a href="' + langPrefix + s + '/" class="idle-chip">' +
+          '<span>' + SECTION_ICONS[s] + "</span>" +
+          sectionNames[s] +
+          ' <span class="chip-num">' + counts[s] + "</span></a>";
+      }
+      secHtml += "</div></div>";
+
+      var tags = popularTags(8);
+      var tagHtml = '<div class="idle-block"><div class="idle-title">' + ui.popTags + "</div><div class='idle-chips'>";
+      for (var t = 0; t < tags.length; t++) {
+        // 标签页路径需跟随当前语言前缀（英文站 /en/tags/...）
+        tagHtml += '<a href="' + langPrefix + 'tags/' + encodeURIComponent(tags[t].tag) + '" class="idle-chip">#' +
+          tags[t].tag +
+          ' <span class="chip-num">' + tags[t].n + "</span></a>";
+      }
+      tagHtml += "</div></div>";
+
+      var tipHtml = '<div class="idle-tip">' +
+        "<span>" + ui.idleHint + "</span>" +
+        '<span class="flex items-center gap-1"><kbd>ESC</kbd> ' + ui.hintClose + "</span>" +
+        '<span class="flex items-center gap-1"><kbd>↑↓</kbd> ' + ui.hintNav + "</span>" +
+        '<span class="flex items-center gap-1"><kbd>↵</kbd> ' + ui.hintOpen + "</span>" +
+        "</div>";
+
+      idleEl.innerHTML = secHtml + tagHtml + tipHtml;
+    }
+
+    // ── 搜索 ──
     function doSearch(query) {
       var q = query.trim();
+      activeGroup = null;
       if (!q) {
-        results.innerHTML = "";
-        hintsEl && hintsEl.classList.remove("hidden");
+        resultsList.innerHTML = "";
+        tabsEl && (tabsEl.innerHTML = "", tabsEl.classList.add("hidden"));
+        idleEl && idleEl.classList.remove("hidden");
         emptyEl && emptyEl.classList.add("hidden");
         loadingEl && loadingEl.classList.add("hidden");
-        setCount(index.length);
+        setCount(index.length, index.length, true);
         activeIdx = -1;
         return;
       }
 
-      hintsEl && hintsEl.classList.add("hidden");
+      idleEl && idleEl.classList.add("hidden");
+      tabsEl && tabsEl.classList.add("hidden");
       loadingEl && loadingEl.classList.remove("hidden");
       emptyEl && emptyEl.classList.add("hidden");
 
-      // debounced
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(function () {
         var words = q.toLowerCase().split(/\s+/).filter(Boolean);
@@ -305,7 +589,6 @@ const searchData = allArticles.map(function (post) {
         for (var i = 0; i < index.length; i++) {
           var p = index[i];
           var score = 0;
-
           for (var w = 0; w < words.length; w++) {
             var word = words[w];
             if (hasExact(p.title, word)) score += 20;
@@ -316,7 +599,6 @@ const searchData = allArticles.map(function (post) {
             else if (hasFuzzy(p.excerpt, word)) score += 2;
             if (hasExact(p.category, word)) score += 2;
           }
-
           if (score > 0) {
             total++;
             if (!groups[p.category]) {
@@ -327,7 +609,7 @@ const searchData = allArticles.map(function (post) {
           }
         }
 
-        // 组内按相关性排序；组间按栏目固定顺序展示
+        // 组间按栏目固定顺序
         var sectionOrder = { insights: 0, ai: 1, tips: 2, books: 3, invest: 4 };
         order.sort(function (a, b) {
           var sa = sectionOrder[groups[a].section] ?? 9;
@@ -339,68 +621,162 @@ const searchData = allArticles.map(function (post) {
         }
 
         activeIdx = -1;
+        renderTabs(groups, order, total);
         renderResults(groups, order, q);
-        setCount(total);
+        setCount(total, index.length, false);
         loadingEl && loadingEl.classList.add("hidden");
       }, 150);
     }
 
-    // ── footer count ──
-    var countEl = document.getElementById("search-count");
-    var countSuffixEl = document.getElementById("search-count-suffix");
-    var zh = !/^en$/.test((window.location.pathname || "/").split("/")[1]);
-    function setCount(n) {
+    // ── 底部计数：idle 显示全站总数；有搜索时显示“命中 / 全站” ──
+    function setCount(matched, total, idle) {
       if (!countEl || !countSuffixEl) return;
-      if (n === 0) {
-        countEl.textContent = "";
-        countSuffixEl.textContent = "";
+      if (idle) {
+        countEl.textContent = String(total);
+        countSuffixEl.textContent = " " + ui.totalPosts;
         return;
       }
-      countEl.textContent = String(n);
-      countSuffixEl.textContent = zh ? " 篇文章" : " posts";
+      if (matched === 0) {
+        // 无命中：显示 0，明确与 idle 总数区分
+        countEl.textContent = "0";
+        countSuffixEl.textContent = " " + ui.totalPosts;
+        return;
+      }
+      var isZh = ui.totalPosts === "篇文章";
+      // zh: “命中 3 / 共 14 篇文章”  en: “3 of 14 articles”
+      var text = isZh
+        ? ui.matched + " " + matched + " / " + ui.of + " " + total
+        : matched + " " + ui.of + " " + total;
+      countEl.textContent = text;
+      countSuffixEl.textContent = " " + ui.totalPosts;
     }
 
-    // ── render ──
+    // ── 分组 Tab ──
+    function renderTabs(groups, order, total) {
+      if (!tabsEl) return;
+      if (total === 0) {
+        tabsEl.innerHTML = "";
+        tabsEl.classList.add("hidden");
+        return;
+      }
+      var htmlStr = '<button type="button" class="search-tab active" data-group="">' + ui.hintAll +
+        ' <span class="tab-count">' + total + "</span></button>";
+      for (var i = 0; i < order.length; i++) {
+        var cat = order[i];
+        htmlStr += '<button type="button" class="search-tab" data-group="' + cat + '">' + cat +
+          ' <span class="tab-count">' + groups[cat].items.length + "</span></button>";
+      }
+      tabsEl.innerHTML = htmlStr;
+      tabsEl.classList.remove("hidden");
+    }
+
+    // ── 渲染结果 ──
     function renderResults(groups, order, query) {
       if (!results) return;
       var total = 0;
       for (var g = 0; g < order.length; g++) total += groups[order[g]].items.length;
       if (total === 0) {
         emptyEl && emptyEl.classList.remove("hidden");
-        results.innerHTML = "";
+        resultsList.innerHTML = "";
         return;
       }
       emptyEl && emptyEl.classList.add("hidden");
 
       var htmlStr = "";
+      var showAll = activeGroup === null || activeGroup === "";
       for (var g = 0; g < order.length; g++) {
         var cat = order[g];
+        if (!showAll && cat !== activeGroup) continue;
         var items = groups[cat].items;
-        htmlStr += '<div class="search-group-head">' + cat + "</div>";
         for (var i = 0; i < items.length; i++) {
           var p = items[i].post;
+          var icon = SECTION_ICONS[p.section] || "";
           htmlStr += '<a href="' + p.href + '" class="search-result-item">';
+          htmlStr += '<span class="search-item-badge">' + icon + "</span>";
+          htmlStr += '<span class="search-item-body">';
           htmlStr += '<div class="search-result-title">' + highlight(p.title, query) + "</div>";
           if (p.excerpt) {
             htmlStr += '<div class="search-result-excerpt">' + highlight(p.excerpt, query) + "</div>";
           }
           htmlStr += '<div class="search-result-meta">';
           if (p.date) htmlStr += "<span>" + p.date + "</span>";
+          if (p.category) htmlStr += "<span>·</span><span>" + p.category + "</span>";
           if (p.tags) {
-            htmlStr += '<span class="opacity-60">' + p.tags.split(" ").map(function (tag) {
+            htmlStr += "<span>·</span><span>" + p.tags.split(" ").slice(0, 3).map(function (tag) {
               return "#" + tag;
             }).join(" ") + "</span>";
           }
           htmlStr += "</div>";
-          htmlStr += "</a>";
+          htmlStr += "</span></a>";
         }
       }
-      results.innerHTML = htmlStr;
+      resultsList.innerHTML = htmlStr;
     }
 
-    // ── navigate results with keyboard ──
+    // ── Tab 点击事件（事件委托，兼容文本节点点击） ──
+    tabsEl && tabsEl.addEventListener("click", function (e) {
+      var tgt = e.target;
+      while (tgt && tgt !== tabsEl && !(tgt.classList && tgt.classList.contains("search-tab"))) {
+        tgt = tgt.parentNode;
+      }
+      if (!tgt || tgt === tabsEl) return;
+      var all = tabsEl.querySelectorAll(".search-tab");
+      for (var i = 0; i < all.length; i++) all[i].classList.remove("active");
+      tgt.classList.add("active");
+      activeGroup = tgt.getAttribute("data-group") || null;
+      // 重新用当前输入搜索（结果会按 activeGroup 过滤）
+      var q = input.value.trim();
+      var words = q.toLowerCase().split(/\s+/).filter(Boolean);
+      var groups = {};
+      var order = [];
+      for (var k = 0; k < index.length; k++) {
+        var p = index[k];
+        var score = 0;
+        for (var w = 0; w < words.length; w++) {
+          var word = words[w];
+          if (hasExact(p.title, word)) score += 20;
+          else if (hasFuzzy(p.title, word)) score += 10;
+          if (hasExact(p.tags, word)) score += 8;
+          else if (hasFuzzy(p.tags, word)) score += 3;
+          if (hasExact(p.excerpt, word)) score += 5;
+          else if (hasFuzzy(p.excerpt, word)) score += 2;
+          if (hasExact(p.category, word)) score += 2;
+        }
+        if (score > 0) {
+          if (!groups[p.category]) {
+            groups[p.category] = { section: p.section, items: [] };
+            order.push(p.category);
+          }
+          groups[p.category].items.push({ post: p, score: score });
+        }
+      }
+      var sectionOrder = { insights: 0, ai: 1, tips: 2, books: 3, invest: 4 };
+      order.sort(function (a, b) {
+        var sa = sectionOrder[groups[a].section] ?? 9;
+        var sb = sectionOrder[groups[b].section] ?? 9;
+        return sa - sb || a.localeCompare(b);
+      });
+      for (var g = 0; g < order.length; g++) {
+        groups[order[g]].items.sort(function (a, b) { return b.score - a.score; });
+      }
+      activeIdx = -1;
+      renderResults(groups, order, q);
+    });
+
+    // ── 点击结果项：导航前先关闭搜索面板 ──
+    resultsList && resultsList.addEventListener("click", function (e) {
+      var tgt = e.target;
+      while (tgt && tgt !== resultsList && !(tgt.tagName && tgt.tagName.toLowerCase() === "a")) {
+        tgt = tgt.parentNode;
+      }
+      if (tgt && tgt !== resultsList && tgt.tagName.toLowerCase() === "a") {
+        closeSearch();
+      }
+    });
+
+    // ── 键盘导航 ──
     function navigateResults(e) {
-      var items = results.querySelectorAll(".search-result-item");
+      var items = resultsList.querySelectorAll(".search-result-item");
       if (!items.length) return;
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
         e.preventDefault();
@@ -428,15 +804,17 @@ const searchData = allArticles.map(function (post) {
       if (isOpen) return;
       isOpen = true;
       activeIdx = -1;
-      atTop = window.scrollY < 40;
+      activeGroup = null;
       overlay.classList.add(CLS_OPEN);
       overlay.setAttribute("aria-hidden", "false");
       html.classList.add(BODY_CLS);
       input.value = "";
-      results.innerHTML = "";
-      hintsEl && hintsEl.classList.remove("hidden");
+      resultsList.innerHTML = "";
+      tabsEl && (tabsEl.innerHTML = "", tabsEl.classList.add("hidden"));
+      idleEl && idleEl.classList.remove("hidden");
       emptyEl && emptyEl.classList.add("hidden");
-      setCount(index.length);
+      renderIdle();
+      setCount(index.length, index.length, true);
       input.focus();
     }
 
@@ -447,12 +825,16 @@ const searchData = allArticles.map(function (post) {
       overlay.setAttribute("aria-hidden", "true");
       html.classList.remove(BODY_CLS);
       input.value = "";
-      results.innerHTML = "";
+      resultsList.innerHTML = "";
+      tabsEl && (tabsEl.innerHTML = "", tabsEl.classList.add("hidden"));
       activeIdx = -1;
+      activeGroup = null;
     }
 
     // ── events ──
-    trigger.addEventListener("click", openSearch);
+    [triggerDesktop, triggerMd, triggerMobile].forEach(function (el) {
+      if (el) el.addEventListener("click", openSearch);
+    });
     closeBtn.addEventListener("click", function () {
       // 有输入时先清空；无输入时关闭搜索
       if (input.value) {
@@ -465,16 +847,14 @@ const searchData = allArticles.map(function (post) {
     });
     backdrop.addEventListener("click", closeSearch);
 
-    // close on overlay itself click (outside panel)
     overlay.addEventListener("click", function (e) {
       if (e.target === overlay) closeSearch();
     });
 
-    // close on document mousedown outside panel
     document.addEventListener("mousedown", function (e) {
       if (!isOpen) return;
       if (overlay.contains(e.target)) return;
-      if (e.target === trigger) return;
+      if (e.target === triggerDesktop || e.target === triggerMd || e.target === triggerMobile) return;
       closeSearch();
     });
 
@@ -485,6 +865,7 @@ const searchData = allArticles.map(function (post) {
     input.addEventListener("keydown", function (e) {
       if (e.key === "Escape") {
         e.preventDefault();
+        e.stopPropagation(); // 阻止冒泡到 document 的关闭监听（避免“先清空又立即关闭”）
         if (input.value) {
           input.value = "";
           doSearch("");
@@ -496,14 +877,13 @@ const searchData = allArticles.map(function (post) {
       navigateResults(e);
     });
 
-    // close on Escape when overlay is open
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && isOpen) {
         closeSearch();
       }
     });
 
-    // touch: prevent iOS Safari double-tap zoom when tapping result items
+    // touch: prevent iOS Safari double-tap zoom
     overlay.addEventListener("touchstart", function (e) {}, { passive: true });
 
     // reset on view-transition swap
