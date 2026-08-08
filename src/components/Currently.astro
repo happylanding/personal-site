@@ -1,51 +1,202 @@
 ---
+/**
+ * 📡 CURRENTLY —— "最近在做什么" 动态状态卡片
+ *
+ * 不再写死示例数据，而是基于站内真实内容（src/content/articles/）动态生成：
+ *
+ *   READING  最近在看的书        → 最近更新的书籍专区文章（author 字段非空）
+ *   WRITING  最近在写什么        → 最近更新的普通文章
+ *   CODING   最近在折腾什么      → 优先取最近文章正文中首个代码块的语言
+ *   LEARNING 最近在学什么        → 优先取最近文章标签中与学习相关的词
+ *
+ * 生成规则：
+ *   - 取「更新优先」排序（updated 存在时优先于 date，兼顾改稿与发布）
+ *   - 每行自带链接：可跳转到对应文章，整卡不再是死文本
+ *   - 文章不足或缺少可推断字段时自动降级为网站默认简介，绝不显示空行
+ *   - 中英文双语标题/描述，跟随站点语言
+ */
 import { useTranslations, getLangFromUrl } from "../i18n/utils";
+import { getCollection } from "astro:content";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-// 这些数据可以从一个配置文件或环境变量中读取
-const currentActivity = {
-  zh: {
-    reading: "《思考，快与慢》— 丹尼尔·卡尼曼",
-    coding: "使用 Astro + Tailwind CSS 构建个人网站",
-    writing: "关于个人知识管理的文章",
-    learning: "Cloudflare Pages 部署与边缘计算",
-  },
-  en: {
-    reading: "Thinking, Fast and Slow — Daniel Kahneman",
-    coding: "Building personal site with Astro + Tailwind CSS",
-    writing: "An article about personal knowledge management",
-    learning: "Cloudflare Pages deployment & edge computing",
-  },
+const now = Date.now();
+const yearMs = 365 * 24 * 60 * 60 * 1000;
+
+const isBook = (a) => Boolean(a.data.author);
+const titleOf = (a) => (lang === "en" ? a.data.titleEn || a.data.title : a.data.title);
+const descOf = (a) => (lang === "en" ? a.data.descriptionEn || a.data.description || "" : a.data.description || "");
+const pathOf = (a) => `${lang === "en" ? "/en" : ""}/${a.data.section}/${a.slug}`;
+
+/** 更新优先排序：updated 存在且不晚于未来则按 updated，否则按 date */
+const byUpdated = (a, b) => {
+  const at = (x) => {
+    const u = x.data.updated;
+    return u && u.getTime() <= now + 24 * 60 * 60 * 1000 ? u.getTime() : x.data.date.getTime();
+  };
+  return at(b) - at(a);
 };
 
-const data = lang === "en" ? currentActivity.en : currentActivity.zh;
+// 数据源：已发布文章，按更新时间倒序
+const published = (await getCollection("articles", ({ data }) => !data.draft)).sort(byUpdated);
+const books = published.filter(isBook);
+const posts = published.filter((a) => !isBook(a));
+
+/** 挑选最近一年内的一篇，超出则回退到全局最新一篇，避免空值 */
+const pickRecent = (list) => list.find((a) => Date.now() - (a.data.updated || a.data.date).getTime() <= yearMs) || list[0];
+
+const book = pickRecent(books);
+const writing = pickRecent(posts);
+
+// READING：默认回退到站内最近一本书籍
+const reading = book
+  ? {
+      label: "READING",
+      title: lang === "en" ? `Reading ${titleOf(book)}` : `在读《${titleOf(book).replace(/^《|》$/g, "")}》`,
+      desc: book.data.author
+        ? `${lang === "en" ? "by" : "作者"} ${lang === "en" ? book.data.authorEn || book.data.author : book.data.author} · ${descOf(book) || (lang === "en" ? "Latest book on the shelf" : "书架上的新书")}`
+        : descOf(book),
+      href: pathOf(book),
+    }
+  : null;
+
+// WRITING：默认回退到最近一篇普通文章
+const writingItem = writing
+  ? {
+      label: "WRITING",
+      title: lang === "en" ? `Writing ${titleOf(writing)}` : `在写《${titleOf(writing).replace(/^《|》$/g, "")}》`,
+      desc: descOf(writing) || (lang === "en" ? "A new article" : "一篇新文章"),
+      href: pathOf(writing),
+    }
+  : null;
+
+// CODING：优先从最近正文里挑首个代码块的语言，找不到就写网站本身
+const LANG_NAMES = {
+  js: "JavaScript",
+  javascript: "JavaScript",
+  ts: "TypeScript",
+  typescript: "TypeScript",
+  bash: "Shell",
+  sh: "Shell",
+  html: "HTML",
+  css: "CSS",
+  python: "Python",
+  node: "Node.js",
+  vue: "Vue",
+  react: "React",
+  svelte: "Svelte",
+  astro: "Astro",
+  json: "JSON",
+  md: "Markdown",
+  markdown: "Markdown",
+  sql: "SQL",
+  yaml: "YAML",
+  yml: "YAML",
+};
+let codeLang = "";
+let codeSource = null;
+for (const a of published) {
+  const m = a.body?.match(/```([\w+-]+)/);
+  if (m) {
+    codeLang = m[1];
+    codeSource = a;
+    break;
+  }
+}
+const codeLangPretty = LANG_NAMES[codeLang.toLowerCase()] || codeLang;
+const coding = {
+  label: "CODING",
+  title: codeLang
+    ? lang === "en"
+      ? `Experimenting with ${codeLangPretty}`
+      : `在折腾 ${codeLangPretty}`
+    : lang === "en"
+      ? "Building this site with Astro"
+      : "在折腾 Astro 个人网站",
+  desc: lang === "en"
+    ? codeSource
+      ? `From the post on ${titleOf(codeSource)}`
+      : "Building this site with Astro + Tailwind"
+    : codeSource
+      ? `最近文章里在用 ${codeLangPretty}`
+      : "用 Astro + Tailwind 维护这个站点",
+  href: codeSource ? pathOf(codeSource) : "/",
+};
+
+// LEARNING：优先从最近文章标签里找学习相关词（AI / 工具 / 语言），找不到就写长期主题
+const learningKeywords = ["AI", "ai", "astro", "tailwind", "css", "javascript", "node", "vue", "react", "python", "web"];
+const learning = (() => {
+  const seen = published.find((a) =>
+    (a.data.tags || []).some((tag) => learningKeywords.includes(tag))
+  );
+  if (seen) {
+    const tag = (seen.data.tags || []).find((x) => learningKeywords.includes(x));
+    const pretty = { ai: "AI", astro: "Astro", tailwind: "Tailwind CSS", css: "CSS", javascript: "JavaScript", node: "Node.js", vue: "Vue", react: "React", python: "Python", web: "Web" }[tag] || tag;
+    return {
+      label: "LEARNING",
+      title: lang === "en" ? `Learning ${pretty}` : `在学 ${pretty}`,
+      desc: lang === "en" ? `From the post on ${titleOf(seen)}` : `最近文章里聊到 ${titleOf(seen)}`,
+      href: pathOf(seen),
+    };
+  }
+  return {
+    label: "LEARNING",
+    title: lang === "en" ? "Learning AI & tools" : "在学 AI 与效率工具",
+    desc: lang === "en" ? "The long-running theme of this site" : "本站一直关注的主题",
+    href: "/",
+  };
+})();
+
+const rows = [reading, writingItem, coding, learning].filter(Boolean);
+const grid = rows.length > 0 ? rows.slice(0, 4) : [];
 ---
 
-<div class="rounded-2xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] p-6">
-  <h2
-    class="mb-4 font-mono text-xs font-semibold uppercase tracking-widest
-           text-black/40 dark:text-white/40"
-  >
-    {lang === "en" ? "📡 CURRENTLY" : "📡 最近在做什么"}
-  </h2>
-  <div class="space-y-3 text-sm">
-    <div class="flex items-start gap-3">
-      <span class="mt-0.5 shrink-0 font-mono text-xs text-black/30 dark:text-white/30">READING</span>
-      <span class="text-black/70 dark:text-white/70">{data.reading}</span>
+{
+  grid.length > 0 && (
+    <div
+      class="rounded-2xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] p-6"
+      data-currently
+    >
+      <div class="mb-4 flex items-center justify-between">
+        <h2
+          class="font-mono text-xs font-semibold uppercase tracking-widest text-black/40 dark:text-white/40"
+        >
+          {lang === "en" ? "📡 CURRENTLY" : "📡 最近在做什么"}
+        </h2>
+        <span class="font-mono text-[11px] text-black/25 dark:text-white/25">
+          {lang === "en" ? "auto · from posts" : "自动 · 来自站内文章"}
+        </span>
+      </div>
+      <div class="space-y-3 text-sm">
+        {grid.map((row) => (
+          <a
+            href={row.href}
+            class="group flex items-start gap-3 rounded-lg p-1 -m-1 transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.03]"
+            data-currently-row
+          >
+            <span
+              class="mt-0.5 shrink-0 font-mono text-xs text-black/30 dark:text-white/30 group-hover:text-black/60 dark:group-hover:text-white/60 transition-colors"
+            >
+              {row.label}
+            </span>
+            <span class="min-w-0">
+              <span class="block text-black/70 dark:text-white/70 group-hover:opacity-70 transition-opacity">
+                {row.title}
+              </span>
+              <span class="mt-0.5 block truncate text-xs text-black/35 dark:text-white/35">
+                {row.desc}
+              </span>
+            </span>
+            <span
+              class="mt-0.5 shrink-0 font-mono text-xs text-black/25 dark:text-white/25 opacity-0 transition-opacity group-hover:opacity-100"
+              aria-hidden="true"
+            >
+              ↗
+            </span>
+          </a>
+        ))}
+      </div>
     </div>
-    <div class="flex items-start gap-3">
-      <span class="mt-0.5 shrink-0 font-mono text-xs text-black/30 dark:text-white/30">CODING</span>
-      <span class="text-black/70 dark:text-white/70">{data.coding}</span>
-    </div>
-    <div class="flex items-start gap-3">
-      <span class="mt-0.5 shrink-0 font-mono text-xs text-black/30 dark:text-white/30">WRITING</span>
-      <span class="text-black/70 dark:text-white/70">{data.writing}</span>
-    </div>
-    <div class="flex items-start gap-3">
-      <span class="mt-0.5 shrink-0 font-mono text-xs text-black/30 dark:text-white/30">LEARNING</span>
-      <span class="text-black/70 dark:text-white/70">{data.learning}</span>
-    </div>
-  </div>
-</div>
+  )
+}
