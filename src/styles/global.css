@@ -439,16 +439,23 @@ body {
 
   /* 主题变体令牌：亮色默认（品牌绿） */
   --pet-body: #16a34a;
+  --pet-body-deep: #15803d;
   --pet-dark: #15803d;
+  --pet-dark-deep: #14532d;
   --pet-belly: #f0fdf4;
+  --pet-belly-deep: #d9f99d;
   --pet-feet: #d97706;
+  --pet-feet-deep: #92400e;
   --pet-blush: #fda4af;
   --pet-outline: #14532d;
   --pet-eye-bg: #ffffff;
   --pet-pupil: #1c1917;
   --pet-pupil-hi: #ffffff;
   --pet-beak: #d97706;
-  --pet-beak-stroke: #92400e;
+  --pet-beak-deep: #b45309;
+  --pet-face: #f7fee7;
+  --pet-face-deep: #d9f99d;
+  --pet-face-disc: #ecfccb;
   --pet-book: #7c3aed;
   --pet-book-edge: #6d28d9;
 }
@@ -456,16 +463,23 @@ body {
 /* 暗色变体：墨绿 + 暗金瞳孔 */
 .dark .pet {
   --pet-body: #166534;
+  --pet-body-deep: #14532d;
   --pet-dark: #14532d;
+  --pet-dark-deep: #052e16;
   --pet-belly: #052e16;
+  --pet-belly-deep: #052e16;
   --pet-feet: #d97706;
+  --pet-feet-deep: #78350f;
   --pet-blush: #9f1239;
   --pet-outline: #bbf7d0;
   --pet-eye-bg: #101418;
   --pet-pupil: #fbbf24;
   --pet-pupil-hi: #fff7ed;
   --pet-beak: #f59e0b;
-  --pet-beak-stroke: #b45309;
+  --pet-beak-deep: #b45309;
+  --pet-face: #fef3c7;
+  --pet-face-deep: #fde68a;
+  --pet-face-disc: #422006;
   --pet-book: #6d28d9;
   --pet-book-edge: #4c1d95;
 }
@@ -514,7 +528,7 @@ body {
 
 /* 挥手：右翅膀轻轻摆动 */
 .pose-waving {
-  transform-origin: 150px 100px;
+  transform-origin: 158px 100px;
   animation: pet-wave 2.2s ease-in-out infinite;
 }
 
@@ -528,6 +542,178 @@ body {
   }
 }
 
+/* ===== 更生动的 Gali：头部 / 翅膀 / 耳朵 / 脚 / 尾巴待机动效 ===== */
+/* 头部缓慢左右摆动（锚在颈根部），配饰随头部一起动 */
+.pet-head {
+  transform-origin: 100px 84px;
+  animation: pet-head-sway 5s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes pet-head-sway {
+  0%,
+  100% {
+    transform: rotate(-2.2deg);
+  }
+  50% {
+    transform: rotate(2.2deg);
+  }
+}
+
+/* 翅膀待机轻扑（右翅） */
+.pet-wing-r {
+  transform-origin: 158px 112px;
+  animation: pet-flap 3.6s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes pet-flap {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-9deg);
+  }
+}
+
+/* 左翅与右翅错峰，更自然 */
+.pet-wing-l {
+  transform-origin: 42px 112px;
+  animation: pet-flap-l 3.6s ease-in-out 1.8s infinite;
+  will-change: transform;
+}
+
+@keyframes pet-flap-l {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(9deg);
+  }
+}
+
+/* 耳朵羽簇小幅抖动 */
+.pet-head-turn path:nth-child(1),
+.pet-head-turn path:nth-child(2) {
+  transform-origin: 62px 44px;
+  animation: pet-ear-l 4.2s ease-in-out infinite;
+}
+
+.pet-head-turn path:nth-child(2) {
+  transform-origin: 138px 44px;
+  animation-name: pet-ear-r;
+  animation-delay: 2.1s;
+}
+
+@keyframes pet-ear-l {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-4deg);
+  }
+  60% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes pet-ear-r {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(4deg);
+  }
+  60% {
+    transform: rotate(-3deg);
+  }
+}
+
+/* 脚轻点 + 尾巴轻摆 */
+.pet-feet {
+  transform-origin: 100px 174px;
+  animation: pet-feet-tap 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes pet-feet-tap {
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  50% {
+    transform: rotate(1.2deg) translateY(-1px);
+  }
+}
+
+.pet-tail path:nth-child(1) {
+  transform-origin: 52px 160px;
+  animation: pet-tail-l 4.6s ease-in-out infinite;
+}
+
+.pet-tail path:nth-child(2) {
+  transform-origin: 148px 160px;
+  animation: pet-tail-r 4.6s ease-in-out 2.3s infinite;
+}
+
+@keyframes pet-tail-l {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-4deg);
+  }
+}
+
+@keyframes pet-tail-r {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+
+/* hover / 拖拽：略抬翅膀，增强“活”感 */
+.pet:hover .pet-wing-l,
+.pet:hover .pet-wing-r {
+  animation-play-state: paused;
+  transform: rotate(-14deg);
+}
+
+.pet:hover .pet-wing-l {
+  transform: rotate(14deg);
+}
+
+/* 眨眼：把眼睛 group 纵向压扁，模拟闭眼（瞳孔也一起压） */
+.pet.blink .pet-eye {
+  transform: scaleY(0.1);
+}
+
+.pet.blink .pet-eye .pet-pupil {
+  opacity: 0;
+}
+
+.pet-eye {
+  transform-origin: center;
+  transition: transform 0.08s ease-in;
+}
+
+/* 眨一只眼（逗趣 wink） */
+.pet.wink .pet-eye-r {
+  transform: scaleY(0.1);
+}
+
+.pet.wink .pet-eye-r .pet-pupil {
+  opacity: 0;
+}
+
 /* 抱书：书脊微光 */
 .pose-reading rect {
   stroke: var(--pet-book-edge);
@@ -537,6 +723,15 @@ body {
 /* 睡觉：Z 字浮动 */
 .pet-zzz {
   fill: var(--pet-pupil);
+  opacity: 0;
+}
+
+/* 睡觉时把真实眼睛闭上（显示闭眼弧线） */
+.pet[data-pose="sleeping"] .pet-eye {
+  transform: scaleY(0.1);
+}
+
+.pet[data-pose="sleeping"] .pet-eye .pet-pupil {
   opacity: 0;
 }
 
@@ -571,16 +766,6 @@ body {
   50% {
     transform: translateY(-10px);
   }
-}
-
-/* 眨眼：把眼睛 group 纵向压扁，模拟闭眼 */
-.pet.blink .pet-eye {
-  transform: scaleY(0.08);
-}
-
-.pet-eye {
-  transform-origin: center;
-  transition: transform 0.08s ease-in;
 }
 
 /* 气泡 */
@@ -855,5 +1040,15 @@ body {
   }
   .pet-growth-bar {
     transition: none;
+  }
+  .pet-head,
+  .pet-head-turn path:nth-child(1),
+  .pet-head-turn path:nth-child(2),
+  .pet-wing-l,
+  .pet-wing-r,
+  .pet-feet,
+  .pet-tail path:nth-child(1),
+  .pet-tail path:nth-child(2) {
+    animation: none;
   }
 }
