@@ -32,7 +32,7 @@ CodeBuddy 已经具备：读取项目文件、理解代码结构、编辑代码�
 ### 流程
 
 ```
-你写草稿 → 丢进 drafts/ → 说"处理草稿" → 智能体生成 Meta → 你确认 → 自动发布
+你写草稿 → 丢进 drafts/ → 说"处理草稿" → 智能体生成 Meta → 你确认 → 自动发布 → 【配图环节】
 ```
 
 ### 第一步：写好文章，丢进草稿箱
@@ -94,6 +94,23 @@ draft: false
 ### 第四步：自动发布
 
 智能体自动执行：草稿 → 写入 `articles/` → `astro build` 验证 → `git commit` → `git push` → Cloudflare 部署。
+
+### 第五步：配图环节（发布后紧接着执行）
+
+每篇文章发布后**紧接着进入配图环节**，默认使用「星野极光·分栏配色」风格（详见 `docs/illustration-workflow.md`）：
+
+```
+bash scripts/gen-cover.sh <文章 slug>   # 生成 cover.png / cover-en.png
+```
+
+然后在前置 frontmatter 中写入：
+
+```yaml
+ogImage: /images/<slug>/cover.png
+ogImageEn: /images/<slug>/cover-en.png
+```
+
+再 `npm run build` 验证 → 提交 → 部署。配图的完整规范、参数与批量处理方式见 `docs/illustration-workflow.md`。
 
 ### 草稿箱位置
 

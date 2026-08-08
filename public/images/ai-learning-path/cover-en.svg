@@ -16,10 +16,12 @@
     </linearGradient>
   </defs>
 
+  <!-- 背景 -->
   <rect width="1200" height="630" fill="#0c0c0c"/>
   <rect width="1200" height="630" fill="url(#glow1)"/>
   <rect width="1200" height="630" fill="url(#glow2)"/>
 
+  <!-- 星野 -->
   <g fill="#ffffff">
     <circle cx="120" cy="90" r="1.8" opacity="0.5"/>
     <circle cx="280" cy="160" r="1.2" opacity="0.4"/>
@@ -30,31 +32,38 @@
     <circle cx="1030" cy="90" r="1.5" opacity="0.45"/>
     <circle cx="1150" cy="140" r="1.1" opacity="0.35"/>
     <circle cx="200" cy="300" r="1.3" opacity="0.3"/>
-    <circle cx="350" cy="380" r="1.0" opacity="0.25"/>
+    <circle cx="350" cy="380" r="1" opacity="0.25"/>
     <circle cx="520" cy="320" r="1.4" opacity="0.3"/>
-    <circle cx="700" cy="400" r="1.0" opacity="0.25"/>
+    <circle cx="700" cy="400" r="1" opacity="0.25"/>
     <circle cx="900" cy="330" r="1.3" opacity="0.3"/>
-    <circle cx="1050" cy="420" r="1.0" opacity="0.25"/>
+    <circle cx="1050" cy="420" r="1" opacity="0.25"/>
     <circle cx="90" cy="500" r="1.2" opacity="0.25"/>
     <circle cx="640" cy="540" r="1.1" opacity="0.2"/>
     <circle cx="980" cy="560" r="1.4" opacity="0.25"/>
   </g>
 
+  <!-- 顶部光带 -->
   <rect width="1200" height="4" fill="url(#fade)"/>
 
+  <!-- 装饰：左上角双竖线 -->
   <rect x="60" y="52" width="2" height="64" fill="#16A34A" opacity="0.7"/>
   <rect x="66" y="52" width="2" height="64" fill="#16A34A" opacity="0.35"/>
 
-  <text x="60" y="170" font-family="'DejaVu Sans Mono', monospace" font-size="20" letter-spacing="6" fill="#16A34A" opacity="0.9">AI LEARNING PATH</text>
+  <!-- 标签 -->
+  <text x="60" y="170" font-family="'DejaVu Sans Mono', monospace" font-size="20" letter-spacing="6" fill="#16A34A" opacity="0.9">AI IN PRACTICE · 2026</text>
 
-  <text x="60" y="290" font-family="Playfair Display, 'DejaVu Serif', Georgia, serif" font-size="56" font-weight="bold" fill="#ffffff">AI Learning Path</text>
-  <text x="60" y="346" font-family="Playfair Display, 'DejaVu Serif', Georgia, serif" font-size="56" font-weight="bold" fill="#ffffff">From Zero to Practical</text>
+  <!-- 主标题 -->
+  <text x="60" y="290" font-family="Playfair Display, 'DejaVu Serif', Georgia, serif" font-size="50" font-weight="bold" fill="#ffffff">An AI Learning Path: From Zero to</text>
+  <text x="60" y="340" font-family="Playfair Display, 'DejaVu Serif', Georgia, serif" font-size="50" font-weight="bold" fill="#ffffff">Practical, My Recommended Route</text>
 
-  <text x="60" y="428" font-family="'Source Sans 3', 'DejaVu Sans', Arial, sans-serif" font-size="24" fill="#a3a3a3">From zero to practical — use it first, understand it next, then go deeper</text>
+  <!-- 副标题 -->
+  <text x="60" y="416" font-family="'Source Sans 3', 'DejaVu Sans', Arial, sans-serif" font-size="24" fill="#a3a3a3">A low-friction, practical AI learning path: use it first, understand it…</text>
 
+  <!-- 分隔线 -->
   <line x1="60" y1="485" x2="360" y2="485" stroke="#ffffff" stroke-opacity="0.25" stroke-width="1"/>
   <circle cx="360" cy="485" r="4" fill="#16A34A"/>
   <line x1="368" y1="485" x2="460" y2="485" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1"/>
 
+  <!-- 底部署名 -->
   <text x="60" y="540" font-family="'Source Sans 3', 'DejaVu Sans', Arial, sans-serif" font-size="18" fill="#737373">Galvin x CodeBuddy · Use it first, then go deeper</text>
 </svg>
