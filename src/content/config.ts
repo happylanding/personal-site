@@ -41,6 +41,16 @@ const articlesCollection = defineCollection({
   }),
 });
 
+/**
+ * 草稿箱：格式不限（不需要 frontmatter，也不需要日期/标签）。
+ * 使用宽松 schema，避免自动生成集合的 deprecation 警告，
+ * 也不会在草稿文件加入时触发校验错误。
+ */
+const draftsCollection = defineCollection({
+  type: "content",
+  schema: z.object({}),
+});
+
 const sitesCollection = defineCollection({
   type: "content",
   schema: z.object({
@@ -64,4 +74,5 @@ const sitesCollection = defineCollection({
 export const collections = {
   articles: articlesCollection,
   sites: sitesCollection,
+  drafts: draftsCollection,
 };
