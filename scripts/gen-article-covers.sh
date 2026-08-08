@@ -1,14 +1,19 @@
 #!/bin/bash
-# 生成其余文章的封面横幅（统一「星野极光」风格，与 vibe-coding 文章一致）
+# 生成其余文章的封面横幅（统一「星野极光」风格，方案 A：按栏目区分配色）
 # 用法：bash scripts/gen-article-covers.sh
 set -e
-
 BASE=/workspace/public/images
 
+# 加载栏目配色（方案 A｜星野极光·分栏配色）
+source "$(dirname "$0")/covers-palette.sh"
+
 # 生成单张封面 SVG + PNG
-# 参数：slug title1 title2 subtitle tagline accent_primary accent_secondary signature
+# 参数：section slug title1 title2 subtitle tagline signature
 gen_cover() {
-  local slug="$1" t1="$2" t2="$3" sub="$4" tag="$5" c1="$6" c2="$7" sig="$8"
+  local section="$1" slug="$2" t1="$3" t2="$4" sub="$5" tag="$6" sig="$7"
+  local c1 c2
+  c1=$(palette_primary "$section")
+  c2=$(palette_secondary "$section")
   local dir="$BASE/$slug"
   mkdir -p "$dir"
   local svg="$dir/cover.svg"
@@ -103,16 +108,26 @@ EOF
 }
 
 # ============ 文章封面数据 ============
-# slug | 主标题行1 | 主标题行2(可空) | 副标题 | 标签 | 主色 | 辅色 | 署名
-gen_cover ai-learning-path "AI 学习路径" "从零基础到能落地" "先会用，再理解，后深入，让 AI 变成生产力" "AI LEARNING PATH" "#16a34a" "#b45309" "Galvin × CodeBuddy · 先会用，再理解，后深入"
-gen_cover ai-tools-practice "AI 效率工具实测" "我的 5 个高频使用场景" "文档、纪要、写作、问答、代码——AI 是放大器，不是替身" "AI TOOLS IN PRACTICE" "#16a34a" "#b45309" "Galvin × CodeBuddy · AI 是放大器，不是替身"
-gen_cover ai-website-rebuild "用 AI 重构个人网站" "一场非程序员的改造实验" "需求 → 方案 → 执行 → 验证，把工程思维借给 AI" "REBUILDING WITH AI" "#16a34a" "#b45309" "Galvin × CodeBuddy · 把工程思维借给 AI"
-gen_cover easy-vibe-guide "Easy-Vibe 宝藏指南" "Datawhale AI 编程教程全拆解" "从 60 秒贪吃蛇到 Claude Code、MCP、Agent 团队" "EASY-VIBE TREASURE GUIDE" "#16a34a" "#b45309" "Galvin × CodeBuddy · 曾经最难的是怎么写代码"
-gen_cover ai-as-colleague "当 AI 成为同事" "人机协作时代的工作方式重构" "从工具到协作者，评审与判断成为新的核心竞争力" "AI AS COLLEAGUE" "#b45309" "#16a34a" "Galvin × CodeBuddy · AI 放大产出，人提供方向"
-gen_cover astro-guide "使用 Astro 构建静态网站" "" "零 JavaScript 默认输出，内容驱动的现代静态站点生成器" "BUILDING WITH ASTRO" "#b45309" "#16a34a" "Galvin × CodeBuddy · 内容优先，零 JS 默认"
-gen_cover dark-mode-tailwind "Tailwind CSS 暗色模式实践" "" "class 策略 + localStorage，一行配置实现主题切换" "DARK MODE WITH TAILWIND" "#b45309" "#16a34a" "Galvin × CodeBuddy · 亮暗之间，一行切换"
-gen_cover digital-economy-pulse "数字经济脉搏" "从产业数字化看中国经济的底层逻辑" "数据流动起来，就会重塑几乎所有行业的成本与格局" "DIGITAL ECONOMY PULSE" "#b45309" "#16a34a" "Galvin × CodeBuddy · 数据的时代底色"
-gen_cover digital-government-notes "数字政府观察" "一网通办背后的治理逻辑" "信息化 → 数字化 → 智能化，数据多跑路、群众少跑腿" "DIGITAL GOVERNMENT" "#b45309" "#16a34a" "Galvin × CodeBuddy · 数据多跑路，群众少跑腿"
-gen_cover hello-world "欢迎来到我的个人网站" "" "记录思考、分享见解、展示作品的线上空间" "WELCOME ABOARD" "#16a34a" "#b45309" "Galvin × CodeBuddy · 内容优先，安静克制"
+# section | slug | 主标题行1 | 主标题行2(可空) | 副标题 | 标签 | 署名
+# ---- ai 墨绿棕 ----
+gen_cover ai ai-learning-path "AI 学习路径" "从零基础到能落地" "先会用，再理解，后深入，让 AI 变成生产力" "AI LEARNING PATH" "Galvin × CodeBuddy · 先会用，再理解，后深入"
+gen_cover ai ai-tools-practice "AI 效率工具实测" "我的 5 个高频使用场景" "文档、纪要、写作、问答、代码——AI 是放大器，不是替身" "AI TOOLS IN PRACTICE" "Galvin × CodeBuddy · AI 是放大器，不是替身"
+gen_cover ai ai-website-rebuild "用 AI 重构个人网站" "一场非程序员的改造实验" "需求 → 方案 → 执行 → 验证，把工程思维借给 AI" "REBUILDING WITH AI" "Galvin × CodeBuddy · 把工程思维借给 AI"
+gen_cover ai easy-vibe-guide "Easy-Vibe 宝藏指南" "Datawhale AI 编程教程全拆解" "从 60 秒贪吃蛇到 Claude Code、MCP、Agent 团队" "EASY-VIBE TREASURE GUIDE" "Galvin × CodeBuddy · 曾经最难的是怎么写代码"
+
+# ---- insights 冰蓝紫 ----
+gen_cover insights ai-as-colleague "当 AI 成为同事" "人机协作时代的工作方式重构" "从工具到协作者，评审与判断成为新的核心竞争力" "AI AS COLLEAGUE" "Galvin × CodeBuddy · AI 放大产出，人提供方向"
+gen_cover insights digital-economy-pulse "数字经济脉搏" "从产业数字化看中国经济的底层逻辑" "数据流动起来，就会重塑几乎所有行业的成本与格局" "DIGITAL ECONOMY PULSE" "Galvin × CodeBuddy · 数据的时代底色"
+gen_cover insights digital-government-notes "数字政府观察" "一网通办背后的治理逻辑" "信息化 → 数字化 → 智能化，数据多跑路、群众少跑腿" "DIGITAL GOVERNMENT" "Galvin × CodeBuddy · 数据多跑路，群众少跑腿"
+
+# ---- tips 琥珀棕 ----
+gen_cover tips astro-guide "使用 Astro 构建静态网站" "" "零 JavaScript 默认输出，内容驱动的现代静态站点生成器" "BUILDING WITH ASTRO" "Galvin × CodeBuddy · 内容优先，零 JS 默认"
+gen_cover tips dark-mode-tailwind "Tailwind CSS 暗色模式实践" "" "class 策略 + localStorage，一行配置实现主题切换" "DARK MODE WITH TAILWIND" "Galvin × CodeBuddy · 亮暗之间，一行切换"
+gen_cover tips hello-world "欢迎来到我的个人网站" "" "记录思考、分享见解、展示作品的线上空间" "WELCOME ABOARD" "Galvin × CodeBuddy · 内容优先，安静克制"
+
+# ---- books 紫罗兰 ----
+gen_cover books meditations "沉思录" "马可·奥勒留的内心独白" "斯多葛学派经典 · 关于自我修养与内心平静的永恒智慧" "MEDITATIONS · STOICISM" "Marcus Aurelius · 斯多葛学派经典"
+gen_cover books pride-and-prejudice "傲慢与偏见" "简·奥斯汀的经典爱情小说" "十九世纪英国乡绅阶层的生活与婚恋观" "PRIDE AND PREJUDICE" "Jane Austen · 世界文学经典"
+gen_cover books the-art-of-war "孙子兵法" "兵学圣典的现代启示" "战略、军事哲学与领导智慧的源头" "THE ART OF WAR" "Sun Tzu · 兵学圣典"
 
 echo "=== all covers done ==="

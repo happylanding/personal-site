@@ -5,6 +5,7 @@ description: "中国古代军事经典著作，由春秋时期军事家孙武所
 descriptionEn: "The ancient Chinese military treatise attributed to Sun Tzu, a seminal work on strategy, military philosophy, and leadership wisdom that has influenced both Eastern and Western military and business thinking."
 date: 2024-01-15
 section: books
+ogImage: /images/the-art-of-war/cover.png
 tags: ["经典", "战略", "哲学"]
 tagsEn: ["classic", "strategy", "philosophy"]
 author: "孙武 (Sun Tzu)"

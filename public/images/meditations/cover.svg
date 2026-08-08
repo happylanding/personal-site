@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
     <radialGradient id="glow1" cx="0.15" cy="0.2" r="0.9">
-      <stop offset="0%" stop-color="#B45309" stop-opacity="0.32"/>
-      <stop offset="60%" stop-color="#B45309" stop-opacity="0.06"/>
-      <stop offset="100%" stop-color="#B45309" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.32"/>
+      <stop offset="60%" stop-color="#7C3AED" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#7C3AED" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="glow2" cx="0.85" cy="0.85" r="0.9">
-      <stop offset="0%" stop-color="#4ADE80" stop-opacity="0.22"/>
-      <stop offset="60%" stop-color="#4ADE80" stop-opacity="0.05"/>
-      <stop offset="100%" stop-color="#4ADE80" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#F33BD6" stop-opacity="0.22"/>
+      <stop offset="60%" stop-color="#F33BD6" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#F33BD6" stop-opacity="0"/>
     </radialGradient>
     <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#ffffff" stop-opacity="0.06"/>
@@ -46,23 +46,24 @@
   <rect width="1200" height="4" fill="url(#fade)"/>
 
   <!-- 装饰：左上角双竖线 -->
-  <rect x="60" y="52" width="2" height="64" fill="#B45309" opacity="0.7"/>
-  <rect x="66" y="52" width="2" height="64" fill="#B45309" opacity="0.35"/>
+  <rect x="60" y="52" width="2" height="64" fill="#7C3AED" opacity="0.7"/>
+  <rect x="66" y="52" width="2" height="64" fill="#7C3AED" opacity="0.35"/>
 
   <!-- 标签 -->
-  <text x="60" y="170" font-family="monospace" font-size="20" letter-spacing="6" fill="#B45309" opacity="0.9">BUILDING WITH ASTRO</text>
+  <text x="60" y="170" font-family="monospace" font-size="20" letter-spacing="6" fill="#7C3AED" opacity="0.9">MEDITATIONS · STOICISM</text>
 
   <!-- 主标题 -->
-  <text x="60" y="290" font-family="Noto Serif SC" font-size="64" font-weight="bold" fill="#ffffff">使用 Astro 构建静态网站</text>
+  <text x="60" y="290" font-family="Noto Serif SC" font-size="56" font-weight="bold" fill="#ffffff">沉思录</text>
+  <text x="60" y="346" font-family="Noto Serif SC" font-size="56" font-weight="bold" fill="#ffffff">马可·奥勒留的内心独白</text>
 
   <!-- 副标题 -->
-  <text x="60" y="372" font-family="Noto Sans SC" font-size="26" fill="#a3a3a3">零 JavaScript 默认输出，内容驱动的现代静态站点生成器</text>
+  <text x="60" y="412" font-family="Noto Sans SC" font-size="26" fill="#a3a3a3">斯多葛学派经典 · 关于自我修养与内心平静的永恒智慧</text>
 
   <!-- 分隔线 -->
   <line x1="60" y1="485" x2="360" y2="485" stroke="#ffffff" stroke-opacity="0.25" stroke-width="1"/>
-  <circle cx="360" cy="485" r="4" fill="#B45309"/>
+  <circle cx="360" cy="485" r="4" fill="#7C3AED"/>
   <line x1="368" y1="485" x2="460" y2="485" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1"/>
 
   <!-- 底部署名 -->
-  <text x="60" y="540" font-family="Noto Sans SC" font-size="18" fill="#737373">Galvin × CodeBuddy · 内容优先，零 JS 默认</text>
+  <text x="60" y="540" font-family="Noto Sans SC" font-size="18" fill="#737373">Marcus Aurelius · 斯多葛学派经典</text>
 </svg>

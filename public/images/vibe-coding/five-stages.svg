@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
     <radialGradient id="g1" cx="0.5" cy="0.2" r="0.9">
-      <stop offset="0%" stop-color="#16a34a" stop-opacity="0.28"/>
-      <stop offset="60%" stop-color="#16a34a" stop-opacity="0.05"/>
-      <stop offset="100%" stop-color="#16a34a" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#B45309" stop-opacity="0.28"/>
+      <stop offset="60%" stop-color="#B45309" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#B45309" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="g2" cx="0.8" cy="0.9" r="0.8">
-      <stop offset="0%" stop-color="#b45309" stop-opacity="0.18"/>
-      <stop offset="100%" stop-color="#b45309" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#4ADE80" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#4ADE80" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect width="1200" height="630" fill="#0c0c0c"/>
@@ -18,9 +18,9 @@
     <circle cx="520" cy="100" r="1.4" opacity="0.4"/><circle cx="760" cy="60" r="1.2" opacity="0.35"/>
     <circle cx="980" cy="90" r="1.5" opacity="0.45"/><circle cx="1150" cy="140" r="1.1" opacity="0.3"/>
   </g>
-  <rect x="60" y="52" width="2" height="60" fill="#16a34a" opacity="0.7"/>
-  <rect x="66" y="52" width="2" height="60" fill="#16a34a" opacity="0.35"/>
-  <text x="60" y="150" font-family="monospace" font-size="18" letter-spacing="5" fill="#16a34a">FIVE STAGES</text>
+  <rect x="60" y="52" width="2" height="60" fill="#B45309" opacity="0.7"/>
+  <rect x="66" y="52" width="2" height="60" fill="#B45309" opacity="0.35"/>
+  <text x="60" y="150" font-family="monospace" font-size="18" letter-spacing="5" fill="#B45309">FIVE STAGES</text>
   <text x="60" y="216" font-family="Noto Serif CJK SC" font-size="48" font-weight="bold" fill="#ffffff">五个阶段：从零到上线</text>
   <text x="60" y="262" font-family="Noto Sans CJK SC" font-size="22" fill="#a3a3a3">约 14 小时，完成 55+ 双语页面</text>
 
@@ -28,36 +28,36 @@
   <line x1="120" y1="430" x2="1080" y2="430" stroke="#ffffff" stroke-opacity="0.15" stroke-width="2"/>
 
   <!-- 节点1 -->
-  <circle cx="140" cy="430" r="14" fill="#0c0c0c" stroke="#16a34a" stroke-width="3"/>
-  <text x="140" y="400" font-family="Noto Sans CJK SC" font-size="22" font-weight="bold" fill="#4ade80" text-anchor="middle">搭骨架</text>
+  <circle cx="140" cy="430" r="14" fill="#0c0c0c" stroke="#B45309" stroke-width="3"/>
+  <text x="140" y="400" font-family="Noto Sans CJK SC" font-size="22" font-weight="bold" fill="#FBBF24" text-anchor="middle">搭骨架</text>
   <text x="140" y="478" font-family="Noto Sans CJK SC" font-size="18" fill="#d4d4d4" text-anchor="middle">约 2 小时</text>
   <text x="140" y="508" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">选型 Astro · 目录结构</text>
   <text x="140" y="530" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">数据模型 · 4 专栏页</text>
 
   <!-- 节点2 -->
-  <circle cx="375" cy="430" r="14" fill="#0c0c0c" stroke="#16a34a" stroke-width="3"/>
-  <text x="375" y="400" font-family="Noto Sans CJK SC" font-size="22" font-weight="bold" fill="#4ade80" text-anchor="middle">核心功能</text>
+  <circle cx="375" cy="430" r="14" fill="#0c0c0c" stroke="#B45309" stroke-width="3"/>
+  <text x="375" y="400" font-family="Noto Sans CJK SC" font-size="22" font-weight="bold" fill="#FBBF24" text-anchor="middle">核心功能</text>
   <text x="375" y="478" font-family="Noto Sans CJK SC" font-size="18" fill="#d4d4d4" text-anchor="middle">约 1 小时</text>
   <text x="375" y="508" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">中英双语 · 明暗主题</text>
   <text x="375" y="530" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">全文搜索 · 表格视图</text>
 
   <!-- 节点3 -->
-  <circle cx="610" cy="430" r="14" fill="#0c0c0c" stroke="#16a34a" stroke-width="3"/>
-  <text x="610" y="400" font-family="Noto Sans CJK SC" font-size="22" font-weight="bold" fill="#4ade80" text-anchor="middle">磨页面</text>
+  <circle cx="610" cy="430" r="14" fill="#0c0c0c" stroke="#B45309" stroke-width="3"/>
+  <text x="610" y="400" font-family="Noto Sans CJK SC" font-size="22" font-weight="bold" fill="#FBBF24" text-anchor="middle">磨页面</text>
   <text x="610" y="478" font-family="Noto Sans CJK SC" font-size="18" fill="#d4d4d4" text-anchor="middle">约 4 小时</text>
   <text x="610" y="508" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">对话最密集的阶段</text>
   <text x="610" y="530" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">像一场即兴演奏</text>
 
   <!-- 节点4 -->
-  <circle cx="845" cy="430" r="14" fill="#0c0c0c" stroke="#b45309" stroke-width="3"/>
+  <circle cx="845" cy="430" r="14" fill="#0c0c0c" stroke="#4ADE80" stroke-width="3"/>
   <text x="845" y="400" font-family="Noto Sans CJK SC" font-size="22" font-weight="bold" fill="#fbbf24" text-anchor="middle">手机适配</text>
   <text x="845" y="478" font-family="Noto Sans CJK SC" font-size="18" fill="#d4d4d4" text-anchor="middle">约 6 小时 · 最艰难</text>
   <text x="845" y="508" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">汉堡菜单迭代 4 版</text>
   <text x="845" y="530" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">每步都有根因分析</text>
 
   <!-- 节点5 -->
-  <circle cx="1080" cy="430" r="14" fill="#0c0c0c" stroke="#16a34a" stroke-width="3"/>
-  <text x="1080" y="400" font-family="Noto Sans CJK SC" font-size="22" font-weight="bold" fill="#4ade80" text-anchor="middle">部署上线</text>
+  <circle cx="1080" cy="430" r="14" fill="#0c0c0c" stroke="#B45309" stroke-width="3"/>
+  <text x="1080" y="400" font-family="Noto Sans CJK SC" font-size="22" font-weight="bold" fill="#FBBF24" text-anchor="middle">部署上线</text>
   <text x="1080" y="478" font-family="Noto Sans CJK SC" font-size="18" fill="#d4d4d4" text-anchor="middle">约 1 小时</text>
   <text x="1080" y="508" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">GitHub + Cloudflare</text>
   <text x="1080" y="530" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">1-2 分钟自动上线</text>

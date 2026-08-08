@@ -7,14 +7,14 @@ cat > "$OUT" <<'EOF'
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
     <radialGradient id="glow1" cx="0.15" cy="0.2" r="0.9">
-      <stop offset="0%" stop-color="#16a34a" stop-opacity="0.32"/>
-      <stop offset="60%" stop-color="#16a34a" stop-opacity="0.06"/>
-      <stop offset="100%" stop-color="#16a34a" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#B45309" stop-opacity="0.32"/>
+      <stop offset="60%" stop-color="#B45309" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#B45309" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="glow2" cx="0.85" cy="0.85" r="0.9">
-      <stop offset="0%" stop-color="#b45309" stop-opacity="0.22"/>
-      <stop offset="60%" stop-color="#b45309" stop-opacity="0.05"/>
-      <stop offset="100%" stop-color="#b45309" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#4ADE80" stop-opacity="0.22"/>
+      <stop offset="60%" stop-color="#4ADE80" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#4ADE80" stop-opacity="0"/>
     </radialGradient>
     <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#ffffff" stop-opacity="0.06"/>
@@ -52,11 +52,11 @@ cat > "$OUT" <<'EOF'
   <rect width="1200" height="4" fill="url(#fade)"/>
 
   <!-- 装饰：左上角双竖线 -->
-  <rect x="60" y="52" width="2" height="64" fill="#16a34a" opacity="0.7"/>
-  <rect x="66" y="52" width="2" height="64" fill="#16a34a" opacity="0.35"/>
+  <rect x="60" y="52" width="2" height="64" fill="#B45309" opacity="0.7"/>
+  <rect x="66" y="52" width="2" height="64" fill="#B45309" opacity="0.35"/>
 
   <!-- 标签 -->
-  <text x="60" y="170" font-family="monospace" font-size="20" letter-spacing="6" fill="#16a34a" opacity="0.9">VIBE CODING · 2026.08</text>
+  <text x="60" y="170" font-family="monospace" font-size="20" letter-spacing="6" fill="#B45309" opacity="0.9">VIBE CODING · 2026.08</text>
 
   <!-- 主标题 -->
   <text x="60" y="290" font-family="Noto Serif CJK SC" font-size="64" font-weight="bold" fill="#ffffff">我的第一件 Vibe Coding 作品</text>
@@ -67,7 +67,7 @@ cat > "$OUT" <<'EOF'
 
   <!-- 分隔线 -->
   <line x1="60" y1="485" x2="360" y2="485" stroke="#ffffff" stroke-opacity="0.25" stroke-width="1"/>
-  <circle cx="360" cy="485" r="4" fill="#16a34a"/>
+  <circle cx="360" cy="485" r="4" fill="#B45309"/>
   <line x1="368" y1="485" x2="460" y2="485" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1"/>
 
   <!-- 底部署名 -->

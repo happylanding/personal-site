@@ -5,6 +5,7 @@ description: "罗马皇帝马可·奥勒留的个人哲学随笔，斯多葛学�
 descriptionEn: "A series of personal writings by Marcus Aurelius, Roman Emperor from 161 to 180 AD, recording his private notes to himself and ideas on Stoic philosophy — a timeless guide to self-mastery and inner peace."
 date: 2024-03-10
 section: books
+ogImage: /images/meditations/cover.png
 tags: ["哲学", "斯多葛", "经典"]
 tagsEn: ["philosophy", "stoicism", "classic"]
 author: "马可·奥勒留 (Marcus Aurelius)"
