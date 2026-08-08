@@ -24,6 +24,8 @@ const statsText = t("tools.stats")
   .replace("{total}", String(total))
   .replace("{apps}", String(appCount))
   .replace("{scripts}", String(scriptCount));
+// 工具标题列表（供随机推荐 JS 使用，避免 is:inline 脚本里写花括号表达式）
+const toolTitles = tools.map((x) => (isEn ? x.data.titleEn || x.data.title : x.data.title));
 ---
 
 <BaseLayout
@@ -105,7 +107,7 @@ const statsText = t("tools.stats")
                 {String(i + 1).padStart(2, "0")}
               </span>
 
-              <div class="flex items-start justify-between gap-3 mb-3">
+              <div class="flex items-start justify-between gap-3 mb-3 pr-20">
                 <span class="block opacity-60"><ToolIcon type={type} class="w-7 h-7" /></span>
                 <span
                   class="inline-flex items-center gap-1.5 text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5"
@@ -200,8 +202,8 @@ const statsText = t("tools.stats")
     <p class="mt-12 text-center text-sm text-black/40 dark:text-white/40">{t("tools.footer")}</p>
   </section>
 
-  <script is:inline>
-    window.__TOOL_TITLES__ = {JSON.stringify(tools.map((x) => (isEn ? x.data.titleEn || x.data.title : x.data.title)))}
+  <script is:inline define:vars={{ toolTitles }}>
+    window.__TOOL_TITLES__ = toolTitles;
   </script>
 </BaseLayout>
 
