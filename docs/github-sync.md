@@ -28,11 +28,23 @@ Cloudflare Pages → https://galvinai.pages.dev
 
 ### 第 1 步：在 GitHub 生成 Personal Access Token（PAT）
 
+两种令牌任选其一：
+
+**方式 A：Tokens (classic)（推荐，最简单）**
+
 1. 打开 GitHub → 右上角头像 → **Settings** → 底部 **Developer settings**
 2. 进入 **Personal access tokens** → **Tokens (classic)** → **Generate new token (classic)**
 3. 填写 Note（如 `CNB sync`），Expiration 自选（建议 90 天，到期提醒续期）
 4. **勾选权限**：只需 `repo`（勾选后会展开 `repo:status`、`repo_deployment`、`public_repo` 等子项，`public_repo` 已够用，因为你的仓库是公开的）
 5. 点击 **Generate token**，**立即复制**生成的 `ghp_...` 字符串（只显示这一次，关闭页面后就看不到了）
+
+**方式 B：Fine-grained tokens（更精细，可选）**
+
+1. 进入 **Personal access tokens** → **Fine-grained tokens** → **Generate new token**
+2. Token name 自拟（如 `CNB-sync`），Expiration 建议 90 天
+3. **Repository access** 选 **`Only select repositories`** → 勾选 **`happylanding/personal-site`**
+4. **Repository permissions → Contents** 设为 **`Read and write`**（`Metadata` 会自动为 `Read-only`），其余权限全部保持 `No access`
+5. 点击 **Generate token**，**立即复制**生成的 `github_pat_...` 字符串
 
 > ⚠️ Token 相当于 GitHub 密码，请妥善保管，不要提交到代码仓库、不要贴到评论里。
 
@@ -40,7 +52,7 @@ Cloudflare Pages → https://galvinai.pages.dev
 
 1. 打开 https://cnb.cool/new/repos
 2. **仓库类型**选择 **`密钥仓库`**（高安全等级，禁止本地克隆，仅 Web 界面可编辑，支持流水线引用与审计）
-3. 填写仓库名（如 `secret`）、描述，创建
+3. **仓库名填写 `secret`**（与 `.cnb.yml` 中已预填的地址一致），描述可写 `GitHub PAT 密钥仓库（git-sync 用）`，创建
 4. 在密钥仓库中新建文件 `github-sync.yml`，内容：
 
 ```yaml
@@ -52,15 +64,17 @@ GITHUB_ACCESS_TOKEN: ghp_你的token
 
 > 参考：CNB 密钥仓库文档 https://docs.cnb.cool/zh/repo/secret.md
 
-### 第 3 步：把密钥仓库地址填进 `.cnb.yml`
+### 第 3 步：确认 `.cnb.yml` 中的密钥仓库地址（本 PR 已预填）
 
-打开仓库根目录的 `.cnb.yml`，找到两处 `imports:`，把 `<密钥仓库路径>` 替换成你的实际地址：
+本 PR 已在 `.cnb.yml` 两处 `imports:` 中**预填**密钥仓库地址：
 
 ```
 https://cnb.cool/Galvin2026/secret/-/blob/main/github-sync.yml
 ```
 
-（即 `https://cnb.cool/<组织>/<密钥仓库名>/-/blob/main/github-sync.yml`）
+即 `https://cnb.cool/<组织>/<密钥仓库名>/-/blob/main/github-sync.yml`。
+
+> ⚠️ 只要你在第 2 步把密钥仓库命名为 `secret`，本文件无需任何修改即可生效；若用了其他名字，请把 `.cnb.yml` 两处地址中的 `secret` 换成你的实际仓库名。
 
 ### 第 4 步：提交生效
 

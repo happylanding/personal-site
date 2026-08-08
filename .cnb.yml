@@ -2,11 +2,11 @@
 #
 # 使用方式（首次配置）：
 #   1. 在 GitHub 生成一个具备 repo 权限的 Personal Access Token（见 docs/github-sync.md）
-#   2. 在 CNB 创建「密钥仓库」（如 Galvin2026/secret），在其中新建文件 github-sync.yml：
+#   2. 在 CNB 创建「密钥仓库」Galvin2026/secret，在其中新建文件 github-sync.yml：
 #        GITHUB_USERNAME: happylanding
 #        GITHUB_ACCESS_TOKEN: ghp_xxxxxxxxxxxxxxxxxxxx
-#   3. 把下方 imports 地址中的 <密钥仓库路径> 替换为你的密钥仓库实际地址
-#      （密钥仓库路径如：https://cnb.cool/Galvin2026/secret/-/blob/main/github-sync.yml）
+#   3. 本文件已预填密钥仓库地址，无需再改；
+#      但请务必先创建好密钥仓库和 github-sync.yml，再合并本 PR，否则 main 流水线会因找不到密钥文件而失败
 #   4. 提交本文件后，每次 push 到 main 都会自动构建验证并同步到 GitHub
 #
 # 触发说明：
@@ -20,7 +20,7 @@ main:
       docker:
         image: node:22
       imports:
-        - https://cnb.cool/<密钥仓库路径>/github-sync.yml
+        - https://cnb.cool/Galvin2026/secret/-/blob/main/github-sync.yml
       stages:
         - name: install
           script: npm ci
@@ -39,7 +39,7 @@ main:
   "crontab: 0 2 * * *":
     - name: nightly-sync
       imports:
-        - https://cnb.cool/<密钥仓库路径>/github-sync.yml
+        - https://cnb.cool/Galvin2026/secret/-/blob/main/github-sync.yml
       stages:
         - name: sync-to-github
           image: tencentcom/git-sync
