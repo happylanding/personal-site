@@ -7,7 +7,6 @@ import BackToTop from "../components/BackToTop.astro";
 import MouseGlow from "../components/MouseGlow.astro";
 import ScrollReveal from "../components/ScrollReveal.astro";
 import ReadingProgress from "../components/ReadingProgress.astro";
-import DesktopPet from "../components/DesktopPet.astro";
 
 interface Props {
   title?: string;
@@ -79,7 +78,6 @@ const alternateZh = lang === "en" ? path.replace(/^\/en/, "") || "/" : path;
     </main>
     <Footer />
     <BackToTop />
-    <DesktopPet />
   </body>
 </html>
 
