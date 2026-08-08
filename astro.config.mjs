@@ -12,8 +12,8 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: (page) => {
-        // 隐藏路由（如 /invest/）不进入 sitemap，避免搜索引擎收录不对外栏目
-        return !/\/invest(\/|$)/.test(new URL(page).pathname);
+        // 隐藏路由（如 /invest/、/sites/ 收藏夹）不进入 sitemap，避免搜索引擎收录不对外栏目
+        return !/\/(invest|sites)(\/|$)/.test(new URL(page).pathname);
       },
     }),
   ],

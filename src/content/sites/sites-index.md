@@ -9,7 +9,6 @@ tags: ["设计", "收藏夹", "网站拆解"]
 tagsEn: ["design", "collection", "breakdown"]
 section: insights
 featured: true
-siteUrl: https://www.oiloil.org/
 ---
 
 这是「设计灵感收藏夹」的入口页。平时刷到的好网站会持续收录在这里，每篇都是一份**网站拆解 + 创意分析 + 亮点特色**报告。

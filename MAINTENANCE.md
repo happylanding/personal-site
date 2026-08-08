@@ -123,6 +123,7 @@ docs/                           # 归档文档
 
 - 导航栏 / 首页卡片 / 关于页只展示前 4 栏。
 - `invest` 路由仍在 `getStaticPaths` 中生成（`src/lib/sections.ts` 的 `ALL_SECTIONS`），避免旧链接 404。
+- `sites`（设计灵感收藏夹）为隐藏栏目：不在导航/首页展示，入口是页脚的小书签图标，键盘按 `g` `s` 也可直达，供站主个人查阅；sitemap 已过滤。
 
 ---
 
@@ -161,6 +162,8 @@ docs/                           # 归档文档
 | `/tips` | `[section].astro` | 实用技巧 |
 | `/books` | `[section].astro` | 书籍专区 |
 | `/invest` | `[section].astro` | 投资复盘（隐藏，保留路由） |
+| `/sites` | `sites.astro` | 设计灵感收藏夹（隐藏入口，页脚小书签 + 快捷键 `g s`） |
+| `/sites/oiloil` | `sites/[slug].astro` | 收藏夹报告详情 |
 | `/tips/vibe-coding` | `[section]/[slug].astro` | 文章详情 |
 | `/tags` | `tags/index.astro` | 标签聚合 |
 | `/tags/标签名` | `tags/[tag].astro` | 标签筛选 |
