@@ -2,6 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import ToolIcon from "../../components/ToolIcon.astro";
+import Icon from "../../components/Icon.astro";
 import { getCollection } from "astro:content";
 import { useTranslations } from "../../i18n/utils";
 import { TOOL_COLORS, TOOL_TYPE_ORDER, type ToolEntry } from "../../content/tools/config";
@@ -47,9 +48,10 @@ const gachaTools = tools.map((x) => ({
     <!-- 页头 -->
     <header class="mb-8">
       <div class="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: TOOL_COLORS.script }}></div>
-      <h1 class="text-3xl font-serif font-bold mb-2">
-        {t("tools.name")}
-        <span class="ml-2 text-sm font-sans font-normal text-black/35 dark:text-white/35 align-middle">{t("tools.enName")}</span>
+      <h1 class="text-3xl font-serif font-bold mb-2 flex items-center gap-3">
+        <span class="block opacity-70 flex-shrink-0"><Icon name="toolbox" class="w-9 h-9" style="color:#B45309" /></span>
+        <span>{t("tools.name")}</span>
+        <span class="text-sm font-sans font-normal text-black/35 dark:text-white/35 align-middle">{t("tools.enName")}</span>
       </h1>
       <p class="text-sm text-black/40 dark:text-white/40">{t("tools.subtitle")}</p>
       <p class="text-base text-black/50 dark:text-white/50 mt-3 leading-relaxed max-w-2xl">{t("tools.desc")}</p>

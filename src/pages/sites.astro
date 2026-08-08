@@ -25,8 +25,9 @@ const siteEntries = (await getCollection("sites", ({ data }) => !data.draft && !
 
   <section data-reveal>
     <header class="mb-10">
-      <h1 class="text-3xl font-serif font-bold mb-2">
-        {isEn ? "Design Inspiration Collection" : "设计灵感收藏夹"}
+      <h1 class="text-3xl font-serif font-bold mb-2 flex items-center gap-3">
+        <span class="block opacity-70 flex-shrink-0"><Icon name="bookmark" class="w-9 h-9" style="color:#0E96E9" /></span>
+        <span>{isEn ? "Design Inspiration Collection" : "设计灵感收藏夹"}</span>
       </h1>
       <p class="text-sm text-black/40 dark:text-white/40">
         {isEn ? "Curated sites & designs with breakdowns" : "收藏好网站 · 附拆解与创意分析"}
