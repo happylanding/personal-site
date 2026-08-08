@@ -39,8 +39,7 @@ src/
 │   ├── ReadingProgress.astro   # 顶部阅读进度条 + 百分比
 │   ├── ScrollReveal.astro      # 滚动渐入 + 卡片 3D 翻牌
 │   ├── SearchDialog.astro      # 搜索弹窗
-│   ├── ThemeToggle.astro       # 暗色/亮色模式切换
-│   └── TOCPanel.astro          # 电子书目录预览面板
+│   └── ThemeToggle.astro       # 暗色/亮色模式切换
 │
 ├── content/
 │   ├── config.ts               # Zod schema 定义（见 §3）
@@ -143,7 +142,6 @@ docs/                           # 归档文档
 | 幽灵编号 | `.ghost-num` | 首页四栏 `01-04` 大号浅色编号 |
 | 阅读进度条 | `<ReadingProgress />` | 顶部 3px 细条 + 百分比，reduced-motion 降级 |
 | 文章内目录 | `<ArticleTOC />` | 自动收集 h2/h3，滚动高亮当前章节 |
-| 电子书目录 | `<TOCPanel />` | 读预生成的 `.toc.json` |
 
 > 所有动效尊重 `prefers-reduced-motion`，低能力设备自动降级。
 
@@ -190,7 +188,8 @@ Overlay 点击关闭逻辑简化。
 ### 8.5 技术债清理（P0 完成）
 - ✅ `robots.txt` Sitemap 指向 `galvinai.pages.dev`
 - ✅ 接入 `@astrojs/sitemap`，真实生成 `/sitemap.xml`
-- ✅ 三个闲置组件挂载：`Currently`（首页）/ `TOCPanel`（书籍页）/ `ArticleTOC`（文章页）
+- ✅ 三个闲置组件挂载：`Currently`（首页）/ `ArticleTOC`（文章页）
+- ✅ 移除电子书「目录预览」面板（`TOCPanel` 及 `extract-ebook.cjs` 生成链路），书籍页仅保留下载区
 - ✅ `ColumnIcon` 统一 `SectionKey` 类型（`src/lib/sections.ts`）
 - ✅ 英文 tags 按 `tagsEn` 独立聚合
 - ✅ 根目录散文档归档进 `docs/`

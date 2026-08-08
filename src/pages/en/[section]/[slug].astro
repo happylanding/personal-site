@@ -4,7 +4,6 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../../components/Breadcrumb.astro";
 import ColumnIcon from "../../../components/ColumnIcon.astro";
 import ArticleTOC from "../../../components/ArticleTOC.astro";
-import TOCPanel from "../../../components/TOCPanel.astro";
 import { useTranslations } from "../../../i18n/utils";
 
 export async function getStaticPaths() {
@@ -175,22 +174,6 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
           )}
         </div>
       </div>
-    )}
-
-    <!-- Book: TOC panel -->
-    {isBook && article.data.pdfUrl && (
-      <TOCPanel
-        tocUrl={`${article.data.pdfUrl.replace(/\.pdf$/, "")}.toc.json`}
-        format="PDF"
-        title="Table of Contents"
-      />
-    )}
-    {isBook && article.data.epubUrl && (
-      <TOCPanel
-        tocUrl={`${article.data.epubUrl.replace(/\.epub$/, "")}.toc.json`}
-        format="EPUB"
-        title="Table of Contents"
-      />
     )}
 
     <!-- Prev / Next: aligned with the article column (right spacer keeps same width as TOC rail) -->

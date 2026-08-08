@@ -4,7 +4,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import ColumnIcon from "../../components/ColumnIcon.astro";
 import ArticleTOC from "../../components/ArticleTOC.astro";
-import TOCPanel from "../../components/TOCPanel.astro";
 import { getLangFromUrl, useTranslations } from "../../i18n/utils";
 
 export async function getStaticPaths() {
@@ -190,22 +189,6 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
           )}
         </div>
       </div>
-    )}
-
-    <!-- 书籍：目录预览面板（读预生成的 .toc.json） -->
-    {isBook && article.data.pdfUrl && (
-      <TOCPanel
-        tocUrl={`${article.data.pdfUrl.replace(/\.pdf$/, "")}.toc.json`}
-        format="PDF"
-        title={lang === "en" ? "Table of Contents" : "目录预览"}
-      />
-    )}
-    {isBook && article.data.epubUrl && (
-      <TOCPanel
-        tocUrl={`${article.data.epubUrl.replace(/\.epub$/, "")}.toc.json`}
-        format="EPUB"
-        title={lang === "en" ? "Table of Contents" : "目录预览"}
-      />
     )}
 
     <!-- 上一篇 / 下一篇：与正文列对齐（桌面端右侧留出与目录同宽的空白列） -->
