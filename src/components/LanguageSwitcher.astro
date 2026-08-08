@@ -5,7 +5,6 @@ import { getCollection } from "astro:content";
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-const targetLang = lang === "zh" ? "en" : "zh";
 const pathname = Astro.url.pathname;
 
 /**
