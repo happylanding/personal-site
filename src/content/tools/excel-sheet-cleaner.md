@@ -6,7 +6,11 @@ descriptionEn: "Drop it into any folder and double-click to run — automaticall
 type: "script"
 status: "stable"
 version: "v2.0"
-command: "双击 运行.bat 即可（或 powershell -File ExcelSheetCleaner.ps1）"
+command: ""
+usage:
+  - "点击下方「下载」，得到 excel-sheet-cleaner.zip 并解压"
+  - "把 ExcelSheetCleaner.ps1 和 运行.bat 复制到存放 Excel 的文件夹"
+  - "双击 运行.bat，自动扫描清理，完成后生成 excel-cleaner-log.txt 日志"
 downloadUrl: "/downloads/excel-sheet-cleaner.zip"
 date: 2026-08-08
 updated: 2026-08-08

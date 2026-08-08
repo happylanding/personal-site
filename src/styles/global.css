@@ -302,6 +302,7 @@ body {
   font-family: var(--font-serif);
   line-height: 1;
   pointer-events: none;
+  z-index: 0;
 }
 
 /* ===== Reading progress (阅读进度条) ===== */
