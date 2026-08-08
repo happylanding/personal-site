@@ -1,0 +1,275 @@
+---
+// HeroOwl: 首页 Hero 的黑白简笔画/素描风猫头鹰
+// 参考 oiloil 网站 Hero 会“看人”的狗：本组件是纯 SVG 线条画 + 零依赖动效
+//   - 眼睛跟随鼠标转动、随机眨眼
+//   - 头部随鼠标小幅转向（更克制）+ 待机轻摆
+//   - 双翅待机微微扑扇、身体呼吸浮动
+//   - 黑白灰三色，走主题令牌，亮/暗色自动适配；尊重 prefers-reduced-motion
+---
+
+<div class="hero-owl" role="img" aria-label="Gali 猫头鹰 · Gali the owl">
+  <svg class="hero-owl-svg" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <!-- ===== 树枝 ===== -->
+    <path d="M14 168 Q70 154 110 162 Q150 168 206 154" fill="none" stroke="var(--owl-ink)" stroke-width="3" stroke-linecap="round" />
+    <path d="M40 162 q2 10 -4 14 M180 156 q-2 10 4 14 M110 162 q4 12 -2 18" fill="none" stroke="var(--owl-ink)" stroke-width="2" stroke-linecap="round" opacity="0.7" />
+
+    <!-- ===== 脚爪 ===== -->
+    <g class="owl-feet" stroke="var(--owl-ink)" stroke-width="2.2" stroke-linecap="round" fill="none">
+      <path d="M82 146 q-2 6 0 10 M86 146 q0 7 -2 12 M90 146 q2 6 1 10" />
+      <path d="M130 146 q-2 6 0 10 M134 146 q0 7 -2 12 M138 146 q2 6 1 10" />
+    </g>
+
+    <!-- ===== 身体 ===== -->
+    <ellipse cx="110" cy="110" rx="48" ry="42" fill="var(--owl-bg)" stroke="var(--owl-ink)" stroke-width="3" />
+    <!-- 肚皮 -->
+    <ellipse cx="110" cy="122" rx="28" ry="30" fill="none" stroke="var(--owl-ink)" stroke-width="2" opacity="0.65" />
+    <!-- 肚皮素描排线 -->
+    <g stroke="var(--owl-ink)" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.4">
+      <path d="M92 116 q10 3 20 0 M90 126 q10 3 20 0 M92 136 q10 3 20 0" />
+    </g>
+
+    <!-- ===== 翅膀（待机微扑） ===== -->
+    <g class="owl-wing owl-wing-l">
+      <path d="M64 90 C46 100 42 122 48 140 C56 148 66 144 68 132 C70 118 70 102 64 90 Z" fill="var(--owl-bg)" stroke="var(--owl-ink)" stroke-width="3" stroke-linejoin="round" />
+      <g stroke="var(--owl-ink)" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.5">
+        <path d="M54 108 q8 3 14 0 M52 120 q8 3 14 0 M54 132 q7 2 12 0" />
+      </g>
+    </g>
+    <g class="owl-wing owl-wing-r">
+      <path d="M156 90 C174 100 178 122 172 140 C164 148 154 144 152 132 C150 118 150 102 156 90 Z" fill="var(--owl-bg)" stroke="var(--owl-ink)" stroke-width="3" stroke-linejoin="round" />
+      <g stroke="var(--owl-ink)" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.5">
+        <path d="M166 108 q-8 3 -14 0 M168 120 q-8 3 -14 0 M166 132 q-7 2 -12 0" />
+      </g>
+    </g>
+
+    <!-- ===== 头部（外层随鼠标转向，内层待机轻摆） ===== -->
+    <g class="owl-head">
+      <g class="owl-head-sway">
+        <!-- 耳羽 -->
+        <path d="M86 26 L70 8 L102 24 Z" fill="var(--owl-bg)" stroke="var(--owl-ink)" stroke-width="3" stroke-linejoin="round" />
+        <path d="M134 26 L150 8 L118 24 Z" fill="var(--owl-bg)" stroke="var(--owl-ink)" stroke-width="3" stroke-linejoin="round" />
+        <g stroke="var(--owl-ink)" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.55">
+          <path d="M84 20 q6 3 12 1 M136 20 q-6 3 -12 1" />
+        </g>
+
+        <!-- 头 -->
+        <circle cx="110" cy="58" r="38" fill="var(--owl-bg)" stroke="var(--owl-ink)" stroke-width="3" />
+
+        <!-- 脸部盘（素描双圈） -->
+        <ellipse cx="88" cy="62" rx="22" ry="20" fill="none" stroke="var(--owl-ink)" stroke-width="2" opacity="0.7" />
+        <ellipse cx="132" cy="62" rx="22" ry="20" fill="none" stroke="var(--owl-ink)" stroke-width="2" opacity="0.7" />
+        <ellipse cx="88" cy="62" rx="15" ry="13" fill="none" stroke="var(--owl-ink)" stroke-width="1.4" opacity="0.3" />
+        <ellipse cx="132" cy="62" rx="15" ry="13" fill="none" stroke="var(--owl-ink)" stroke-width="1.4" opacity="0.3" />
+
+        <!-- 眉毛（简笔一笔） -->
+        <g stroke="var(--owl-ink)" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.6">
+          <path d="M70 40 q12 -7 24 -1 M150 40 q-12 -7 -24 -1" />
+        </g>
+
+        <!-- 眼睛（眨眼 / 瞳孔追踪） -->
+        <g class="owl-eye owl-eye-l">
+          <circle cx="88" cy="62" r="14" fill="var(--owl-bg)" stroke="var(--owl-ink)" stroke-width="3" />
+          <g class="owl-pupil">
+            <circle cx="88" cy="63" r="7" fill="var(--owl-ink)" />
+            <circle cx="85.6" cy="60.6" r="2.4" fill="var(--owl-bg)" />
+          </g>
+        </g>
+        <g class="owl-eye owl-eye-r">
+          <circle cx="132" cy="62" r="14" fill="var(--owl-bg)" stroke="var(--owl-ink)" stroke-width="3" />
+          <g class="owl-pupil">
+            <circle cx="132" cy="63" r="7" fill="var(--owl-ink)" />
+            <circle cx="129.6" cy="60.6" r="2.4" fill="var(--owl-bg)" />
+          </g>
+        </g>
+
+        <!-- 喙 -->
+        <path d="M106 74 L110 84 L114 74 L110 70 Z" fill="var(--owl-bg)" stroke="var(--owl-ink)" stroke-width="2.2" stroke-linejoin="round" />
+        <path d="M110 72 v9" stroke="var(--owl-ink)" stroke-width="1.2" stroke-linecap="round" opacity="0.5" />
+      </g>
+    </g>
+  </svg>
+</div>
+
+<script>
+  const owl = document.querySelector(".hero-owl");
+  if (owl) {
+    const pupils = owl.querySelectorAll(".owl-pupil");
+    const head = owl.querySelector(".owl-head");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // 随机眨眼
+    let blinkTimer: ReturnType<typeof setTimeout>;
+    function scheduleBlink() {
+      if (reduceMotion) return;
+      clearTimeout(blinkTimer);
+      blinkTimer = setTimeout(() => {
+        owl.classList.remove("owl-blink");
+        void owl.offsetWidth;
+        owl.classList.add("owl-blink");
+        setTimeout(() => owl.classList.remove("owl-blink"), 200);
+        scheduleBlink();
+      }, 2600 + Math.random() * 3400);
+    }
+    scheduleBlink();
+
+    // 瞳孔跟随鼠标 + 头部小幅转向（类 oiloil 狗狗转头，但更克制）
+    let raf = false;
+    window.addEventListener("mousemove", (e) => {
+      if (reduceMotion) return;
+      if (raf) return;
+      raf = true;
+      requestAnimationFrame(() => {
+        const rect = owl.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        let dx = (e.clientX - cx) / (rect.width / 2);
+        let dy = (e.clientY - cy) / (rect.height / 2);
+        dx = Math.max(-1, Math.min(1, dx));
+        dy = Math.max(-1, Math.min(1, dy));
+        const maxMove = 4.5;
+        pupils.forEach((p) => {
+          p.setAttribute("transform", `translate(${(dx * maxMove).toFixed(1)} ${(dy * maxMove * 0.7).toFixed(1)})`);
+        });
+        if (head) {
+          head.style.setProperty("--owl-tilt", `${(dx * 4).toFixed(1)}deg`);
+        }
+        raf = false;
+      });
+    });
+  }
+</script>
+
+<style>
+  /* ===== Hero 猫头鹰：黑白简笔画/素描风 ===== */
+  .hero-owl {
+    width: 180px;
+    margin: 0 auto;
+
+    /* 黑白灰主题令牌 */
+    --owl-ink: #1a1a1a;
+    --owl-bg: #ffffff;
+    --owl-ink-soft: rgba(26, 26, 26, 0.55);
+
+    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.14));
+    animation: hero-owl-float 5s ease-in-out infinite;
+  }
+
+  .dark .hero-owl {
+    --owl-ink: #e5e5e5;
+    --owl-bg: #000000;
+    --owl-ink-soft: rgba(229, 229, 229, 0.55);
+    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.5));
+  }
+
+  .hero-owl-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.25s ease;
+  }
+
+  .hero-owl:hover .hero-owl-svg {
+    transform: scale(1.04);
+  }
+
+  /* 身体呼吸浮动 */
+  @keyframes hero-owl-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  /* 头部：外层随鼠标转向（JS 写 --owl-tilt），内层待机轻摆 */
+  .owl-head {
+    transform: rotate(var(--owl-tilt, 0deg));
+    transition: transform 0.3s ease;
+    transform-origin: 110px 92px;
+  }
+
+  .owl-head-sway {
+    animation: hero-owl-head-sway 6s ease-in-out infinite;
+    transform-origin: 110px 92px;
+    will-change: transform;
+  }
+
+  @keyframes hero-owl-head-sway {
+    0%,
+    100% {
+      transform: rotate(-1.6deg);
+    }
+    50% {
+      transform: rotate(1.6deg);
+    }
+  }
+
+  /* 翅膀待机微扑（错峰） */
+  .owl-wing-l {
+    transform-origin: 64px 96px;
+    animation: hero-owl-flap-l 3.8s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .owl-wing-r {
+    transform-origin: 156px 96px;
+    animation: hero-owl-flap-r 3.8s ease-in-out 1.9s infinite;
+    will-change: transform;
+  }
+
+  @keyframes hero-owl-flap-l {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(3deg);
+    }
+  }
+
+  @keyframes hero-owl-flap-r {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(-3deg);
+    }
+  }
+
+  /* 眨眼：把眼睛 group 纵向压扁 */
+  .hero-owl.owl-blink .owl-eye {
+    transform: scaleY(0.08);
+  }
+
+  .hero-owl.owl-blink .owl-pupil {
+    opacity: 0;
+  }
+
+  .owl-eye {
+    transform-origin: center;
+    transition: transform 0.08s ease-in;
+  }
+
+  /* 移动端缩小 */
+  @media (max-width: 640px) {
+    .hero-owl {
+      width: 148px;
+    }
+  }
+
+  /* 尊重系统减弱动效偏好 */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-owl,
+    .owl-head-sway,
+    .owl-wing-l,
+    .owl-wing-r {
+      animation: none;
+    }
+    .owl-head {
+      transition: none;
+    }
+  }
+</style>

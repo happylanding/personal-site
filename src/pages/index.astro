@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ColumnIcon from "../components/ColumnIcon.astro";
+import HeroOwl from "../components/HeroOwl.astro";
 import Currently from "../components/Currently.astro";
 import { getLangFromUrl, useTranslations } from "../i18n/utils";
 import { getCollection } from "astro:content";
@@ -35,6 +36,9 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
     <p class="text-xs tracking-[0.2em] uppercase text-black/25 dark:text-white/25 mb-8 font-mono">
       {t("home.location")} · {new Date().toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", { year: "numeric", month: "long", day: "numeric" })}
     </p>
+
+    <!-- Hero 猫头鹰：黑白简笔画/素描风（参考 oiloil Hero 的互动吉祥物） -->
+    <HeroOwl />
 
     <!-- English motto in handwriting font -->
     <p class="font-hand text-3xl md:text-5xl text-black/60 dark:text-white/60 mb-4 leading-tight lmask">
