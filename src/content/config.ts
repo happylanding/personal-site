@@ -41,6 +41,27 @@ const articlesCollection = defineCollection({
   }),
 });
 
+const sitesCollection = defineCollection({
+  type: "content",
+  schema: z.object({
+    title: z.string(),
+    titleEn: z.string().optional(),
+    description: z.string().optional(),
+    descriptionEn: z.string().optional(),
+    date: z.date(),
+    updated: z.date().optional(),
+    tags: z.array(z.string()).default([]),
+    tagsEn: z.array(z.string()).default([]),
+    /** 所属专栏 */
+    section: z.enum(["insights", "ai", "tips", "books", "invest"]).default("insights"),
+    draft: z.boolean().default(false),
+    featured: z.boolean().default(false),
+    /** 被收藏的网站地址 */
+    siteUrl: z.string().optional(),
+  }),
+});
+
 export const collections = {
   articles: articlesCollection,
+  sites: sitesCollection,
 };
