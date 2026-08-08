@@ -25,8 +25,7 @@
 
 ```
 src/
-├── components/          # 15 个 Astro 组件
-│   ├── ArticleCard.astro       # 文章卡片（备用）
+├── components/          # 14 个 Astro 组件
 │   ├── ArticleTOC.astro        # 文章内目录（h2/h3 自动收集 + 滚动高亮）
 │   ├── BackToTop.astro         # 回到顶部按钮
 │   ├── Breadcrumb.astro        # 面包屑导航
@@ -72,8 +71,8 @@ src/
     └── global.css              # 全局样式（Tailwind + prose + 动效 + 自定义覆盖）
 
 docs/                           # 归档文档
-├── maintenance-zh.md           # 原《维护指南.md》
-└── vibe-coding-creation.md     # 原《我的第一件Vibe-Coding作品.md》
+├── github-sync.md              # CNB → GitHub 自动同步配置指南
+└── illustration-workflow.md    # 文章配图流程（星野极光·分栏配色）
 ```
 
 ---

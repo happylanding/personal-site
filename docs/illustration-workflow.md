@@ -173,5 +173,4 @@ for f in src/content/articles/*.md; do node scripts/cover-render.mjs --article "
 ## 七、与其他文档的关系
 
 - `AGENT_OPS.md`：发布新文章总流程（写作 → 草稿 → 发布 → 配图 → 部署）
-- `docs/vibe-coding-creation.md`：Vibe Coding 协作方法论
-- `docs/skills-inventory.md`：已收录技能清单（写作/润色/配图相关）
+- `MAINTENANCE.md`：站点维护总览（技术栈 / 结构 / 内容管理）
