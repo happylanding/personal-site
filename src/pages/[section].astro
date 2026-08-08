@@ -4,7 +4,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Breadcrumb from "../components/Breadcrumb.astro";
 import ColumnIcon from "../components/ColumnIcon.astro";
 import { getLangFromUrl, useTranslations } from "../i18n/utils";
-import { ALL_SECTIONS } from "../lib/sections";
+import { ALL_SECTIONS, SECTION_COLORS } from "../lib/sections";
 
 export async function getStaticPaths() {
   return ALL_SECTIONS.map((section) => ({ params: { section } }));
@@ -31,7 +31,8 @@ const isBooksSection = section === "books";
 
   <section data-reveal>
     <div class="mb-10">
-      <span class="mb-4 block opacity-60"><ColumnIcon section={section as import("../lib/sections").SectionKey} class="w-10 h-10" /></span>
+      <div class="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: SECTION_COLORS[section] }}></div>
+      <span class="mb-4 block opacity-70"><ColumnIcon section={section as import("../lib/sections").SectionKey} class="w-10 h-10" /></span>
       <h1 class="text-3xl font-serif font-bold mb-2">{t(`columns.${section}.name`)}</h1>
       <p class="text-sm text-black/40 dark:text-white/40">{t(`columns.${section}.enName`)}</p>
       <p class="text-base text-black/50 dark:text-white/50 mt-3 leading-relaxed max-w-2xl">

@@ -9,6 +9,7 @@ tagsEn: ["AI", "Learning Path", "Beginner"]
 section: ai
 featured: true
 ogImage: /images/ai-learning-path/cover.png
+ogImageEn: /images/ai-learning-path/cover-en.png
 ---
 
 > 很多人在 AI 学习上卡住，不是因为难，而是因为**顺序错了**——一上来就啃数学公式，结果热情耗尽。这篇文章分享一条"先会用、再理解、后深入"的路径，适合零基础、但想尽快把 AI 变成生产力的人。

@@ -9,6 +9,7 @@ tagsEn: ["Digital Economy", "Industry Insights", "Digital Transformation"]
 section: insights
 featured: true
 ogImage: /images/digital-economy-pulse/cover.png
+ogImageEn: /images/digital-economy-pulse/cover-en.png
 ---
 
 > 如果说工业时代的底色是"钢铁与石油"，那么数字经济时代的底色，就是"数据与算法"。本文尝试从一线从业者的视角，梳理数字经济的两条主线，并回答一个更贴近个人的问题：这些宏观叙事，跟我的学习和职业到底有什么关系？

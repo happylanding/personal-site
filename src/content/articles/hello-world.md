@@ -9,6 +9,7 @@ tagsEn: ["intro", "website"]
 section: tips
 featured: true
 ogImage: /images/hello-world/cover.png
+ogImageEn: /images/hello-world/cover-en.png
 ---
 
 这是你的个人网站的第一篇文章。这里将是你记录思考、分享见解和展示作品的地方。

@@ -9,6 +9,7 @@ tagsEn: ["AI Coding", "Vibe Coding", "Learning Path", "Datawhale", "Resources"]
 section: ai
 featured: false
 ogImage: /images/easy-vibe-guide/cover.png
+ogImageEn: /images/easy-vibe-guide/cover-en.png
 ---
 
 > 之前把 Easy-Vibe 收录进了[设计灵感收藏夹](./easy-vibe)（一篇偏"网站设计拆解"的报告）。今天这篇不一样——我想把**网站里面真正的好东西**挖出来，仔细讲一讲：它到底分享了什么、哪些资源值得收藏、按照什么顺序学最省力。

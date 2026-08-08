@@ -6,6 +6,7 @@ descriptionEn: "Jane Austen's beloved classic novel of manners, following the em
 date: 2024-02-20
 section: books
 ogImage: /images/pride-and-prejudice/cover.png
+ogImageEn: /images/pride-and-prejudice/cover-en.png
 tags: ["经典", "文学", "小说"]
 tagsEn: ["classic", "literature", "fiction"]
 author: "简·奥斯汀 (Jane Austen)"

@@ -6,6 +6,7 @@ descriptionEn: "The ancient Chinese military treatise attributed to Sun Tzu, a s
 date: 2024-01-15
 section: books
 ogImage: /images/the-art-of-war/cover.png
+ogImageEn: /images/the-art-of-war/cover-en.png
 tags: ["经典", "战略", "哲学"]
 tagsEn: ["classic", "strategy", "philosophy"]
 author: "孙武 (Sun Tzu)"

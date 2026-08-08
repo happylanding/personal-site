@@ -8,6 +8,7 @@ tags: ["数字政府", "数字经济", "产业观察"]
 tagsEn: ["Digital Government", "Digital Economy", "Industry Insights"]
 section: insights
 ogImage: /images/digital-government-notes/cover.png
+ogImageEn: /images/digital-government-notes/cover-en.png
 ---
 
 > 作为数字经济的组成部分，数字政府这几年离普通人的生活越来越近。"一网通办""最多跑一次"这些词背后，其实藏着一套完整的治理逻辑。本文从从业视角做个拆解。

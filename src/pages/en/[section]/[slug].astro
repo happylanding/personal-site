@@ -33,7 +33,7 @@ const dateStr = article.data.date.toLocaleDateString("en-US", {
 const isBook = section === "books";
 const displayAuthor = article.data.authorEn || article.data.author;
 const hasEnglishBody = !!article.data.bodyEn;
-const ogImage = article.data.ogImage || "/favicon.svg";
+const ogImage = article.data.ogImageEn || article.data.ogImage || "/favicon.svg";
 
 // 上一篇 / 下一篇（同栏目内按时间排序）
 const sectionArticles = allArticles
@@ -54,9 +54,9 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
 
   <article class="max-w-2xl mx-auto" data-reveal>
     <header class="mb-10">
-      {article.data.ogImage && (
+      {(article.data.ogImageEn || article.data.ogImage) && (
         <img
-          src={article.data.ogImage}
+          src={article.data.ogImageEn || article.data.ogImage}
           alt={displayTitle}
           class="w-full rounded-xl border border-black/10 dark:border-white/10 shadow-sm mb-6"
           loading="eager"

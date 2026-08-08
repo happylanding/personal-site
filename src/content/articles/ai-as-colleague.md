@@ -8,6 +8,7 @@ tags: ["AI", "人机协作", "工作方式"]
 tagsEn: ["AI", "Human-AI Collaboration", "Future of Work"]
 section: insights
 ogImage: /images/ai-as-colleague/cover.png
+ogImageEn: /images/ai-as-colleague/cover-en.png
 ---
 
 > 过去我们把 AI 当作"搜索框的升级版"，现在它更像一位"能力越来越强的同事"。本文想聊的，不是 AI 会不会取代人，而是**当 AI 成为同事之后，我们的工作方式会发生怎样的重构**。

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="glow1" cx="0.15" cy="0.2" r="0.9">
+      <stop offset="0%" stop-color="#16A34A" stop-opacity="0.32"/>
+      <stop offset="60%" stop-color="#16A34A" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#16A34A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0.85" cy="0.85" r="0.9">
+      <stop offset="0%" stop-color="#B45309" stop-opacity="0.22"/>
+      <stop offset="60%" stop-color="#B45309" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#B45309" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="#0c0c0c"/>
+  <rect width="1200" height="630" fill="url(#glow1)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+
+  <g fill="#ffffff">
+    <circle cx="120" cy="90" r="1.8" opacity="0.5"/>
+    <circle cx="280" cy="160" r="1.2" opacity="0.4"/>
+    <circle cx="430" cy="70" r="1.6" opacity="0.45"/>
+    <circle cx="580" cy="130" r="1.1" opacity="0.35"/>
+    <circle cx="720" cy="80" r="1.7" opacity="0.5"/>
+    <circle cx="880" cy="150" r="1.2" opacity="0.4"/>
+    <circle cx="1030" cy="90" r="1.5" opacity="0.45"/>
+    <circle cx="1150" cy="140" r="1.1" opacity="0.35"/>
+    <circle cx="200" cy="300" r="1.3" opacity="0.3"/>
+    <circle cx="350" cy="380" r="1.0" opacity="0.25"/>
+    <circle cx="520" cy="320" r="1.4" opacity="0.3"/>
+    <circle cx="700" cy="400" r="1.0" opacity="0.25"/>
+    <circle cx="900" cy="330" r="1.3" opacity="0.3"/>
+    <circle cx="1050" cy="420" r="1.0" opacity="0.25"/>
+    <circle cx="90" cy="500" r="1.2" opacity="0.25"/>
+    <circle cx="640" cy="540" r="1.1" opacity="0.2"/>
+    <circle cx="980" cy="560" r="1.4" opacity="0.25"/>
+  </g>
+
+  <rect width="1200" height="4" fill="url(#fade)"/>
+
+  <rect x="60" y="52" width="2" height="64" fill="#16A34A" opacity="0.7"/>
+  <rect x="66" y="52" width="2" height="64" fill="#16A34A" opacity="0.35"/>
+
+  <text x="60" y="170" font-family="'DejaVu Sans Mono', monospace" font-size="20" letter-spacing="6" fill="#16A34A" opacity="0.9">REBUILDING WITH AI</text>
+
+  <text x="60" y="290" font-family="Playfair Display, 'DejaVu Serif', Georgia, serif" font-size="44" font-weight="bold" fill="#ffffff">Rebuilding a Personal Site with AI</text>
+  <text x="60" y="334" font-family="Playfair Display, 'DejaVu Serif', Georgia, serif" font-size="44" font-weight="bold" fill="#ffffff">A Non-Programmer's Experiment</text>
+
+  <text x="60" y="404" font-family="'Source Sans 3', 'DejaVu Sans', Arial, sans-serif" font-size="24" fill="#a3a3a3">How a non-programmer rebuilt a bilingual site with AI, end to end</text>
+
+  <line x1="60" y1="485" x2="360" y2="485" stroke="#ffffff" stroke-opacity="0.25" stroke-width="1"/>
+  <circle cx="360" cy="485" r="4" fill="#16A34A"/>
+  <line x1="368" y1="485" x2="460" y2="485" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1"/>
+
+  <text x="60" y="540" font-family="'Source Sans 3', 'DejaVu Sans', Arial, sans-serif" font-size="18" fill="#737373">Galvin x CodeBuddy · Engineering thinking with AI</text>
+</svg>

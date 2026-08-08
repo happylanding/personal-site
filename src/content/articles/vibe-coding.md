@@ -9,6 +9,7 @@ tagsEn: ["Vibe Coding", "AI Programming", "Web Dev", "Personal Blog", "CodeBuddy
 section: tips
 featured: true
 ogImage: /images/vibe-coding/cover.png
+ogImageEn: /images/vibe-coding/cover-en.png
 ---
 
 > 作者：Galvin · 共创伙伴：CodeBuddy  

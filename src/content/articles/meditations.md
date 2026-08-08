@@ -6,6 +6,7 @@ descriptionEn: "A series of personal writings by Marcus Aurelius, Roman Emperor 
 date: 2024-03-10
 section: books
 ogImage: /images/meditations/cover.png
+ogImageEn: /images/meditations/cover-en.png
 tags: ["哲学", "斯多葛", "经典"]
 tagsEn: ["philosophy", "stoicism", "classic"]
 author: "马可·奥勒留 (Marcus Aurelius)"

@@ -8,6 +8,7 @@ tags: ["astro", "web", "tutorial"]
 tagsEn: ["astro", "web", "tutorial"]
 section: tips
 ogImage: /images/astro-guide/cover.png
+ogImageEn: /images/astro-guide/cover-en.png
 ---
 
 Astro 是近年来最受欢迎的静态网站生成器之一。它的核心设计理念是 **"零 JavaScript 默认输出"**（Zero JS by default），只在需要交互的地方加载 JavaScript。
