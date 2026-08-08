@@ -226,10 +226,19 @@ npm run preview    # 预览构建结果
 
 ```
 CNB 仓库 Galvin2026/personal-site  ←（开发/提交/构建验证）
-        │ 同步（push 到 GitHub）
+        │ ① push 到 main 自动触发
+        │ ② 每日 02:00 定时兜底
+        ▼
+   git-sync 插件（tencentcom/git-sync）
+        │ 携带 GitHub Token 推送 main
         ▼
 GitHub happylanding/personal-site  ←（Cloudflare 连接源）
         │ 自动构建
         ▼
 Cloudflare Pages → galvinai.pages.dev
 ```
+
+**自动同步机制**：仓库根目录的 `.cnb.yml` 配置了「构建验证 + git-sync 同步」流水线。
+在 CNB 完成改动并合并到 `main` 后，流水线自动运行 `npm run build` 验证，通过后自动把 `main` 推送到 GitHub，Cloudflare 随即自动部署，**全程无需手动操作**。
+
+> 首次配置步骤（创建 GitHub Token、CNB 密钥仓库、填写 imports 地址）详见 [`docs/github-sync.md`](docs/github-sync.md)。
