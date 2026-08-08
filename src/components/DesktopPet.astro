@@ -27,6 +27,19 @@ const greetings = t("pet.greetings");
 >
   <div id="pet-bubble" class="pet-bubble" aria-live="polite"></div>
 
+  <!-- 角色成长进度条（P2 #7 彩蛋）：随页面滚动成长，Lv.1 → Lv.4 -->
+  <div class="pet-growth" aria-hidden="true">
+    <span class="pet-growth-bar"></span>
+    <span class="pet-growth-stage">Lv.1</span>
+  </div>
+
+  <!-- 移动端最小化/恢复按钮（P2 #9 体验兜底） -->
+  <button class="pet-min-btn" type="button" aria-label={label} data-min-label>
+    <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M4 4 L12 12 M12 4 L4 12" />
+    </svg>
+  </button>
+
   <svg class="pet-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <!-- 耳朵 -->
     <path d="M40 74 L28 26 L76 56 Z" style="fill:var(--pet-dark)" />
@@ -67,6 +80,14 @@ const greetings = t("pet.greetings");
       <text x="162" y="66" text-anchor="middle" class="pet-zzz pet-zzz-small" font-size="11" font-weight="700">z</text>
     </g>
 
+    <!-- 成长配饰（P2 #7 角色成长彩蛋）：由 data-growth 切换，默认隐藏 -->
+    <!-- 蝴蝶结：Lv.2 成长阶段佩戴 -->
+    <g class="growth-badge growth-ribbon">
+      <circle cx="100" cy="48" r="5" fill="#ec4899" />
+      <path d="M100 48 Q82 40 78 52 Q88 58 100 48 Z" fill="#f472b6" />
+      <path d="M100 48 Q118 40 122 52 Q112 58 100 48 Z" fill="#f472b6" />
+    </g>
+
     <!-- 眼睛（眨眼动画作用于此 group） -->
     <g class="pet-eye">
       <circle cx="76" cy="96" r="21" style="fill:var(--pet-eye-bg);stroke:var(--pet-outline)" stroke-width="3.5" />
@@ -78,6 +99,21 @@ const greetings = t("pet.greetings");
         <circle cx="72.5" cy="94.5" r="3.2" style="fill:var(--pet-pupil-hi)" />
         <circle cx="120.5" cy="94.5" r="3.2" style="fill:var(--pet-pupil-hi)" />
       </g>
+    </g>
+    <!-- 圆框眼镜：Lv.3 及以上佩戴 -->
+    <g class="growth-badge growth-glasses">
+      <circle cx="76" cy="96" r="24" fill="none" stroke="#475569" stroke-width="2.5" />
+      <circle cx="124" cy="96" r="24" fill="none" stroke="#475569" stroke-width="2.5" />
+      <path d="M100 96 q4 -7 9 0" stroke="#475569" stroke-width="2.5" fill="none" />
+      <path d="M52 92 q-7 -5 -13 0" stroke="#475569" stroke-width="2.5" fill="none" />
+      <path d="M148 92 q7 -5 13 0" stroke="#475569" stroke-width="2.5" fill="none" />
+    </g>
+    <!-- 学士帽：Lv.4 毕业造型 -->
+    <g class="growth-badge growth-hat">
+      <ellipse cx="100" cy="40" rx="34" ry="8" fill="#1e293b" />
+      <path d="M68 38 L132 38 L132 30 Q132 22 122 22 L78 22 Q68 22 68 30 Z" fill="#1e293b" />
+      <path d="M132 30 q11 7 6 17" stroke="#f59e0b" stroke-width="3" fill="none" />
+      <circle cx="138" cy="47" r="3.5" fill="#f59e0b" />
     </g>
     <!-- 喙 -->
     <path d="M100 112 L90 128 L110 128 Z" style="fill:var(--pet-beak);stroke:var(--pet-beak-stroke)" stroke-width="2" stroke-linejoin="round" />
@@ -277,6 +313,113 @@ const greetings = t("pet.greetings");
     bubbleTimer = setTimeout(() => bubble.classList.remove("show"), 3200);
   }
 
+  // ===== P2 #8：宠物 × Currently 联动 =====
+  // 从 Currently 卡片读取站内真实内容（在读哪本书 / 最近写了什么），让宠物“说人话”
+  const pageLang = document.documentElement.lang || "zh";
+  let currentlyRows: { label: string; title: string }[] = [];
+  function collectCurrently() {
+    const rows: { label: string; title: string }[] = [];
+    document.querySelectorAll("[data-currently-row]").forEach((row) => {
+      const label = row.querySelector(".font-mono")?.textContent?.trim() || "";
+      const title = row.querySelector(".truncate")?.textContent?.trim() || "";
+      if (title) rows.push({ label, title });
+    });
+    currentlyRows = rows;
+  }
+
+  // 从 Currently 行生成一句“说人话”的台词（长度 ≤ 20 字，超出截断）
+  function currentlyLine(): string {
+    if (!currentlyRows.length) return "";
+    const row = currentlyRows[Math.floor(Math.random() * currentlyRows.length)];
+    const clean = row.title.replace(/《|》/g, "").replace(/:.*$/g, "").trim();
+    if (!clean) return "";
+    const prefix = pageLang?.startsWith("en") ? "Currently" : "最近";
+    return `${prefix} ${clean}`.slice(0, 22);
+  }
+
+  // 首次收集 + 每次 View Transition 后重新收集（SPA 导航时内容会变）
+  collectCurrently();
+  document.addEventListener("astro:page-load", collectCurrently);
+
+  // ===== P2 #7：角色成长彩蛋 =====
+  // 随页面滚动进度从 Lv.1（小萌新）成长到 Lv.4（老学究），佩戴蝴蝶结/眼镜/学士帽
+  const growthBar = pet.querySelector(".pet-growth-bar");
+  const growthStage = pet.querySelector(".pet-growth-stage");
+  const growthBadges = {
+    ribbon: pet.querySelector(".growth-ribbon"),
+    glasses: pet.querySelector(".growth-glasses"),
+    hat: pet.querySelector(".growth-hat"),
+  };
+
+  function growthLevel(progress: number): number {
+    if (progress >= 0.9) return 4;
+    if (progress >= 0.6) return 3;
+    if (progress >= 0.3) return 2;
+    return 1;
+  }
+
+  function updateGrowth() {
+    if (!growthBar) return;
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? Math.min(1, Math.max(0, scrollTop / docHeight)) : 0;
+    const level = growthLevel(progress);
+
+    // 进度条宽度 + 等级标签
+    growthBar.style.width = `${(progress * 100).toFixed(0)}%`;
+    if (growthStage) growthStage.textContent = `Lv.${level}`;
+    pet.setAttribute("data-growth", String(level));
+
+    // 配饰切换：Lv.2 蝴蝶结、Lv.3 眼镜、Lv.4 学士帽（Lv.4 叠加眼镜）
+    (Object.keys(growthBadges) as (keyof typeof growthBadges)[]).forEach((k) => {
+      const el = growthBadges[k];
+      if (!el) return;
+      const active =
+        (k === "ribbon" && level >= 2) || (k === "glasses" && level >= 3) || (k === "hat" && level >= 4);
+      el.setAttribute("data-active", active ? "true" : "false");
+    });
+  }
+
+  // 成长随滚动更新（复用 rAF 合并，不重复监听）
+  let growthRAF = false;
+  function requestGrowth() {
+    if (growthRAF) return;
+    growthRAF = true;
+    requestAnimationFrame(() => {
+      growthRAF = false;
+      updateGrowth();
+    });
+  }
+  updateGrowth();
+  window.addEventListener("scroll", requestGrowth, { passive: true });
+  window.addEventListener("resize", requestGrowth, { passive: true });
+  document.addEventListener("astro:page-load", requestGrowth);
+
+  // ===== P2 #9：移动端最小化 / 恢复 =====
+  const minBtn = pet.querySelector(".pet-min-btn");
+  let petMinimized = false;
+  function setMinimized(min: boolean) {
+    petMinimized = min;
+    pet.classList.toggle("pet-minimized", min);
+    if (min) {
+      // 收进角落：隐藏成长条，仅留一个“小 Gali”圆点
+      if (minBtn) minBtn.setAttribute("data-state", "restore");
+    } else {
+      if (minBtn) minBtn.setAttribute("data-state", "min");
+    }
+  }
+  if (minBtn) {
+    minBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      setMinimized(!petMinimized);
+    });
+    pet.addEventListener("click", (e) => {
+      if (petMinimized && !(e.target as Element).closest(".pet-min-btn")) {
+        setMinimized(false);
+      }
+    });
+  }
+
   // 首次进入弹一句引导（每次会话一次）
   if (!sessionStorage.getItem("pet-hint-shown")) {
     setTimeout(() => {
@@ -307,6 +450,7 @@ const greetings = t("pet.greetings");
 
   pet.addEventListener("pointerdown", (e) => {
     if (!isFinePointer()) return; // 触屏不启用拖拽，保持页面滚动
+    if ((e.target as Element).closest?.(".pet-min-btn")) return; // 最小化按钮不触发拖拽
     startX = e.clientX;
     startY = e.clientY;
     moved = false;
@@ -337,10 +481,15 @@ const greetings = t("pet.greetings");
     }
   });
 
-  // 点击台词：30% 概率说节令问候（周末/早晚/深夜），否则随机台词
+  // 点击台词：30% 概率说节令问候（周末/早晚/深夜），
+  // 30% 概率说 Currently 真实内容（P2 #8 联动），否则随机台词
   function randomLine() {
     const g = greetingForNow();
-    return g && Math.random() < 0.3 ? g : lines[Math.floor(Math.random() * lines.length)] || "";
+    const roll = Math.random();
+    if (g && roll < 0.3) return g;
+    const c = currentlyLine();
+    if (c && roll < 0.6) return c;
+    return lines[Math.floor(Math.random() * lines.length)] || "";
   }
 
   const endDrag = () => {
