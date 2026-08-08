@@ -9,12 +9,13 @@ const sitesHref = isEn ? "/en/sites/" : "/sites/";
 
 <footer class="border-t border-black/10 dark:border-white/10 mt-20">
   <div class="mx-auto max-w-4xl px-6 py-8 text-center">
-    <!-- 隐藏入口：收藏夹（低调的小书签图标，仅供站主快速访问） -->
-    <div class="mb-3">
+    <!-- 隐藏入口：收藏夹（低调的小书签图标，放在版权说明右侧同一行，仅供站主快速访问） -->
+    <p class="inline-flex items-center justify-center gap-2 text-xs text-black/40 dark:text-white/40">
+      &copy; {new Date().getFullYear()} {t("footer.rights")}
       <a
         href={sitesHref}
         id="sites-hidden-link"
-        class="inline-flex items-center gap-1.5 text-xs text-black/25 dark:text-white/25 hover:text-black/50 dark:hover:text-white/50 transition-colors"
+        class="inline-flex items-center text-black/25 dark:text-white/25 hover:text-black/50 dark:hover:text-white/50 transition-colors"
         title="收藏夹"
         aria-label="收藏夹"
       >
@@ -23,9 +24,6 @@ const sitesHref = isEn ? "/en/sites/" : "/sites/";
         </svg>
         <span class="hidden">收藏夹</span>
       </a>
-    </div>
-    <p class="text-xs text-black/40 dark:text-white/40">
-      &copy; {new Date().getFullYear()} {t("footer.rights")}
     </p>
   </div>
 </footer>
