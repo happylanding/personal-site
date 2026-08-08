@@ -46,6 +46,7 @@ const isBooksSection = section === "books";
             const title = lang === "en" ? (article.data.titleEn || article.data.title) : article.data.title;
             const desc = lang === "en" ? (article.data.descriptionEn || article.data.description) : article.data.description;
             const author = lang === "en" ? (article.data.authorEn || article.data.author) : article.data.author;
+            const displayTags = article.data.tagsEn?.length ? article.data.tagsEn : article.data.tags;
             const dateStr = article.data.date.toLocaleDateString("en-US", {
               year: "numeric", month: "long", day: "numeric",
             });
@@ -137,7 +138,7 @@ const isBooksSection = section === "books";
                     )}
                   </div>
                   <div class="flex gap-2 mt-3">
-                    {article.data.tags.slice(0, 3).map((tag: string) => (
+                    {displayTags.slice(0, 3).map((tag: string) => (
                       <span class="text-xs text-black/25 dark:text-white/25">#{tag}</span>
                     ))}
                   </div>
@@ -152,6 +153,7 @@ const isBooksSection = section === "books";
           {sectionArticles.map((article) => {
             const title = lang === "en" ? (article.data.titleEn || article.data.title) : article.data.title;
             const desc = lang === "en" ? (article.data.descriptionEn || article.data.description) : article.data.description;
+            const displayTags = article.data.tagsEn?.length ? article.data.tagsEn : article.data.tags;
             const dateStr = article.data.date.toLocaleDateString("en-US", {
               year: "numeric", month: "long", day: "numeric",
             });
@@ -169,7 +171,7 @@ const isBooksSection = section === "books";
                     <p class="text-sm text-black/40 dark:text-white/40 line-clamp-1">{desc}</p>
                   )}
                   <div class="flex gap-2 mt-2">
-                    {article.data.tags.slice(0, 3).map((tag: string) => (
+                    {displayTags.slice(0, 3).map((tag: string) => (
                       <span class="text-xs text-black/25 dark:text-white/25">#{tag}</span>
                     ))}
                   </div>

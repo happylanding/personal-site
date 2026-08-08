@@ -100,7 +100,7 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
 
   {featured.length > 0 && (
     <section class="mb-16" data-reveal>
-      <h2 class="text-lg font-bold font-serif mb-8">✨ Featured</h2>
+      <h2 class="text-lg font-bold font-serif mb-8">✨ {t("articles.featured")}</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {featured.map((a) => {
           const title = a.data.titleEn || a.data.title;

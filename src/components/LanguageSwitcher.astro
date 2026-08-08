@@ -1,11 +1,54 @@
 ---
 import { useTranslations, getLangFromUrl } from "../i18n/utils";
+import { getCollection } from "astro:content";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-const targetLang = lang === "zh" ? "en" : "zh";
-const targetPath = targetLang === "en" ? "/en/" : "/";
+const pathname = Astro.url.pathname;
+
+/**
+ * 在同一页面切换语言，而不是跳回首页。
+ *
+ * 普通路由（首页 / 栏目 / 文章 / 归档 / 关于 / 联系 / 收藏夹）在中英文下使用
+ * 相同的 slug，只需增删 /en 前缀即可。
+ *
+ * 标签详情页是特例：中英文标签名不同（tags 与 tagsEn），需要把当前标签映射到
+ * 目标语言的等价标签，否则会跳到不存在的 404 页面。
+ */
+let targetPath: string;
+
+// 是否为标签详情页：/tags/<tag> 或 /en/tags/<tag>
+const tagMatch = pathname.match(/^(?:\/en)?\/tags\/([^/]+)\/?$/);
+
+if (tagMatch) {
+  const articles = await getCollection("articles", ({ data }) => !data.draft);
+  const currentTag = decodeURIComponent(tagMatch[1]);
+
+  // 建立中英文标签双向映射
+  const zhToEn = new Map<string, string>();
+  const enToZh = new Map<string, string>();
+  for (const a of articles) {
+    const zhTags = a.data.tags || [];
+    const enTags = a.data.tagsEn?.length ? a.data.tagsEn : zhTags;
+    zhTags.forEach((zh, i) => {
+      const en = enTags[i] ?? zh;
+      if (!zhToEn.has(zh)) zhToEn.set(zh, en);
+      if (!enToZh.has(en)) enToZh.set(en, zh);
+    });
+  }
+
+  const mappedTag = lang === "zh" ? zhToEn.get(currentTag) || currentTag : enToZh.get(currentTag) || currentTag;
+  const encodedTag = encodeURIComponent(mappedTag);
+  targetPath = lang === "zh" ? `/en/tags/${encodedTag}/` : `/tags/${encodedTag}/`;
+} else if (lang === "zh") {
+  // 中文 → 英文：加 /en 前缀（首页 / 保持为 /en/）
+  targetPath = pathname === "/" ? "/en/" : `/en${pathname}`;
+} else {
+  // 英文 → 中文：去掉 /en 前缀（/en/ 回到 /）
+  const rest = pathname.replace(/^\/en\/?/, "");
+  targetPath = rest ? `/${rest}` : "/";
+}
 ---
 
 <a
