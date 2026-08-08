@@ -76,27 +76,9 @@ body {
   background: radial-gradient(circle, rgba(180, 83, 9, 0.12), transparent 70%);
 }
 
-.hp-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, black 40%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, black 40%, transparent 100%);
-}
-
-.dark .hp-grid {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-}
-
 /* 视差位移通过 JS 写入 transform；reduced-motion 时静止 */
 @media (prefers-reduced-motion: reduce) {
-  .hp-glow,
-  .hp-grid {
+  .hp-glow {
     transform: none !important;
     animation: none !important;
   }

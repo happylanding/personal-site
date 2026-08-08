@@ -78,6 +78,7 @@ Issue #6 提出「网站交互单调」。经梳理，滚动叙事与桌面宠�
 第 2 步（✅ 已完成）  Currently 动态卡片 PR #11 合入（先确认 ScrollReveal 阈值不回归）
 第 3 步（✅ 已完成）  方案 A 升级 ScrollReveal（stagger + back.out）→ 落在 Currently 卡片
 第 4 步（✅ 已完成）  方案 B Hero 视差（只动背景/装饰层，不动正文）
+第 4.5 步（✅ 已完成）  移除 Hero 格子背景（hp-grid），仅保留柔光层（与站点风格统一）
 第 5 步（✅ 已完成）  宠物 P1 升级（SVG 姿态 + dark 变体 + reduced-motion 完全静止）
 第 6 步（✅ 已完成）  方案 C About 页 pin 叙事（每页最多 1 个 pin）
 ```
@@ -93,7 +94,7 @@ Issue #6 提出「网站交互单调」。经梳理，滚动叙事与桌面宠�
 | PR #7 交互资源清单 | 📄 进行中 |
 | docs/interaction-roadmap.md（本文档） | ✅ 已随 PR #10 合入，并在交互升级 PR 中更新 |
 | 方案 A 升级 ScrollReveal（stagger + back.out） | ✅ 已落地（Currently 卡片） |
-| 方案 B Hero 视差 | ✅ 已落地（首页背景装饰层） |
+| 方案 B Hero 视差 | ✅ 已落地（首页背景装饰层，仅保留柔光；格子背景已移除） |
 | 宠物视觉升级（SVG 姿态 + dark 变体） | ✅ 已落地 |
 | 方案 C About 页 pin 叙事 | ✅ 已落地（中英双语） |
 | P2 #7 宠物角色成长彩蛋（Lv.1→Lv.4 配饰成长） | ✅ 已落地 |
