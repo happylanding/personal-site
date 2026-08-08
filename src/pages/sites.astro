@@ -45,7 +45,7 @@ const siteEntries = (await getCollection("sites", ({ data }) => !data.draft && !
           const dateStr = entry.data.date.toLocaleDateString(isEn ? "en-US" : "zh-CN", {
             year: "numeric", month: "long", day: "numeric",
           });
-          const href = isEn ? `/en/sites/${entry.slug}/` : `/sites/${entry.slug}/`;
+          const href = isEn ? `/en/sites/${entry.id}/` : `/sites/${entry.id}/`;
           return (
             <a
               href={href}

@@ -21,7 +21,7 @@ const searchData = allArticles.map(function (post) {
     month: "2-digit",
     day: "2-digit",
   });
-  var href = langPrefix + post.data.section + "/" + post.slug + "/";
+  var href = langPrefix + post.data.section + "/" + post.id + "/";
   return {
     title: title,
     excerpt: excerpt || "",

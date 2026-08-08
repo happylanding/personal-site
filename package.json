@@ -12,11 +12,11 @@
     "@astrojs/sitemap": "^3.7.3",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.1.18",
-    "astro": "^5.7.12",
+    "astro": "^7.2.0",
     "epub": "^2.1.1",
     "fast-xml-parser": "^5.10.1",
-    "pdfjs-dist": "^4.0.379",
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^4.1.18",
+    "vite": "^8.2.1"
   },
   "devDependencies": {
     "jspdf": "^4.2.1"

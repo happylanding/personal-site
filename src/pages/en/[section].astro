@@ -70,7 +70,7 @@ const isBooksSection = section === "books";
                 </div>
                 <div class="flex-1 min-w-0">
                   <h3 class="text-lg font-bold font-serif group-hover:opacity-70 transition-opacity mb-1">
-                    <a href={`/en/${section}/${article.slug}`} class="hover-scale-text inline-block">
+                    <a href={`/en/${section}/${article.id}`} class="hover-scale-text inline-block">
                       {title}
                     </a>
                     {article.data.featured && <span class="ml-2 text-sm">★</span>}
@@ -160,7 +160,7 @@ const isBooksSection = section === "books";
             });
             return (
               <a
-                href={`/en/${section}/${article.slug}`}
+                href={`/en/${section}/${article.id}`}
                 class="flex items-start justify-between py-4 px-4 rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-colors group"
               >
                 <div class="min-w-0">

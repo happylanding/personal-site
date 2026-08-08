@@ -1,12 +1,12 @@
 ---
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../../components/Breadcrumb.astro";
 import { useTranslations } from "../../../i18n/utils";
 
 export async function getStaticPaths() {
   const sites = await getCollection("sites", ({ data }) => !data.draft && !!data.siteUrl);
-  return sites.map((site) => ({ params: { slug: site.slug } }));
+  return sites.map((site) => ({ params: { slug: site.id } }));
 }
 
 const { slug } = Astro.params;
@@ -14,16 +14,16 @@ const lang = "en" as const;
 const t = useTranslations(lang);
 
 const allSites = await getCollection("sites", ({ data }) => !data.draft && !!data.siteUrl);
-const entry = allSites.find((s) => s.slug === slug);
+const entry = allSites.find((s) => s.id === slug);
 if (!entry) return Astro.redirect("/404");
 
 // 同系列内按日期排序，用于上一篇 / 下一篇
 const sectionSites = allSites.sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
-const idx = sectionSites.findIndex((s) => s.slug === slug);
+const idx = sectionSites.findIndex((s) => s.id === slug);
 const prevEntry = idx > 0 ? sectionSites[idx - 1] : undefined;
 const nextEntry = idx >= 0 && idx < sectionSites.length - 1 ? sectionSites[idx + 1] : undefined;
 
-const { Content } = await entry.render();
+const { Content } = await render(entry);
 
 const isEn = true;
 const title = entry.data.titleEn || entry.data.title;
@@ -89,7 +89,7 @@ const displayTags = entry.data.tagsEn?.length ? entry.data.tagsEn : entry.data.t
     <nav class="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4">
       {prevEntry ? (
         <a
-          href={`/en/sites/${prevEntry.slug}/`}
+          href={`/en/sites/${prevEntry.id}/`}
           class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors"
         >
           <p class="text-xs text-black/30 dark:text-white/30 mb-1">← Previous</p>
@@ -102,7 +102,7 @@ const displayTags = entry.data.tagsEn?.length ? entry.data.tagsEn : entry.data.t
       )}
       {nextEntry ? (
         <a
-          href={`/en/sites/${nextEntry.slug}/`}
+          href={`/en/sites/${nextEntry.id}/`}
           class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors sm:text-right"
         >
           <p class="text-xs text-black/30 dark:text-white/30 mb-1">Next →</p>
