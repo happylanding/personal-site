@@ -26,6 +26,7 @@ const dateStr = entry.data.date.toLocaleDateString("en-US", {
   year: "numeric", month: "long", day: "numeric",
 });
 const host = entry.data.siteUrl ? new URL(entry.data.siteUrl).hostname : "";
+const displayTags = entry.data.tagsEn?.length ? entry.data.tagsEn : entry.data.tags;
 ---
 
 <BaseLayout title={title} description={desc}>
@@ -63,9 +64,9 @@ const host = entry.data.siteUrl ? new URL(entry.data.siteUrl).hostname : "";
         {dateStr}
       </time>
 
-      {entry.data.tags.length > 0 && (
+      {displayTags.length > 0 && (
         <div class="flex flex-wrap gap-2 mt-4">
-          {entry.data.tags.slice(0, 5).map((tag: string) => (
+          {displayTags.slice(0, 5).map((tag: string) => (
             <span class="text-xs px-2 py-1 rounded-md bg-black/5 dark:bg-white/5 text-black/40 dark:text-white/40">
               #{tag}
             </span>
