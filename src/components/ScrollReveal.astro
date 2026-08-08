@@ -10,7 +10,10 @@
           }
         });
       },
-      { threshold: 0.1, rootMargin: window.innerWidth < 768 ? "0px 0px -10px 0px" : "0px 0px -40px 0px" }
+      // 注意：不能用固定的 ratio threshold（如 0.1）——对超长页面（如长篇正文）
+      // 10% 高度可能超过视口，永远无法触发，导致内容一直 opacity:0。
+      // 改为 threshold: 0（任意可见即触发），对短元素和超长元素都可靠。
+      { threshold: 0, rootMargin: window.innerWidth < 768 ? "0px 0px -10px 0px" : "0px 0px -40px 0px" }
     );
 
     document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
