@@ -1,5 +1,6 @@
 ---
 import { getLangFromUrl, useTranslations } from "../i18n/utils";
+import Icon from "./Icon.astro";
 
 interface Crumb {
   label: string;
@@ -27,7 +28,7 @@ const { crumbs } = Astro.props;
     </li>
     {crumbs.map((crumb, i) => (
       <li class="flex items-center gap-1">
-        <span aria-hidden="true" class="text-black/20 dark:text-white/20">›</span>
+        <span aria-hidden="true" class="text-black/20 dark:text-white/20"><Icon name="chevronRight" class="w-3.5 h-3.5" /></span>
         {i === crumbs.length - 1 ? (
           <span class="text-black/70 dark:text-white/70 font-medium">{crumb.label}</span>
         ) : (
