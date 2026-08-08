@@ -75,8 +75,47 @@ const sitesCollection = defineCollection({
   }),
 });
 
+/**
+ * 工具箱工具集合
+ *
+ * type 三类：
+ * - online  在线工具（收藏引用他人网页工具）
+ * - app     自研小工具（站内可玩 Demo）
+ * - script  脚本工具（本地 CLI，站内下载 / 复制命令）
+ */
+const toolsCollection = defineCollection({
+  type: "content",
+  schema: z.object({
+    title: z.string(),
+    titleEn: z.string().optional(),
+    description: z.string().optional(),
+    descriptionEn: z.string().optional(),
+    /** 工具类型：online | app | script */
+    type: z.enum(["online", "app", "script"]).default("online"),
+    /** 外链地址（online/app 使用） */
+    url: z.string().optional(),
+    /** 状态：online 在线 / dev 开发中 / beta 试玩中 / stable 稳定 */
+    status: z.enum(["online", "dev", "beta", "stable"]).default("online"),
+    /** 脚本命令（script 类型，终端卡一键复制） */
+    command: z.string().optional(),
+    /** 站内下载地址（script 类型，如 /downloads/xxx.zip） */
+    downloadUrl: z.string().optional(),
+    /** 版本号（可选） */
+    version: z.string().optional(),
+    /** 开源仓库地址（可选） */
+    repo: z.string().optional(),
+    date: z.date(),
+    updated: z.date().optional(),
+    tags: z.array(z.string()).default([]),
+    tagsEn: z.array(z.string()).default([]),
+    draft: z.boolean().default(false),
+    featured: z.boolean().default(false),
+  }),
+});
+
 export const collections = {
   articles: articlesCollection,
   sites: sitesCollection,
+  tools: toolsCollection,
   drafts: draftsCollection,
 };

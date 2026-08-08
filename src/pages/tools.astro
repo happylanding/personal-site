@@ -1,0 +1,289 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Breadcrumb from "../components/Breadcrumb.astro";
+import ToolIcon from "../components/ToolIcon.astro";
+import { getCollection } from "astro:content";
+import { getLangFromUrl, useTranslations } from "../i18n/utils";
+import { TOOL_COLORS, TOOL_TYPE_ORDER, type ToolEntry } from "../content/tools/config";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const isEn = lang === "en";
+
+// 已入库工具（按置顶 + 更新日期倒序）
+const tools = (await getCollection("tools", ({ data }) => !data.draft)) as unknown as ToolEntry[];
+tools.sort((a, b) => {
+  if (a.data.featured !== b.data.featured) return a.data.featured ? -1 : 1;
+  return (b.data.updated || b.data.date).getTime() - (a.data.updated || a.data.date).getTime();
+});
+
+const total = tools.length;
+const appCount = tools.filter((x) => x.data.type === "app").length;
+const scriptCount = tools.filter((x) => x.data.type === "script").length;
+const statsText = t("tools.stats")
+  .replace("{total}", String(total))
+  .replace("{apps}", String(appCount))
+  .replace("{scripts}", String(scriptCount));
+---
+
+<BaseLayout
+  title={t("tools.name")}
+  description={t("tools.desc")}
+>
+  <Breadcrumb crumbs={[{ label: t("tools.name"), href: "/tools/" }]} />
+
+  <section data-reveal>
+    <!-- 页头 -->
+    <header class="mb-8">
+      <div class="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: TOOL_COLORS.script }}></div>
+      <h1 class="text-3xl font-serif font-bold mb-2">
+        {t("tools.name")}
+        <span class="ml-2 text-sm font-sans font-normal text-black/35 dark:text-white/35 align-middle">{t("tools.enName")}</span>
+      </h1>
+      <p class="text-sm text-black/40 dark:text-white/40">{t("tools.subtitle")}</p>
+      <p class="text-base text-black/50 dark:text-white/50 mt-3 leading-relaxed max-w-2xl">{t("tools.desc")}</p>
+      <p class="text-xs font-mono text-black/30 dark:text-white/30 mt-3">{statsText}</p>
+    </header>
+
+    <!-- 随机扭蛋 -->
+    <div class="flex items-center gap-3 mb-8">
+      <button
+        id="tool-gacha-btn"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-black/15 dark:border-white/15 text-sm font-medium hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors"
+      >
+        {t("tools.gacha")}
+      </button>
+      <span id="tool-gacha-result" class="text-sm text-black/40 dark:text-white/40"></span>
+    </div>
+
+    <!-- 分类 Tab -->
+    <div class="flex flex-wrap gap-2 mb-8" role="tablist" aria-label={t("tools.name")}>
+      <button
+        class="tool-tab text-sm px-4 py-1.5 rounded-full border transition-colors"
+        data-type="all"
+        data-active="true"
+      >
+        {t("tools.all")}
+      </button>
+      {TOOL_TYPE_ORDER.map((tp) => (
+        <button
+          class="tool-tab text-sm px-4 py-1.5 rounded-full border transition-colors"
+          data-type={tp}
+          data-active="false"
+        >
+          <span class="inline-block w-1.5 h-1.5 rounded-full mr-1.5 align-middle" style={{ backgroundColor: TOOL_COLORS[tp] }}></span>
+          {t(`tools.type.${tp}`)}
+        </button>
+      ))}
+    </div>
+
+    <!-- 工具卡片 -->
+    {tools.length > 0 ? (
+      <div id="tool-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {tools.map((tool, i) => {
+          const title = isEn ? (tool.data.titleEn || tool.data.title) : tool.data.title;
+          const desc = isEn ? (tool.data.descriptionEn || tool.data.description) : tool.data.description;
+          const type = tool.data.type;
+          const color = TOOL_COLORS[type];
+          const statusLabel = t(`tools.status.${tool.data.status}`);
+          const statusColor =
+            tool.data.status === "online" ? "#16A34A"
+            : tool.data.status === "stable" ? "#B45309"
+            : tool.data.status === "beta" ? "#0E96E9"
+            : "#737373";
+          const tags = isEn ? (tool.data.tagsEn?.length ? tool.data.tagsEn : tool.data.tags) : tool.data.tags;
+          const version = tool.data.version;
+          const updated = tool.data.updated || tool.data.date;
+
+          return (
+            <div
+              class="tool-card roll-card group block p-5 rounded-xl border border-black/10 dark:border-white/10 hover-lift transition-all duration-300 hover:border-black/30 dark:hover:border-white/30 relative overflow-hidden"
+              data-type={type}
+              style={`--roll-index:${i}`}
+            >
+              <span class="ghost-num text-black/5 dark:text-white/5 select-none pointer-events-none" aria-hidden="true">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+
+              <div class="flex items-start justify-between gap-3 mb-3">
+                <span class="block opacity-60"><ToolIcon type={type} class="w-7 h-7" /></span>
+                <span
+                  class="inline-flex items-center gap-1.5 text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5"
+                  style={{ color: statusColor }}
+                >
+                  <span class="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusColor }}></span>
+                  {statusLabel}
+                </span>
+              </div>
+
+              <h3 class="font-bold font-serif text-base mb-1.5 leading-snug">{title}</h3>
+              <p class="text-xs font-mono text-black/30 dark:text-white/30 mb-2">
+                {t(`tools.type.${type}`)}
+                {version && <span class="ml-2">v{version}</span>}
+              </p>
+              {desc && <p class="text-sm text-black/40 dark:text-white/40 line-clamp-2 leading-relaxed mb-4">{desc}</p>}
+
+              <!-- 脚本工具：终端风格 + 一键复制 -->
+              {type === "script" ? (
+                <div class="mt-2">
+                  <div class="rounded-lg border border-black/15 dark:border-white/15 bg-black/[0.04] dark:bg-white/[0.04] font-mono text-xs overflow-hidden">
+                    <div class="flex items-center gap-1.5 px-3 py-2 border-b border-black/10 dark:border-white/10">
+                      <span class="w-2 h-2 rounded-full bg-red-400/70"></span>
+                      <span class="w-2 h-2 rounded-full bg-amber-400/70"></span>
+                      <span class="w-2 h-2 rounded-full bg-green-400/70"></span>
+                      <span class="ml-2 text-black/40 dark:text-white/40 truncate">~/tools/{title}</span>
+                    </div>
+                    <div class="px-3 py-2.5 break-all leading-relaxed">
+                      {tool.data.command || (tool.data.downloadUrl ? "下载后解压即用" : "")}
+                    </div>
+                  </div>
+                  <div class="flex gap-2 mt-3">
+                    {tool.data.command && (
+                      <button
+                        class="tool-copy-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 text-xs font-medium hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors"
+                        data-copy={tool.data.command}
+                      >
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        <span class="copy-label">{t("tools.copy")}</span>
+                      </button>
+                    )}
+                    {tool.data.downloadUrl && (
+                      <a
+                        href={tool.data.downloadUrl}
+                        download
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black dark:bg-white text-white dark:text-black text-xs font-medium hover:opacity-80 transition-opacity"
+                      >
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        {t("tools.download")}
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div class="flex items-center justify-between mt-4">
+                  <a
+                    href={tool.data.url}
+                    target="_blank"
+                    rel="noopener"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 text-xs font-medium hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors"
+                  >
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    {t("tools.open")}
+                  </a>
+                  {tool.data.url && (
+                    <span class="text-xs text-black/25 dark:text-white/25">
+                      {t("tools.external")} · {new URL(tool.data.url).hostname}
+                    </span>
+                  )}
+                </div>
+              )}
+
+              <div class="flex items-center justify-between mt-4">
+                <div class="flex gap-2">
+                  {tags.slice(0, 3).map((tag: string) => (
+                    <span class="text-xs text-black/25 dark:text-white/25">#{tag}</span>
+                  ))}
+                </div>
+                <time class="text-xs text-black/25 dark:text-white/25 font-mono flex-shrink-0 ml-4">
+                  {updated.toLocaleDateString(isEn ? "en-US" : "zh-CN", { year: "numeric", month: "short" })}
+                </time>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    ) : (
+      <p class="py-12 text-center text-black/30 dark:text-white/30 italic">{t("tools.empty")}</p>
+    )}
+
+    <!-- 页脚说明 -->
+    <p class="mt-12 text-center text-sm text-black/40 dark:text-white/40">{t("tools.footer")}</p>
+  </section>
+
+  <script is:inline>
+    window.__TOOL_TITLES__ = {JSON.stringify(tools.map((x) => (isEn ? x.data.titleEn || x.data.title : x.data.title)))}
+  </script>
+</BaseLayout>
+
+<style>
+  .tool-tab[data-active="true"] {
+    background-color: rgba(0, 0, 0, 0.08);
+    font-weight: 600;
+  }
+  :global(.dark) .tool-tab[data-active="true"] {
+    background-color: rgba(255, 255, 255, 0.12);
+  }
+  .tool-card[hidden] {
+    display: none;
+  }
+</style>
+
+<script>
+  // 分类 Tab 过滤
+  (function () {
+    const tabs = document.querySelectorAll(".tool-tab");
+    const cards = document.querySelectorAll(".tool-card");
+    if (!tabs.length || !cards.length) return;
+
+    function applyFilter(type) {
+      tabs.forEach((tb) => {
+        tb.dataset.active = tb.dataset.type === type ? "true" : "false";
+      });
+      cards.forEach((c) => {
+        c.hidden = type !== "all" && c.dataset.type !== type;
+      });
+    }
+
+    tabs.forEach((tb) => {
+      tb.addEventListener("click", () => applyFilter(tb.dataset.type));
+    });
+  })();
+
+  // 一键复制命令
+  (function () {
+    const btns = document.querySelectorAll(".tool-copy-btn");
+    if (!btns.length) return;
+
+    btns.forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const text = btn.dataset.copy || "";
+        const label = btn.querySelector(".copy-label");
+        const old = label ? label.textContent : "";
+        try {
+          await navigator.clipboard.writeText(text);
+          if (label) label.textContent = "✓ 已复制";
+        } catch (e) {
+          // 剪贴板不可用时降级：选中文本
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+          if (label) label.textContent = "✓ 已复制";
+        }
+        if (label) {
+          setTimeout(() => {
+            label.textContent = old;
+          }, 1500);
+        }
+      });
+    });
+  })();
+
+  // 随机扭蛋
+  (function () {
+    const btn = document.getElementById("tool-gacha-btn");
+    const result = document.getElementById("tool-gacha-result");
+    if (!btn || !result) return;
+
+    // 读取 SSR 注入的工具标题列表
+    const pool = (window.__TOOL_TITLES__ || []).slice();
+    if (!pool.length) return;
+
+    btn.addEventListener("click", () => {
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      result.textContent = "🔧 " + pick;
+    });
+  })();
+</script>
