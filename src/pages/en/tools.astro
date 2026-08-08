@@ -72,15 +72,16 @@ const gachaTools = tools.map((x) => ({
     <!-- 扭蛋结果弹层 -->
     <div
       id="tool-gacha-modal"
-      class="fixed inset-0 z-[90] hidden items-center justify-center p-4"
+      class="fixed inset-0 z-[90] hidden overflow-y-auto"
       role="dialog"
       aria-modal="true"
       aria-label={t("tools.gachaTitle")}
     >
-      <div id="tool-gacha-backdrop" class="absolute inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-sm"></div>
-      <div
-        class="relative w-full max-w-sm rounded-2xl border border-black/10 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-2xl p-6 text-center overflow-hidden"
-      >
+      <div id="tool-gacha-backdrop" class="fixed inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-sm"></div>
+      <div class="min-h-full w-full flex items-center justify-center p-4 pointer-events-none">
+        <div
+          class="relative w-full max-w-sm rounded-2xl border border-black/10 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-2xl p-6 text-center my-auto pointer-events-auto"
+        >
         <span class="ghost-num text-black/5 dark:text-white/5 select-none pointer-events-none" aria-hidden="true">🎲</span>
         <button
           id="tool-gacha-close"
@@ -106,6 +107,7 @@ const gachaTools = tools.map((x) => ({
             🎯 {t("tools.gachaGo")}
           </a>
         </div>
+      </div>
       </div>
     </div>
 

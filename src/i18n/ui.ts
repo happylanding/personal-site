@@ -86,7 +86,7 @@ export const ui = {
       gachaGo: "就它了",
       gachaEmpty: "武器库空空如也，先来一件工具吧",
       empty: "这里还空着，等待第一件工具入库",
-      footer: "有好用的工具？丢给 CodeBuddy 收录进武器库 ⚙️",
+      footer: "有好用的工具？丢给 CodeBuddy 收录进武器库 ⚙️ 更多实用神器排队上线中，敬请期待！",
     },
     breadcrumb: {
       home: "首页",
@@ -288,7 +288,7 @@ export const ui = {
       gachaGo: "Go with it",
       gachaEmpty: "The arsenal is empty — add a tool first",
       empty: "Nothing here yet — waiting for the first tool",
-      footer: "Found a handy tool? Hand it to CodeBuddy and it goes into the arsenal ⚙️",
+      footer: "Found a handy tool? Hand it to CodeBuddy and it goes into the arsenal ⚙️ More useful gems are queuing up — stay tuned!",
     },
     breadcrumb: {
       home: "Home",
