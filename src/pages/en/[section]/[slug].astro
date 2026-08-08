@@ -52,7 +52,7 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
     ]}
   />
 
-  <article class="max-w-2xl mx-auto" data-reveal>
+  <article data-reveal>
     <header class="mb-10">
       {(article.data.ogImageEn || article.data.ogImage) && (
         <img
@@ -65,7 +65,7 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
 
       <div class="flex items-center gap-3 mb-4">
         <span class="text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/50 dark:text-white/50 inline-flex items-center gap-1">
-          <ColumnIcon section={section as "insights"|"tips"|"books"|"invest"} class="w-3 h-3" /> {t(`columns.${section}.name`)}
+          <ColumnIcon section={section as "insights"|"ai"|"tips"|"books"|"invest"} class="w-3 h-3" /> {t(`columns.${section}.name`)}
         </span>
         {article.data.featured && (
           <span class="text-xs px-2 py-0.5 rounded-full bg-black dark:bg-white text-white dark:text-black">★ {t("articles.featured")}</span>
@@ -77,7 +77,7 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
       </h1>
 
       {displayDesc && (
-        <p class="text-base text-black/50 dark:text-white/50 mb-4 leading-relaxed">{displayDesc}</p>
+        <p class="text-base text-black/50 dark:text-white/50 mb-4 leading-relaxed max-w-3xl">{displayDesc}</p>
       )}
 
       <div class="flex flex-wrap items-center gap-4 text-sm text-black/30 dark:text-white/30 font-mono">
@@ -108,11 +108,24 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
 
     {
       hasEnglishBody ? (
-        <div class="prose dark:prose-invert article-content max-w-none" set:html={article.data.bodyEn!} />
+        <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14">
+          <div class="min-w-0 order-1">
+            <div class="prose dark:prose-invert article-content max-w-none" set:html={article.data.bodyEn!} />
+          </div>
+          <div class="min-w-0 order-2">
+            <ArticleTOC label={t("articles.toc")} countFormat={t("articles.tocCount")} />
+          </div>
+        </div>
       ) : (
-        <div class="prose dark:prose-invert article-content max-w-none">
-          <ArticleTOC />
-          <Content />
+        <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14">
+          <div class="min-w-0 order-1">
+            <div class="prose dark:prose-invert article-content max-w-none">
+              <Content />
+            </div>
+          </div>
+          <div class="min-w-0 order-2">
+            <ArticleTOC label={t("articles.toc")} countFormat={t("articles.tocCount")} />
+          </div>
         </div>
       )
     }
@@ -180,34 +193,40 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
       />
     )}
 
-    <!-- Prev / Next -->
-    <nav class="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4" data-reveal>
-      {prevArticle ? (
-        <a
-          href={`/en/${section}/${prevArticle.slug}`}
-          class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors"
-        >
-          <p class="text-xs text-black/30 dark:text-white/30 mb-1">← Older</p>
-          <p class="text-sm font-medium group-hover:opacity-70 transition-opacity line-clamp-2">
-            {prevArticle.data.titleEn || prevArticle.data.title}
-          </p>
-        </a>
-      ) : (
-        <span></span>
-      )}
-      {nextArticle ? (
-        <a
-          href={`/en/${section}/${nextArticle.slug}`}
-          class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors sm:text-right"
-        >
-          <p class="text-xs text-black/30 dark:text-white/30 mb-1">Newer →</p>
-          <p class="text-sm font-medium group-hover:opacity-70 transition-opacity line-clamp-2">
-            {nextArticle.data.titleEn || nextArticle.data.title}
-          </p>
-        </a>
-      ) : (
-        <span></span>
-      )}
+    <!-- Prev / Next: aligned with the article column (right spacer keeps same width as TOC rail) -->
+    <nav class="mt-12 article-prevnext" data-reveal>
+      <div class="lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14">
+        <div class="min-w-0 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {prevArticle ? (
+            <a
+              href={`/en/${section}/${prevArticle.slug}`}
+              class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors"
+            >
+              <p class="text-xs text-black/30 dark:text-white/30 mb-1">← Older</p>
+              <p class="text-sm font-medium group-hover:opacity-70 transition-opacity line-clamp-2">
+                {prevArticle.data.titleEn || prevArticle.data.title}
+              </p>
+            </a>
+          ) : (
+            <span></span>
+          )}
+          {nextArticle ? (
+            <a
+              href={`/en/${section}/${nextArticle.slug}`}
+              class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors sm:text-right"
+            >
+              <p class="text-xs text-black/30 dark:text-white/30 mb-1">Newer →</p>
+              <p class="text-sm font-medium group-hover:opacity-70 transition-opacity line-clamp-2">
+                {nextArticle.data.titleEn || nextArticle.data.title}
+              </p>
+            </a>
+          ) : (
+            <span></span>
+          )}
+        </div>
+        <!-- Spacer column: keeps nav aligned with the article column on desktop -->
+        <div class="hidden lg:block article-prevnext-spacer" aria-hidden="true"></div>
+      </div>
     </nav>
 
   </article>
