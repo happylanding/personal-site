@@ -15,6 +15,12 @@
  *   - 文章不足或缺少可推断字段时自动降级为网站默认简介，绝不显示空行
  *   - 中英文双语标题/描述，跟随站点语言
  *
+ * 前缀动态刷新：
+ *   - 不固定：前缀从「网络热梗 × 趣味动词」池里按**站点内容指纹**挑选
+ *   - 站点内容指纹 = 全部已发布文章的关键字段 + 正文归一化哈希
+ *   - 只要站内更新了文章/内容 → 指纹变化 → 四行前缀一起换新（不定期、动态）
+ *   - 内容没变 → 指纹不变 → 前缀稳定，不会每次构建抽风
+ *
  * 排版约定（保证四行严格对齐）：
  *   - 左侧标签列固定等宽（grid 第一列 4.5rem），正文起点对齐
  *   - 标题/描述单行截断（truncate），右边缘对齐
@@ -40,6 +46,120 @@ const fmtDate = (a) =>
     day: "numeric",
   });
 
+/** 网络热梗 × 有趣动词池：本站不严肃，标题也要会整活 😎 每行 8 个备选，池子越大越不容易撞句 */
+const VIBES = {
+  reading: {
+    zh: [
+      "在啃《{t}》",
+      "在盘《{t}》",
+      "在读《{t}》，已上头",
+      "在卷《{t}》，精神状态良好",
+      "今天也在啃《{t}》",
+      "在磨《{t}》，越磨越香",
+      "掉进《{t}》出不来了",
+      "抱着《{t}》不肯撒手",
+    ],
+    en: [
+      "Crushing {t}",
+      "Deep in {t}",
+      "Obsessed with {t}",
+      "Devouring {t}",
+      "Loving {t}",
+      "Savoring {t}",
+      "Falling down the {t} rabbit hole",
+      "Glued to {t}",
+    ],
+  },
+  writing: {
+    zh: [
+      "在肝《{t}》",
+      "键盘冒烟中：《{t}》",
+      "在憋大招：《{t}》",
+      "灵感上头，在写《{t}》",
+      "在更文《{t}》",
+      "码字到飞起：《{t}》",
+      "在憋《{t}》这篇大的",
+      "深夜码字：《{t}》",
+    ],
+    en: [
+      "Cooking up {t}",
+      "Drafting {t}",
+      "Pounding out {t}",
+      "On a roll: {t}",
+      "Working on {t}",
+      "Smashing out {t}",
+      "Crafting {t}",
+      "Late-night writing: {t}",
+    ],
+  },
+  coding: {
+    zh: [
+      "在折腾 {l}",
+      "在跟 {l} 极限拉扯",
+      "在搓 {l}，面向 BUG 编程",
+      "在整活 {l}",
+      "在肝 {l}，头秃警告",
+      "在调 {l}，死活不报错",
+      "在跟 {l} 掰头",
+      "在驯服 {l}",
+    ],
+    en: [
+      "Tinkering with {l}",
+      "Wrestling with {l}",
+      "Hacking on {l}",
+      "Fighting {l}",
+      "Grinding {l}",
+      "Battling {l}",
+      "Taming {l}",
+      "Poking {l} with a stick",
+    ],
+  },
+  learning: {
+    zh: [
+      "在学 {l}",
+      "在偷偷卷 {l}",
+      "在给大脑升级：{l}",
+      "在上头 {l}",
+      "在补课：{l}",
+      "在悄悄点 {l} 技能点",
+      "在研习 {l}",
+      "在恶补 {l}",
+    ],
+    en: [
+      "Leveling up in {l}",
+      "Grinding {l}",
+      "Studying {l}",
+      "Upskilling in {l}",
+      "Learning {l}",
+      "Leveling {l} skill points",
+      "Geeking out on {l}",
+      "Cramming {l}",
+    ],
+  },
+};
+
+/** 稳定字符串哈希（FNV-1a 风格），同一输入永远得到同一数字 */
+const hashStr = (s) => {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h >>> 0;
+};
+
+/**
+ * 按「站点内容指纹」确定性挑选热梗：
+ *  - 指纹 = 全部已发布文章关键字段 + 正文归一化哈希
+ *  - 只要站内更新了文章/内容 → 指纹变 → 前缀刷新（不定期、动态）
+ *  - 内容没变 → 指纹不变 → 前缀稳定，不抽风
+ *  - 每行用不同偏移（kind + 行序号），保证四行前缀互不重复
+ */
+const pickVibe = (kind, lang, seed, offset = 0) => {
+  const pool = VIBES[kind]?.[lang] ?? [];
+  return pool[((hashStr(seed) + offset * 0x9e3779b1) >>> 0) % pool.length];
+};
+
 /** 更新优先排序：updated 存在且不晚于未来则按 updated，否则按 date */
 const byUpdated = (a, b) => {
   const at = (x) => {
@@ -54,6 +174,26 @@ const published = (await getCollection("articles", ({ data }) => !data.draft)).s
 const books = published.filter(isBook);
 const posts = published.filter((a) => !isBook(a));
 
+/**
+ * 站点内容指纹：把所有已发布文章的关键字段 + 正文归一化哈希拼起来，
+ * 只要站内更新了任何文章/内容，指纹就变，四行前缀随之一起刷新。
+ */
+const siteFingerprint = published
+  .map((a) =>
+    [
+      a.slug,
+      a.data.section,
+      a.data.title,
+      a.data.titleEn,
+      a.data.author || "",
+      (a.data.tags || []).join(","),
+      (a.data.date?.getTime?.() ?? ""),
+      (a.data.updated?.getTime?.() ?? ""),
+      (a.body || "").replace(/\s+/g, " ").trim(),
+    ].join("|")
+  )
+  .join("\n");
+
 /** 挑选最近一年内的一篇，超出则回退到全局最新一篇，避免空值 */
 const pickRecent = (list) => list.find((a) => Date.now() - (a.data.updated || a.data.date).getTime() <= yearMs) || list[0];
 
@@ -64,7 +204,7 @@ const writing = pickRecent(posts);
 const reading = book
   ? {
       label: "READING",
-      title: lang === "en" ? `Reading ${titleOf(book)}` : `在读《${stripBookMarks(titleOf(book))}》`,
+      title: pickVibe("reading", lang, siteFingerprint, 0).replace("{t}", stripBookMarks(titleOf(book))),
       desc: book.data.author
         ? `${lang === "en" ? "by" : "作者"} ${lang === "en" ? book.data.authorEn || book.data.author : book.data.author}`
         : lang === "en"
@@ -78,7 +218,7 @@ const reading = book
 const writingItem = writing
   ? {
       label: "WRITING",
-      title: lang === "en" ? `Writing ${titleOf(writing)}` : `在写《${stripBookMarks(titleOf(writing))}》`,
+      title: pickVibe("writing", lang, siteFingerprint, 1).replace("{t}", stripBookMarks(titleOf(writing))),
       desc: lang === "en" ? `Updated ${fmtDate(writing)}` : `更新于 ${fmtDate(writing)}`,
       href: pathOf(writing),
     }
@@ -121,11 +261,9 @@ const codeLangPretty = LANG_NAMES[codeLang.toLowerCase()] || codeLang;
 const coding = {
   label: "CODING",
   title: codeLang
-    ? lang === "en"
-      ? `Experimenting with ${codeLangPretty}`
-      : `在折腾 ${codeLangPretty}`
+    ? pickVibe("coding", lang, siteFingerprint, 2).replace("{l}", codeLangPretty)
     : lang === "en"
-      ? "Building this site with Astro"
+      ? "Hacking on Astro & this site"
       : "在折腾 Astro 个人网站",
   desc: codeSource
     ? lang === "en"
@@ -148,14 +286,14 @@ const learning = (() => {
     const pretty = { ai: "AI", astro: "Astro", tailwind: "Tailwind CSS", css: "CSS", javascript: "JavaScript", node: "Node.js", vue: "Vue", react: "React", python: "Python", web: "Web" }[tag] || tag;
     return {
       label: "LEARNING",
-      title: lang === "en" ? `Learning ${pretty}` : `在学 ${pretty}`,
+      title: pickVibe("learning", lang, siteFingerprint, 3).replace("{l}", pretty),
       desc: lang === "en" ? `From ${titleOf(seen)}` : `来自《${stripBookMarks(titleOf(seen))}》`,
       href: pathOf(seen),
     };
   }
   return {
     label: "LEARNING",
-    title: lang === "en" ? "Learning AI & tools" : "在学 AI 与效率工具",
+    title: lang === "en" ? "Leveling up in AI & tools" : "在偷偷卷 AI 与效率工具",
     desc: lang === "en" ? "The long-running theme of this site" : "本站一直关注的主题",
     href: "/",
   };
