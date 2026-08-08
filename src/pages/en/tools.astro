@@ -69,48 +69,6 @@ const gachaTools = tools.map((x) => ({
       <span id="tool-gacha-result" class="ml-3 text-sm text-black/40 dark:text-white/40"></span>
     </div>
 
-    <!-- 扭蛋结果弹层 -->
-    <div
-      id="tool-gacha-modal"
-      class="fixed inset-0 z-[90] hidden overflow-y-auto"
-      role="dialog"
-      aria-modal="true"
-      aria-label={t("tools.gachaTitle")}
-    >
-      <div id="tool-gacha-backdrop" class="fixed inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-sm"></div>
-      <div class="min-h-full w-full flex items-center justify-center p-4 pointer-events-none">
-        <div
-          class="relative w-full max-w-sm rounded-2xl border border-black/10 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-2xl p-6 text-center my-auto pointer-events-auto"
-        >
-        <span class="ghost-num text-black/5 dark:text-white/5 select-none pointer-events-none" aria-hidden="true">🎲</span>
-        <button
-          id="tool-gacha-close"
-          class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-black/40 dark:text-white/40 transition-colors"
-          aria-label="Close"
-        >
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-        </button>
-        <p class="text-xs uppercase tracking-[0.15em] opacity-40 font-medium mb-4">{t("tools.gachaTitle")}</p>
-        <div id="tool-gacha-modal-body" class="mb-6"></div>
-        <div class="flex items-center justify-center gap-3">
-          <button
-            id="tool-gacha-again"
-            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-black/15 dark:border-white/15 text-sm font-medium hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors"
-          >
-            🎲 {t("tools.gachaHint")}
-          </button>
-          <a
-            id="tool-gacha-open"
-            href="#"
-            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-black dark:bg-white text-white dark:text-black text-sm font-medium hover:opacity-80 transition-opacity"
-          >
-            🎯 {t("tools.gachaGo")}
-          </a>
-        </div>
-      </div>
-      </div>
-    </div>
-
     <!-- 分类 Tab -->
     <div class="flex flex-wrap gap-2 mb-8" role="tablist" aria-label={t("tools.name")}>
       <button
@@ -289,6 +247,49 @@ const gachaTools = tools.map((x) => ({
     <p class="mt-12 text-center text-sm text-black/40 dark:text-white/40">{t("tools.footer")}</p>
   </section>
 
+  <!-- 扭蛋弹层：移到 [data-reveal] section 之外（fixed 定位不受父级 transform 干扰，始终相对视口铺满全屏）
+       外层 overflow-y-auto，卡片超高时弹层可整体上下滚动，X 始终可点 -->
+  <div
+    id="tool-gacha-modal"
+    class="fixed inset-0 z-[90] hidden overflow-y-auto"
+    role="dialog"
+    aria-modal="true"
+    aria-label={t("tools.gachaTitle")}
+  >
+    <div id="tool-gacha-backdrop" class="fixed inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-sm"></div>
+    <div class="min-h-full w-full flex items-center justify-center p-4 pointer-events-none">
+      <div
+        class="relative w-full max-w-sm rounded-2xl border border-black/10 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-2xl p-6 text-center overflow-hidden my-auto pointer-events-auto"
+      >
+      <span class="ghost-num text-black/5 dark:text-white/5 select-none pointer-events-none" aria-hidden="true">🎲</span>
+      <button
+        id="tool-gacha-close"
+        class="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-black/40 dark:text-white/40 transition-colors"
+        aria-label="Close"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <p class="text-xs uppercase tracking-[0.15em] opacity-40 font-medium mb-4 pr-10">{t("tools.gachaTitle")}</p>
+      <div id="tool-gacha-modal-body" class="mb-6"></div>
+      <div class="flex items-center justify-center gap-3">
+        <button
+          id="tool-gacha-again"
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-black/15 dark:border-white/15 text-sm font-medium hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors"
+        >
+          🎲 {t("tools.gachaHint")}
+        </button>
+        <a
+          id="tool-gacha-open"
+          href="#"
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-black dark:bg-white text-white dark:text-black text-sm font-medium hover:opacity-80 transition-opacity"
+        >
+          🎯 {t("tools.gachaGo")}
+        </a>
+      </div>
+    </div>
+    </div>
+  </div>
+
   <script define:vars={{ gachaTools }}>
     window.__TOOL_GACHA__ = gachaTools || [];
   </script>
@@ -383,12 +384,11 @@ const gachaTools = tools.map((x) => ({
 
     function openModal() {
       modal.classList.remove("hidden");
-      modal.classList.add("flex");
+      modal.scrollTop = 0;
       document.documentElement.style.overflow = "hidden";
     }
     function closeModal() {
       modal.classList.add("hidden");
-      modal.classList.remove("flex");
       document.documentElement.style.overflow = "";
     }
 
