@@ -21,6 +21,7 @@ featured: true
 |---|------|-----------|---------|------|
 | 1 | [Oil® — 欧呦](https://www.oiloil.org/#products) | AI 产品经理的个人品牌站，把"产品 → 作品 → 个人"织成一张网 | 2026-08-08 | [完整拆解](./oiloil) |
 | 2 | [花叔 Alchain](https://www.huasheng.ai/) | AI Native Coder 个人品牌站，电影化 REEL 叙事 + 数据驱动，一人持有一家公司 | 2026-08-08 | [完整拆解](./huasheng) |
+| 3 | [Easy-Vibe 教程](https://datawhalechina.github.io/easy-vibe/zh-cn/) | Datawhale 开源 AI 编程教程站，'会说话就能编程' + 四段式成长路径 + 10 语言国际化 | 2026-08-08 | [完整拆解](./easy-vibe) |
 
 ## 报告模板
 
