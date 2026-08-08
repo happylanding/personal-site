@@ -644,6 +644,240 @@ body {
   color: #fb923c;
 }
 
+/* ===== Article TOC v2：左侧 sticky 目录 + 移动端折叠卡片 =====
+   样式放在全局作用域（而非组件 scoped），因为目录项由 JS 动态创建，
+   Astro 的 data-astro-cid 作用域属性不会打到动态节点上。 */
+
+/* 锚点跳转避开 sticky 顶栏 */
+.article-content h2,
+.article-content h3,
+.article-content h4 {
+  scroll-margin-top: 88px;
+}
+
+/* ---- 桌面：左侧 sticky 目录栏 ---- */
+/* 让包装层撑满 grid 列高，rail 才能在整篇文章高度内 sticky 滑动 */
+@media (min-width: 1024px) {
+  .article-toc-root {
+    height: 100%;
+  }
+}
+
+/* 当文章标题数 < 2（无目录）时，JS 会给 .article-grid 加 .no-toc，退回单栏 */
+.article-grid.no-toc {
+  display: block !important;
+}
+
+.article-toc-rail {
+  display: none;
+  position: sticky;
+  top: 96px;
+  max-height: calc(100vh - 128px);
+  overflow-y: auto;
+  padding: 0.25rem 0.25rem 0.25rem 1.25rem;
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+  scrollbar-width: thin;
+}
+
+/* 仅 lg（1024px+）显示左侧栏；标题数不足 2 时由 JS 保留 .toc-hide */
+@media (min-width: 1024px) {
+  .article-toc-rail:not(.toc-hide) {
+    display: block;
+  }
+}
+
+.article-toc-rail.toc-hide {
+  display: none !important;
+}
+
+.dark .article-toc-rail {
+  border-left-color: rgba(255, 255, 255, 0.1);
+}
+
+.article-toc-rail-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.4);
+  margin: 0 0 0.9rem 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.dark .article-toc-rail-label {
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.article-toc-rail-label .article-toc-list-icon {
+  width: 0.85rem;
+  height: 0.85rem;
+  opacity: 0.6;
+}
+
+/* 目录列表（桌面 + 移动端共用） */
+.article-toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.article-toc-item {
+  margin: 0;
+}
+
+.article-toc-item.level-3 {
+  padding-left: 1rem;
+}
+
+.article-toc-link {
+  display: block;
+  padding: 0.32rem 0.6rem;
+  border-radius: 0.5rem;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: rgba(0, 0, 0, 0.52);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dark .article-toc-link {
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.article-toc-link:hover {
+  color: #b45309;
+  background: rgba(0, 0, 0, 0.035);
+}
+
+.dark .article-toc-link:hover {
+  color: #f59e0b;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.article-toc-link.active {
+  color: #b45309;
+  border-left-color: #b45309;
+  background: rgba(180, 83, 9, 0.06);
+  font-weight: 500;
+}
+
+.dark .article-toc-link.active {
+  color: #f59e0b;
+  border-left-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.08);
+}
+
+/* ---- 移动端 / 平板：可折叠目录卡片 ---- */
+.article-toc-mobile {
+  margin-bottom: 1.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 0.75rem;
+  background: rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+}
+
+.dark .article-toc-mobile {
+  border-color: rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.article-toc-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  color: inherit;
+  background: none;
+  border: none;
+  font: inherit;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.article-toc-toggle-icon {
+  width: 1rem;
+  height: 1rem;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.article-toc-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgba(0, 0, 0, 0.68);
+}
+
+.dark .article-toc-label {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.article-toc-count {
+  font-size: 0.7rem;
+  color: rgba(0, 0, 0, 0.35);
+  margin-left: auto;
+  font-family: var(--font-mono);
+}
+
+.dark .article-toc-count {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.article-toc-chevron {
+  width: 0.9rem;
+  height: 0.9rem;
+  opacity: 0.45;
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.article-toc-mobile.open .article-toc-chevron {
+  transform: rotate(180deg);
+}
+
+.article-toc-mobile-body {
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 0.5rem 0.75rem 0.75rem;
+  overscroll-behavior: contain;
+}
+
+.dark .article-toc-mobile-body {
+  border-top-color: rgba(255, 255, 255, 0.07);
+}
+
+/* 窄滚动条（移动端目录/桌面目录共用） */
+.article-toc-rail::-webkit-scrollbar,
+.article-toc-mobile-body::-webkit-scrollbar {
+  width: 4px;
+}
+.article-toc-rail::-webkit-scrollbar-thumb,
+.article-toc-mobile-body::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 2px;
+}
+.dark .article-toc-rail::-webkit-scrollbar-thumb,
+.dark .article-toc-mobile-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .article-toc-link,
+  .article-toc-chevron {
+    transition: none;
+  }
+}
+
 /* ===== Scrollbar styling ===== */
 ::-webkit-scrollbar {
   width: 6px;

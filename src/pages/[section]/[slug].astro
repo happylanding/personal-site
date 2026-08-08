@@ -51,11 +51,11 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
     ]}
   />
 
-  <article class="max-w-2xl mx-auto" data-reveal>
+  <article data-reveal>
     <header class="mb-10">
       <div class="flex items-center gap-3 mb-4">
         <span class="text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/50 dark:text-white/50 inline-flex items-center gap-1">
-          <ColumnIcon section={section as "insights"|"tips"|"books"|"invest"} class="w-3 h-3" /> {t(`columns.${section}.name`)}
+          <ColumnIcon section={section as "insights"|"ai"|"tips"|"books"|"invest"} class="w-3 h-3" /> {t(`columns.${section}.name`)}
         </span>
         {article.data.featured && (
           <span class="text-xs px-2 py-0.5 rounded-full bg-black dark:bg-white text-white dark:text-black">★ Featured</span>
@@ -67,7 +67,7 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
       </h1>
 
       {displayDesc && (
-        <p class="text-base text-black/50 dark:text-white/50 mb-4 leading-relaxed">{displayDesc}</p>
+        <p class="text-base text-black/50 dark:text-white/50 mb-4 leading-relaxed max-w-3xl">{displayDesc}</p>
       )}
 
       <div class="flex flex-wrap items-center gap-4 text-sm text-black/30 dark:text-white/30 font-mono">
@@ -96,9 +96,18 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
       )}
     </header>
 
-    <div class="prose dark:prose-invert article-content max-w-none">
-      <ArticleTOC />
-      <Content />
+    <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)] lg:gap-10 xl:gap-14">
+      <!-- 左侧 sticky 目录（lg+ 显示 rail；移动端/平板显示折叠卡片，均由组件内响应式 class 控制） -->
+      <div class="min-w-0">
+        <ArticleTOC label={t("articles.toc")} countFormat={t("articles.tocCount")} />
+      </div>
+
+      <!-- 正文 -->
+      <div class="min-w-0">
+        <div class="prose dark:prose-invert article-content max-w-none">
+          <Content />
+        </div>
+      </div>
     </div>
 
     <!-- Book-specific: format download section -->
