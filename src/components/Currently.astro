@@ -14,6 +14,11 @@
  *   - 每行自带链接：可跳转到对应文章，整卡不再是死文本
  *   - 文章不足或缺少可推断字段时自动降级为网站默认简介，绝不显示空行
  *   - 中英文双语标题/描述，跟随站点语言
+ *
+ * 排版约定（保证四行严格对齐）：
+ *   - 左侧标签列固定等宽（grid 第一列 4.5rem），正文起点对齐
+ *   - 标题/描述单行截断（truncate），右边缘对齐
+ *   - 行间细分隔线，信息主次分明
  */
 import { useTranslations, getLangFromUrl } from "../i18n/utils";
 import { getCollection } from "astro:content";
@@ -26,8 +31,14 @@ const yearMs = 365 * 24 * 60 * 60 * 1000;
 
 const isBook = (a) => Boolean(a.data.author);
 const titleOf = (a) => (lang === "en" ? a.data.titleEn || a.data.title : a.data.title);
-const descOf = (a) => (lang === "en" ? a.data.descriptionEn || a.data.description || "" : a.data.description || "");
 const pathOf = (a) => `${lang === "en" ? "/en" : ""}/${a.data.section}/${a.slug}`;
+const stripBookMarks = (s) => s.replace(/^《|》$/g, "");
+const fmtDate = (a) =>
+  (a.data.updated || a.data.date).toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 
 /** 更新优先排序：updated 存在且不晚于未来则按 updated，否则按 date */
 const byUpdated = (a, b) => {
@@ -53,10 +64,12 @@ const writing = pickRecent(posts);
 const reading = book
   ? {
       label: "READING",
-      title: lang === "en" ? `Reading ${titleOf(book)}` : `在读《${titleOf(book).replace(/^《|》$/g, "")}》`,
+      title: lang === "en" ? `Reading ${titleOf(book)}` : `在读《${stripBookMarks(titleOf(book))}》`,
       desc: book.data.author
-        ? `${lang === "en" ? "by" : "作者"} ${lang === "en" ? book.data.authorEn || book.data.author : book.data.author} · ${descOf(book) || (lang === "en" ? "Latest book on the shelf" : "书架上的新书")}`
-        : descOf(book),
+        ? `${lang === "en" ? "by" : "作者"} ${lang === "en" ? book.data.authorEn || book.data.author : book.data.author}`
+        : lang === "en"
+          ? "Latest book on the shelf"
+          : "书架上的新书",
       href: pathOf(book),
     }
   : null;
@@ -65,8 +78,8 @@ const reading = book
 const writingItem = writing
   ? {
       label: "WRITING",
-      title: lang === "en" ? `Writing ${titleOf(writing)}` : `在写《${titleOf(writing).replace(/^《|》$/g, "")}》`,
-      desc: descOf(writing) || (lang === "en" ? "A new article" : "一篇新文章"),
+      title: lang === "en" ? `Writing ${titleOf(writing)}` : `在写《${stripBookMarks(titleOf(writing))}》`,
+      desc: lang === "en" ? `Updated ${fmtDate(writing)}` : `更新于 ${fmtDate(writing)}`,
       href: pathOf(writing),
     }
   : null;
@@ -114,12 +127,12 @@ const coding = {
     : lang === "en"
       ? "Building this site with Astro"
       : "在折腾 Astro 个人网站",
-  desc: lang === "en"
-    ? codeSource
-      ? `From the post on ${titleOf(codeSource)}`
-      : "Building this site with Astro + Tailwind"
-    : codeSource
-      ? `最近文章里在用 ${codeLangPretty}`
+  desc: codeSource
+    ? lang === "en"
+      ? `From ${titleOf(codeSource)}`
+      : `来自《${stripBookMarks(titleOf(codeSource))}》`
+    : lang === "en"
+      ? "Building this site with Astro + Tailwind"
       : "用 Astro + Tailwind 维护这个站点",
   href: codeSource ? pathOf(codeSource) : "/",
 };
@@ -136,7 +149,7 @@ const learning = (() => {
     return {
       label: "LEARNING",
       title: lang === "en" ? `Learning ${pretty}` : `在学 ${pretty}`,
-      desc: lang === "en" ? `From the post on ${titleOf(seen)}` : `最近文章里聊到 ${titleOf(seen)}`,
+      desc: lang === "en" ? `From ${titleOf(seen)}` : `来自《${stripBookMarks(titleOf(seen))}》`,
       href: pathOf(seen),
     };
   }
@@ -168,20 +181,23 @@ const grid = rows.length > 0 ? rows.slice(0, 4) : [];
           {lang === "en" ? "auto · from posts" : "自动 · 来自站内文章"}
         </span>
       </div>
-      <div class="space-y-3 text-sm">
-        {grid.map((row) => (
+      <div class="text-sm">
+        {grid.map((row, i) => (
           <a
             href={row.href}
-            class="group flex items-start gap-3 rounded-lg p-1 -m-1 transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.03]"
+            title={row.title}
+            class={`group grid grid-cols-[4.5rem_1fr_auto] items-center gap-x-3 py-2.5 transition-opacity hover:opacity-80 ${
+              i > 0 ? "border-t border-black/[0.06] dark:border-white/[0.06]" : ""
+            }`}
             data-currently-row
           >
             <span
-              class="mt-0.5 shrink-0 font-mono text-xs text-black/30 dark:text-white/30 group-hover:text-black/60 dark:group-hover:text-white/60 transition-colors"
+              class="shrink-0 font-mono text-xs tracking-wider text-black/30 dark:text-white/30 group-hover:text-black/60 dark:group-hover:text-white/60 transition-colors"
             >
               {row.label}
             </span>
             <span class="min-w-0">
-              <span class="block text-black/70 dark:text-white/70 group-hover:opacity-70 transition-opacity">
+              <span class="block truncate text-black/70 dark:text-white/70 group-hover:opacity-70 transition-opacity">
                 {row.title}
               </span>
               <span class="mt-0.5 block truncate text-xs text-black/35 dark:text-white/35">
@@ -189,7 +205,7 @@ const grid = rows.length > 0 ? rows.slice(0, 4) : [];
               </span>
             </span>
             <span
-              class="mt-0.5 shrink-0 font-mono text-xs text-black/25 dark:text-white/25 opacity-0 transition-opacity group-hover:opacity-100"
+              class="shrink-0 font-mono text-xs text-black/25 dark:text-white/25 opacity-0 transition-opacity group-hover:opacity-100"
               aria-hidden="true"
             >
               ↗
