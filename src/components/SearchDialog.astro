@@ -10,14 +10,25 @@ const allArticles = await getCollection("articles", function (entry) {
   return !entry.data.draft;
 });
 
-// 构建精简索引（标题、摘要、链接）
+// 构建精简索引（标题、摘要、栏目、标签、日期、链接）
 const searchData = allArticles.map(function (post) {
   var title = lang === "en" ? (post.data.titleEn || post.data.title) : post.data.title;
   var excerpt = lang === "en" ? (post.data.descriptionEn || post.data.description) : post.data.description;
+  var tags = lang === "en" && post.data.tagsEn?.length ? post.data.tagsEn : post.data.tags;
+  var category = t("columns." + post.data.section + ".name");
+  var dateStr = post.data.date.toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
   var href = langPrefix + post.data.section + "/" + post.slug + "/";
   return {
     title: title,
     excerpt: excerpt || "",
+    tags: (tags || []).join(" "),
+    category: category,
+    section: post.data.section,
+    date: dateStr,
     href: href,
   };
 });
@@ -57,7 +68,7 @@ const searchData = allArticles.map(function (post) {
       </svg>
       <input
         id="search-input"
-        type="search"
+        type="text"
         class="flex-1 bg-transparent border-none outline-none text-[15px] sm:text-base placeholder:text-black/30 dark:placeholder:text-white/30"
         placeholder={t("search.placeholder")}
         autocomplete="off"
@@ -69,6 +80,7 @@ const searchData = allArticles.map(function (post) {
         type="button"
         class="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 dark:active:bg-white/10 ml-1"
         aria-label="关闭搜索"
+        title={t("search.close")}
       >
         <svg class="w-4 h-4 opacity-40" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M18 6L6 18M6 6l12 12" />
@@ -88,16 +100,16 @@ const searchData = allArticles.map(function (post) {
       </div>
       <!-- Default hints -->
       <div id="search-hints" class="px-4 py-4 text-xs opacity-40 space-y-1.5">
-        <div class="flex items-center gap-2"><kbd class="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-[10px]">ESC</kbd> 关闭</div>
-        <div class="flex items-center gap-2"><kbd class="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-[10px]">↑↓</kbd> 导航</div>
-        <div class="flex items-center gap-2"><kbd class="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-[10px]">↵</kbd> 打开</div>
+        <div class="flex items-center gap-2"><kbd class="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-[10px]">ESC</kbd> {t("search.hintClose")}</div>
+        <div class="flex items-center gap-2"><kbd class="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-[10px]">↑↓</kbd> {t("search.hintNav")}</div>
+        <div class="flex items-center gap-2"><kbd class="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-[10px]">↵</kbd> {t("search.hintOpen")}</div>
       </div>
       <!-- Results: JavaScript 动态生成 -->
     </div>
 
     <!-- Footer -->
-    <div class="px-4 py-2 border-t border-black/5 dark:border-white/5 text-[10px] opacity-30 text-center">
-      {searchData.length} {lang === "zh" ? "篇文章" : "posts"}
+    <div id="search-footer" class="px-4 py-2 border-t border-black/5 dark:border-white/5 text-[10px] opacity-40 text-center">
+      <span id="search-count">0</span><span id="search-count-suffix"></span>
     </div>
   </div>
 </div>
@@ -165,6 +177,42 @@ const searchData = allArticles.map(function (post) {
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+  .search-result-excerpt mark {
+    background-color: rgba(250, 204, 21, 0.3);
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+  :global(.dark) .search-result-excerpt mark {
+    background-color: rgba(250, 204, 21, 0.25);
+  }
+
+  .search-result-meta {
+    font-size: 0.6875rem;
+    opacity: 0.45;
+    margin-top: 0.35rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .search-group-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1rem 0.35rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    opacity: 0.5;
+    text-transform: uppercase;
+    background-color: rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  }
+  :global(.dark) .search-group-head {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.05);
+  }
 </style>
 
 <script define:vars={{ __idx: searchData }}>
@@ -199,17 +247,34 @@ const searchData = allArticles.map(function (post) {
       return text.replace(re, "<mark>$1</mark>");
     }
 
-    // ── fuzzy match helper ──
-    function fuzzyMatch(text, q) {
-      if (!q || !text) return false;
-      var t = text.toLowerCase();
-      var query = q.toLowerCase();
-      if (t.indexOf(query) !== -1) return true;
+    // ── normalized text for comparison ──
+    function norm(s) {
+      return (s || "").toLowerCase().replace(/\s+/g, " ").trim();
+    }
+
+    // ── fuzzy match helper（字符跳跃宽松匹配，仅用于长词/长短语）──
+    function fuzzyMatch(text, word) {
+      if (!word) return false;
+      var t = norm(text);
+      var w = norm(word);
+      if (!w) return false;
+      if (t.indexOf(w) !== -1) return true;
+      // 中文按单字、英文按词拆，避免单字符噪声命中
+      var pieces = /[\u4e00-\u9fa5]/.test(w) ? w.split("") : w.split(/\s+/).filter(Boolean);
+      if (pieces.length < 2) return false;
       var qi = 0;
-      for (var i = 0; i < t.length && qi < query.length; i++) {
-        if (query[qi] === t[i]) qi++;
+      for (var i = 0; i < t.length && qi < pieces.length; i++) {
+        if (pieces[qi] === t[i]) qi++;
       }
-      return qi === query.length;
+      return qi === pieces.length;
+    }
+
+    // ── exact / fuzzy helpers ──
+    function hasExact(field, w) {
+      return norm(field).indexOf(norm(w)) !== -1;
+    }
+    function hasFuzzy(field, w) {
+      return fuzzyMatch(field, w);
     }
 
     // ── search ──
@@ -220,6 +285,7 @@ const searchData = allArticles.map(function (post) {
         hintsEl && hintsEl.classList.remove("hidden");
         emptyEl && emptyEl.classList.add("hidden");
         loadingEl && loadingEl.classList.add("hidden");
+        setCount(index.length);
         activeIdx = -1;
         return;
       }
@@ -231,42 +297,75 @@ const searchData = allArticles.map(function (post) {
       // debounced
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(function () {
-        var matches = [];
         var words = q.toLowerCase().split(/\s+/).filter(Boolean);
+        var groups = {};
+        var order = [];
+        var total = 0;
 
         for (var i = 0; i < index.length; i++) {
           var p = index[i];
           var score = 0;
-          var titleLower = p.title.toLowerCase();
-          var excerptLower = p.excerpt.toLowerCase();
-          var catLower = (p.category || "").toLowerCase();
 
           for (var w = 0; w < words.length; w++) {
             var word = words[w];
-            if (titleLower.indexOf(word) !== -1) score += 10;
-            else if (fuzzyMatch(p.title, word)) score += 6;
-            if (excerptLower.indexOf(word) !== -1) score += 4;
-            else if (fuzzyMatch(p.excerpt, word)) score += 2;
-            if (catLower.indexOf(word) !== -1) score += 3;
+            if (hasExact(p.title, word)) score += 20;
+            else if (hasFuzzy(p.title, word)) score += 10;
+            if (hasExact(p.tags, word)) score += 8;
+            else if (hasFuzzy(p.tags, word)) score += 3;
+            if (hasExact(p.excerpt, word)) score += 5;
+            else if (hasFuzzy(p.excerpt, word)) score += 2;
+            if (hasExact(p.category, word)) score += 2;
           }
 
           if (score > 0) {
-            matches.push({ post: p, score: score });
+            total++;
+            if (!groups[p.category]) {
+              groups[p.category] = { section: p.section, items: [] };
+              order.push(p.category);
+            }
+            groups[p.category].items.push({ post: p, score: score });
           }
         }
 
-        matches.sort(function (a, b) { return b.score - a.score; });
+        // 组内按相关性排序；组间按栏目固定顺序展示
+        var sectionOrder = { insights: 0, ai: 1, tips: 2, books: 3, invest: 4 };
+        order.sort(function (a, b) {
+          var sa = sectionOrder[groups[a].section] ?? 9;
+          var sb = sectionOrder[groups[b].section] ?? 9;
+          return sa - sb || a.localeCompare(b);
+        });
+        for (var g = 0; g < order.length; g++) {
+          groups[order[g]].items.sort(function (a, b) { return b.score - a.score; });
+        }
 
         activeIdx = -1;
-        renderResults(matches.slice(0, 10), q);
+        renderResults(groups, order, q);
+        setCount(total);
         loadingEl && loadingEl.classList.add("hidden");
       }, 150);
     }
 
+    // ── footer count ──
+    var countEl = document.getElementById("search-count");
+    var countSuffixEl = document.getElementById("search-count-suffix");
+    var zh = !/^en$/.test((window.location.pathname || "/").split("/")[1]);
+    function setCount(n) {
+      if (!countEl || !countSuffixEl) return;
+      if (n === 0) {
+        countEl.textContent = "";
+        countSuffixEl.textContent = "";
+        return;
+      }
+      countEl.textContent = String(n);
+      countSuffixEl.textContent = zh ? " 篇文章" : " posts";
+    }
+
     // ── render ──
-    function renderResults(matches, query) {
+    function renderResults(groups, order, query) {
       if (!results) return;
-      if (matches.length === 0) {
+      var total = 0;
+      for (var g = 0; g < order.length; g++) total += groups[order[g]].items.length;
+      if (total === 0) {
         emptyEl && emptyEl.classList.remove("hidden");
         results.innerHTML = "";
         return;
@@ -274,15 +373,27 @@ const searchData = allArticles.map(function (post) {
       emptyEl && emptyEl.classList.add("hidden");
 
       var htmlStr = "";
-      for (var i = 0; i < matches.length; i++) {
-        var p = matches[i].post;
-        var activeCls = i === activeIdx ? " active" : "";
-        htmlStr += '<a href="' + p.href + '" class="search-result-item' + activeCls + '" data-idx="' + i + '">';
-        htmlStr += '<div class="search-result-title">' + highlight(p.title, query) + "</div>";
-        if (p.excerpt) {
-          htmlStr += '<div class="search-result-excerpt">' + p.excerpt + "</div>";
+      for (var g = 0; g < order.length; g++) {
+        var cat = order[g];
+        var items = groups[cat].items;
+        htmlStr += '<div class="search-group-head">' + cat + "</div>";
+        for (var i = 0; i < items.length; i++) {
+          var p = items[i].post;
+          htmlStr += '<a href="' + p.href + '" class="search-result-item">';
+          htmlStr += '<div class="search-result-title">' + highlight(p.title, query) + "</div>";
+          if (p.excerpt) {
+            htmlStr += '<div class="search-result-excerpt">' + highlight(p.excerpt, query) + "</div>";
+          }
+          htmlStr += '<div class="search-result-meta">';
+          if (p.date) htmlStr += "<span>" + p.date + "</span>";
+          if (p.tags) {
+            htmlStr += '<span class="opacity-60">' + p.tags.split(" ").map(function (tag) {
+              return "#" + tag;
+            }).join(" ") + "</span>";
+          }
+          htmlStr += "</div>";
+          htmlStr += "</a>";
         }
-        htmlStr += "</a>";
       }
       results.innerHTML = htmlStr;
     }
@@ -325,6 +436,7 @@ const searchData = allArticles.map(function (post) {
       results.innerHTML = "";
       hintsEl && hintsEl.classList.remove("hidden");
       emptyEl && emptyEl.classList.add("hidden");
+      setCount(index.length);
       input.focus();
     }
 
@@ -341,7 +453,16 @@ const searchData = allArticles.map(function (post) {
 
     // ── events ──
     trigger.addEventListener("click", openSearch);
-    closeBtn.addEventListener("click", closeSearch);
+    closeBtn.addEventListener("click", function () {
+      // 有输入时先清空；无输入时关闭搜索
+      if (input.value) {
+        input.value = "";
+        doSearch("");
+        input.focus();
+      } else {
+        closeSearch();
+      }
+    });
     backdrop.addEventListener("click", closeSearch);
 
     // close on overlay itself click (outside panel)

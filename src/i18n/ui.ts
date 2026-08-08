@@ -150,6 +150,11 @@ export const ui = {
       noResults: "未找到相关文章",
       idleHint: "输入关键词开始搜索",
       shortcut: "Ctrl+K",
+      close: "关闭搜索",
+      clear: "清空输入",
+      hintClose: "关闭",
+      hintNav: "导航",
+      hintOpen: "打开",
     },
   },
   en: {
@@ -303,6 +308,11 @@ export const ui = {
       noResults: "No articles found",
       idleHint: "Type to start searching",
       shortcut: "Ctrl+K",
+      close: "Close search",
+      clear: "Clear input",
+      hintClose: "Close",
+      hintNav: "Navigate",
+      hintOpen: "Open",
     },
   },
 };
