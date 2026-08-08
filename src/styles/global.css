@@ -34,7 +34,7 @@ body {
   font-weight: 500;
 }
 
-/* ===== Hero parallax background (方案 B：只动背景装饰层) ===== */
+/* ===== Hero parallax background (方案 B：星野极光 · 大气封面) ===== */
 .hero-section {
   /* 让装饰层相对于 Hero 定位 */
 }
@@ -45,12 +45,28 @@ body {
   overflow: hidden;
   pointer-events: none;
   z-index: 0;
+  /* 居中承载巨型品牌字（flex 定位，JS 位移不影响居中） */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* 装饰层必须置于正文之下，正文内容相对 z-10 */
 .hero-section > *:not(.hero-parallax) {
   position: relative;
   z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* ===== 视差层：不同速率制造景深 ===== */
+.hp-layer {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
 }
 
 .hp-glow {
@@ -61,42 +77,167 @@ body {
 }
 
 .hp-glow-1 {
-  width: 420px;
-  height: 420px;
-  left: -120px;
-  top: -140px;
-  background: radial-gradient(circle, rgba(22, 163, 74, 0.16), transparent 70%);
+  width: 560px;
+  height: 560px;
+  left: -140px;
+  top: -160px;
+  background: radial-gradient(circle, rgba(22, 163, 74, 0.18), transparent 70%);
 }
 
 .hp-glow-2 {
-  width: 380px;
-  height: 380px;
-  right: -100px;
-  bottom: -120px;
-  background: radial-gradient(circle, rgba(180, 83, 9, 0.12), transparent 70%);
+  width: 500px;
+  height: 500px;
+  right: -120px;
+  bottom: -160px;
+  background: radial-gradient(circle, rgba(180, 83, 9, 0.14), transparent 70%);
 }
 
-.hp-grid {
+/* ===== 星野：亮色为灰星、暗色为白星，克制淡雅 ===== */
+.hp-stars {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, black 40%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, black 40%, transparent 100%);
+    radial-gradient(1.5px 1.5px at 18% 28%, rgba(0, 0, 0, 0.10) 50%, transparent 51%),
+    radial-gradient(1px 1px at 46% 64%, rgba(0, 0, 0, 0.08) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 71% 24%, rgba(0, 0, 0, 0.10) 50%, transparent 51%),
+    radial-gradient(1px 1px at 86% 58%, rgba(0, 0, 0, 0.08) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 61% 80%, rgba(0, 0, 0, 0.07) 50%, transparent 51%),
+    radial-gradient(1px 1px at 30% 76%, rgba(0, 0, 0, 0.08) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 9% 54%, rgba(0, 0, 0, 0.07) 50%, transparent 51%),
+    radial-gradient(1px 1px at 92% 14%, rgba(0, 0, 0, 0.09) 50%, transparent 51%),
+    radial-gradient(1px 1px at 52% 40%, rgba(0, 0, 0, 0.07) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 38% 12%, rgba(0, 0, 0, 0.08) 50%, transparent 51%);
+  will-change: transform;
 }
 
-.dark .hp-grid {
+.dark .hp-stars {
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    radial-gradient(1.5px 1.5px at 18% 28%, rgba(255, 255, 255, 0.30) 50%, transparent 51%),
+    radial-gradient(1px 1px at 46% 64%, rgba(255, 255, 255, 0.24) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 71% 24%, rgba(255, 255, 255, 0.30) 50%, transparent 51%),
+    radial-gradient(1px 1px at 86% 58%, rgba(255, 255, 255, 0.24) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 61% 80%, rgba(255, 255, 255, 0.20) 50%, transparent 51%),
+    radial-gradient(1px 1px at 30% 76%, rgba(255, 255, 255, 0.22) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 9% 54%, rgba(255, 255, 255, 0.20) 50%, transparent 51%),
+    radial-gradient(1px 1px at 92% 14%, rgba(255, 255, 255, 0.26) 50%, transparent 51%),
+    radial-gradient(1px 1px at 52% 40%, rgba(255, 255, 255, 0.20) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 38% 12%, rgba(255, 255, 255, 0.24) 50%, transparent 51%);
+}
+
+/* ===== 光尘：动漫感小光点，缓慢漂浮 ===== */
+.hp-dust {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(1px);
+  background: radial-gradient(circle, rgba(22, 163, 74, 0.40), transparent 70%);
+  animation: hp-dust-float 11s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.hp-dust-1 { width: 9px; height: 9px; left: 16%; top: 20%; }
+.hp-dust-2 { width: 6px; height: 6px; left: 78%; top: 16%; background: radial-gradient(circle, rgba(180, 83, 9, 0.45), transparent 70%); animation-delay: -3s; }
+.hp-dust-3 { width: 7px; height: 7px; left: 26%; top: 74%; background: radial-gradient(circle, rgba(180, 83, 9, 0.35), transparent 70%); animation-delay: -6s; }
+.hp-dust-4 { width: 5px; height: 5px; left: 84%; top: 68%; animation-delay: -9s; }
+
+@keyframes hp-dust-float {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.45; }
+  50% { transform: translateY(-20px) scale(1.3); opacity: 0.95; }
+}
+
+/* ===== 巨型品牌字水印：衬线大字撑满 Hero，极淡，营造大气 ===== */
+.hp-mega-name {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: clamp(7rem, 19vw, 17rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.01));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  will-change: transform;
+}
+
+.dark .hp-mega-name {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.015));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ===== 封面正文排版：超大字号 · 渐变标语 ===== */
+.hero-eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.28);
+  font-family: var(--font-mono);
+}
+
+.dark .hero-eyebrow {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.hero-motto {
+  font-family: var(--font-hand);
+  font-weight: 600;
+  font-size: clamp(2rem, 5.5vw, 4.5rem);
+  line-height: 1.15;
+  color: rgba(0, 0, 0, 0.62);
+}
+
+.dark .hero-motto {
+  color: rgba(255, 255, 255, 0.70);
+}
+
+.hero-subtitle {
+  font-family: var(--font-serif);
+  font-weight: 800;
+  font-size: clamp(2.4rem, 6.5vw, 5.5rem);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  padding-bottom: 0.08em; /* 防渐变字裁剪 */
+  background: linear-gradient(120deg, #1f2937 0%, #374151 48%, #b45309 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.dark .hero-subtitle {
+  background: linear-gradient(120deg, #f9fafb 0%, #d1d5db 48%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-intro {
+  max-width: 46rem;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  line-height: 1.8;
+  color: rgba(0, 0, 0, 0.55);
+  font-family: var(--font-serif);
+}
+
+.dark .hero-intro {
+  color: rgba(255, 255, 255, 0.62);
 }
 
 /* 视差位移通过 JS 写入 transform；reduced-motion 时静止 */
 @media (prefers-reduced-motion: reduce) {
   .hp-glow,
-  .hp-grid {
+  .hp-layer,
+  .hp-stars,
+  .hp-dust,
+  .hp-mega-name {
     transform: none !important;
     animation: none !important;
   }
@@ -229,6 +370,127 @@ body {
      导致内部 .about-pin-sticky 的 position:sticky 失效并整体下移 88px，
      与下方章节列表重叠（iPad/手机端错行）。clip 只裁切不建滚动容器。 */
   overflow: clip;
+}
+
+/* About 页统一布局（配合方案 B 全站加宽，消化两侧留白） */
+.about-hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-bottom: 2.5rem;
+  background: linear-gradient(120deg, #1f2937 0%, #374151 55%, #b45309 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.dark .about-hero-title {
+  background: linear-gradient(120deg, #f9fafb 0%, #d1d5db 55%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* pin 区加宽后的左右分栏：左侧 sticky 引言，右侧章节时间线 */
+.about-pin-wide {
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border: none;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.about-pin-wide .about-pin-sticky {
+  position: sticky;
+  top: 96px;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: linear-gradient(160deg, rgba(22, 163, 74, 0.05), rgba(180, 83, 9, 0.04));
+}
+
+.dark .about-pin-wide .about-pin-sticky {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(160deg, rgba(22, 163, 74, 0.09), rgba(180, 83, 9, 0.06));
+}
+
+.about-pin-wide .about-pin-chapters {
+  margin: 0;
+  padding: 0.25rem 0;
+}
+
+.about-pin-wide .about-pin-chapter {
+  position: relative;
+  padding: 1.1rem 1.25rem 1.1rem 2.75rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.dark .about-pin-wide .about-pin-chapter {
+  border-color: rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.about-pin-wide .about-pin-chapter:hover {
+  border-color: rgba(22, 163, 74, 0.45);
+  transform: translateX(3px);
+}
+
+.about-pin-wide .about-pin-dot {
+  position: absolute;
+  left: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.10);
+}
+
+/* About 页个人介绍：双栏网格（宽屏） */
+.about-bio-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .about-bio-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem 2.5rem;
+  }
+}
+
+.about-bio-col {
+  font-size: 1.05rem;
+  line-height: 1.9;
+}
+
+@media (min-width: 768px) {
+  .about-bio-col {
+    font-size: 1.1rem;
+  }
+}
+
+/* 移动端：About pin 退回单栏堆叠 */
+@media (max-width: 767px) {
+  .about-pin-wide {
+    display: block;
+  }
+  .about-pin-wide .about-pin-sticky {
+    position: static;
+    margin-bottom: 1.25rem;
+  }
+  .about-pin-wide .about-pin-chapter {
+    padding: 1rem 1.1rem 1rem 2.5rem;
+  }
 }
 
 .dark .about-pin {

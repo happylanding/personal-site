@@ -12,11 +12,11 @@ const t = useTranslations(lang);
 <BaseLayout title={t("about.title")} description={t("about.description")}>
   <Breadcrumb crumbs={[{ label: t("about.title"), href: "/about/" }]} />
 
-  <section class="max-w-2xl" data-reveal>
-    <h1 class="text-3xl font-serif font-bold mb-12">{t("about.title")}</h1>
+  <section class="max-w-6xl 2xl:max-w-[1400px]" data-reveal>
+    <h1 class="about-hero-title">{t("about.title")}</h1>
 
     <!-- 方案 C：About pin 叙事（CSS sticky 段落随滚动定格切换，每页仅 1 个 pin 区） -->
-    <div class="about-pin" aria-label="About story">
+    <div class="about-pin about-pin-wide" aria-label="About story">
       <div class="about-pin-sticky">
         <span class="about-pin-step">{t("about.pin.step")}</span>
         <p class="about-pin-quote">{t("about.pin.quote")}</p>
@@ -31,9 +31,9 @@ const t = useTranslations(lang);
       </ul>
     </div>
 
-    <div class="leading-relaxed text-base space-y-6">
-      {t("about.bio").map((p: string) => (
-        <p class="text-black/70 dark:text-white/70">{p}</p>
+    <div class="about-bio-grid leading-relaxed text-base">
+      {t("about.bio").map((p: string, i: number) => (
+        <p class="text-black/70 dark:text-white/70 about-bio-col" style={`--col-index:${i}`}>{p}</p>
       ))}
     </div>
 
@@ -41,11 +41,11 @@ const t = useTranslations(lang);
 
     <div data-reveal>
       <h2 class="text-xl font-serif font-bold mb-6">{t("home.exploreColumns")}</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {(["insights", "ai", "tips", "books"] as const).map((s) => (
           <a
             href={lang === "en" ? `/en/${s}/` : `/${s}/`}
-            class="p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors"
+            class="p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors hover-lift"
           >
             <ColumnIcon section={s} class="w-7 h-7 block mb-2 opacity-60" />
             <h3 class="font-bold text-sm mb-1">{t(`columns.${s}.name`)}</h3>

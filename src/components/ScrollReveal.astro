@@ -55,7 +55,7 @@
     containers.forEach((el) => staggerObserver.observe(el));
   }
 
-  // Hero parallax（方案 B）：只动背景装饰层（.hp-glow / .hp-grid），绝不动正文
+  // Hero parallax（方案 B）：只动背景装饰层（极光/星野/光尘/巨型品牌字），绝不动正文
   function initHeroParallax() {
     const hero = document.querySelector(".hero-section");
     const layer = document.querySelector(".hero-parallax");
@@ -63,10 +63,11 @@
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
 
-    const glow1 = layer.querySelector(".hp-glow-1");
-    const glow2 = layer.querySelector(".hp-glow-2");
-    const grid = layer.querySelector(".hp-grid");
-    if (!glow1 || !glow2 || !grid) return;
+    const layer1 = layer.querySelector(".hp-layer-1");
+    const layer2 = layer.querySelector(".hp-layer-2");
+    const stars = layer.querySelector(".hp-stars");
+    const mega = layer.querySelector(".hp-mega-name");
+    if (!layer1 || !layer2 || !stars || !mega) return;
 
     let rafParallax = false;
     function updateParallax() {
@@ -76,10 +77,11 @@
       // 以 hero 中心为基准，计算 -1 ~ 1 的滚动进度
       const vh = window.innerHeight;
       const progress = (rect.top + rect.height / 2 - vh / 2) / (vh + rect.height);
-      // 不同层级不同速率，制造景深（范围克制在 10% 内，避免晕动）
-      grid.style.transform = `translate3d(0, ${(progress * 40).toFixed(1)}px, 0)`;
-      glow1.style.transform = `translate3d(${(progress * -56).toFixed(1)}px, ${(progress * -30).toFixed(1)}px, 0)`;
-      glow2.style.transform = `translate3d(${(progress * 64).toFixed(1)}px, ${(progress * 36).toFixed(1)}px, 0)`;
+      // 不同层级不同速率，制造景深（范围克制在 12% 内，避免晕动）
+      layer1.style.transform = `translate3d(${(progress * -56).toFixed(1)}px, ${(progress * -30).toFixed(1)}px, 0)`;
+      layer2.style.transform = `translate3d(${(progress * 64).toFixed(1)}px, ${(progress * 36).toFixed(1)}px, 0)`;
+      stars.style.transform = `translate3d(0, ${(progress * 26).toFixed(1)}px, 0)`;
+      mega.style.transform = `translate3d(0, ${(progress * -42).toFixed(1)}px, 0)`;
     }
 
     function requestParallax() {

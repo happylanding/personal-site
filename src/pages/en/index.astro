@@ -21,35 +21,45 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
 ---
 
 <BaseLayout>
-  <!-- ===== Hero: motto mask reveal（方案 B：背景装饰层视差） ===== -->
-  <section class="hero-section py-16 md:py-24 text-center relative overflow-hidden">
-    <!-- 视差背景装饰层：只动背景，不动正文（方案 B） -->
+  <!-- ===== Hero: 大气封面（oil 同款超大字号 + 星野极光背景） ===== -->
+  <section class="hero-section pt-24 pb-20 md:pt-36 md:pb-28 text-center relative overflow-hidden">
+    <!-- 视差背景装饰层：极光 + 星野 + 光尘 + 巨型品牌字（只动背景，不动正文） -->
     <div class="hero-parallax" aria-hidden="true">
-      <span class="hp-glow hp-glow-1"></span>
-      <span class="hp-glow hp-glow-2"></span>
-      <span class="hp-grid"></span>
+      <div class="hp-layer hp-layer-1"><span class="hp-glow hp-glow-1"></span></div>
+      <div class="hp-layer hp-layer-2"><span class="hp-glow hp-glow-2"></span></div>
+      <div class="hp-stars"></div>
+      <span class="hp-dust hp-dust-1"></span>
+      <span class="hp-dust hp-dust-2"></span>
+      <span class="hp-dust hp-dust-3"></span>
+      <span class="hp-dust hp-dust-4"></span>
+      <span class="hp-mega-name">GALVIN</span>
     </div>
 
-    <p class="text-xs tracking-[0.2em] uppercase text-black/25 dark:text-white/25 mb-8 font-mono">
-      {t("home.location")} · {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
-    </p>
+    <div class="hero-content">
+      <!-- Location / date ribbon -->
+      <p class="hero-eyebrow mb-8">
+        {t("home.location")} · {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+      </p>
 
-    <p class="font-hand text-3xl md:text-5xl text-black/60 dark:text-white/60 mb-4 leading-tight lmask">
-      <span class="lmask-inner" style="--lmask-delay:0.1s">{t("site.motto")}</span>
-    </p>
+      <!-- 英文座右铭：超大手写体 -->
+      <p class="hero-motto mb-5 lmask">
+        <span class="lmask-inner" style="--lmask-delay:0.1s">{t("site.motto")}</span>
+      </p>
 
-    <h1 class="text-2xl md:text-4xl font-serif font-bold tracking-tight mb-8 leading-snug lmask">
-      <span class="lmask-inner" style="--lmask-delay:0.24s">{t("site.subtitle")}</span>
-    </h1>
+      <!-- 中文标语：超大衬线 + 渐变字 -->
+      <h1 class="hero-subtitle mb-9 lmask">
+        <span class="lmask-inner" style="--lmask-delay:0.24s">{t("site.subtitle")}</span>
+      </h1>
 
-    <div class="max-w-2xl mx-auto text-base md:text-lg leading-relaxed text-black/60 dark:text-white/60 font-serif space-y-3">
-      <p class="text-sm text-black/30 dark:text-white/30 mb-6">
+      <!-- Bio paragraph -->
+      <p class="hero-intro">
         {t("site.title")} · writer, learner. <br/>
         {t("home.intro")}
       </p>
     </div>
 
-    <div class="mt-10 mb-12 flex justify-center" aria-hidden="true">
+    <!-- Divider ornament -->
+    <div class="mt-14 mb-4 flex justify-center" aria-hidden="true">
       <span class="block w-24 h-px bg-gradient-to-r from-transparent via-black/15 dark:via-white/15 to-transparent"></span>
     </div>
   </section>
@@ -62,7 +72,7 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
     <h2 class="text-center text-lg font-bold font-serif mb-3">{t("home.exploreColumns")}</h2>
     <p class="text-center text-sm text-black/40 dark:text-white/40 mb-8">{t("home.columnsDesc")}</p>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {SECTION_ORDER.map((s, i) => (
         <a
           href={`/en/${s}/`}

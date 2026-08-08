@@ -69,3 +69,22 @@ $:
           script: npm ci
         - name: build
           script: npm run build
+
+  # 云原生开发环境（点「云原生开发」按钮或 API 启动时生效）
+  vscode:
+    - docker:
+        image: node:22
+      services:
+        - name: vscode
+          options:
+            # 离线保活时间：检测不到 http/ssh 连接时，超过 20 分钟才回收（默认 10 分钟）
+            keepAliveTimeout: 20m
+      stages:
+        - name: install
+          script: npm ci
+        - name: start-dev
+          script: |
+            nohup npm run dev -- --host 0.0.0.0 > /tmp/astro-dev.log 2>&1 &
+            sleep 5
+            echo "--- dev server check ---"
+            curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:4321/ || echo "not ready yet"
