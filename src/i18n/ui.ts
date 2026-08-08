@@ -140,6 +140,24 @@ export const ui = {
       idleHint: "输入关键词开始搜索",
       shortcut: "Ctrl+K",
     },
+    pet: {
+      label: "Gali 桌面宠物，点击与我互动",
+      hint: "你好呀！我是 Gali 👋 点击我可以聊天哦",
+      lines: [
+        "你好呀！我是 Gali 🦉",
+        "勤学如春起之苗，不见其增，日有所长 🌱",
+        "今天也要一起终身学习呀 💪",
+        "试试拖动我换个位置？",
+        "读万卷书，行万里路 📚",
+      ],
+      greetings: {
+        morning: "早安！新的一天，继续加油 🌞",
+        afternoon: "下午好呀，来杯茶继续读 📖",
+        evening: "晚上好，今天收获如何？🌙",
+        night: "夜深了，早点休息哦 💤",
+        weekend: "周末愉快！好好放松一下 🎉",
+      },
+    },
   },
   en: {
     site: {
@@ -281,6 +299,24 @@ export const ui = {
       noResults: "No articles found",
       idleHint: "Type to start searching",
       shortcut: "Ctrl+K",
+    },
+    pet: {
+      label: "Gali desktop pet — click to interact",
+      hint: "Hi there! I'm Gali 👋 Click me to chat",
+      lines: [
+        "Hi there! I'm Gali 🦉",
+        "Small steps every day, big growth over time 🌱",
+        "Let's keep learning for life 💪",
+        "Try dragging me to a new spot!",
+        "Read a thousand books, travel a thousand miles 📚",
+      ],
+      greetings: {
+        morning: "Good morning! Fresh start, let's go 🌞",
+        afternoon: "Good afternoon! Tea & reading time 📖",
+        evening: "Good evening! How was your day? 🌙",
+        night: "It's late — rest well 💤",
+        weekend: "Happy weekend! Enjoy your time off 🎉",
+      },
     },
   },
 };

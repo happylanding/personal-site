@@ -17,6 +17,16 @@
     );
 
     document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
+
+    // 兜底：3s 后对「已进入视口但仍未 reveal」的元素强制显示，防止极端情况永久 opacity:0。
+    // （视口外的元素不强制，保留滚动渐入效果）
+    window.setTimeout(() => {
+      const vh = window.innerHeight;
+      document.querySelectorAll("[data-reveal]:not(.revealed)").forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.top < vh && r.bottom > 0) el.classList.add("revealed");
+      });
+    }, 3000);
   }
 
   // Card 3D roll-in (oil 同款 card-roll-hitbox)
