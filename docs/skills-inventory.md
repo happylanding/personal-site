@@ -1,7 +1,7 @@
 # CodeBuddy 技能清单（Skills Inventory）
 
 > 维护者：CodeBuddy（协作 NPC）
-> 更新时间：2026-08-08（第 2 版，重新核对所有历史链接后实际安装并逐项验证）
+> 更新时间：2026-08-08（第 3 版，新增多平台搜索的公众号/知乎写作技能）
 > 关联：Issue #29（添加各种 skills）
 > 说明：本文档沉淀 CodeBuddy 在当前环境中**实际可用**的技能清单、每个技能的作用与使用方法。所有技能均已通过**磁盘落盘验证**（存在合法 `SKILL.md`），无弄虚作假。
 
@@ -9,13 +9,16 @@
 
 ## 〇、当前环境说明（真实状态）
 
-- ✅ 当前 `~/.agents/skills/` 下共有 **100 个技能**，全部具备合法 `SKILL.md`（含 `name` + `description` frontmatter），并已被 `npx skills list -g` 识别。
+- ✅ 当前 `~/.agents/skills/` 下共有 **130 个技能**，全部具备合法 `SKILL.md`（含 `name` + `description` frontmatter），并已被 `npx skills list -g` 识别。
 - ✅ 组成：
   - **16 个 CNB 官方技能**（`cnb.cool` 官方仓库，开箱即用，无需任何密钥）
-  - **84 个第三方技能**，来自本次 Issue 中用户给的全部链接（superpowers / vercel-labs / hyperframes / caveman / UI·UX Pro Max / Anthropic / 网易文章 / 头条文章），均已逐项重装并验证落盘。
+  - **114 个第三方技能**：Issue 历史链接（superpowers / vercel-labs / hyperframes / caveman / UI·UX Pro Max / Anthropic / 网易文章 / 头条文章）84 个 + **本次多平台新搜索的公众号/知乎写作技能 30 个**，均已逐项重装并验证落盘。
 - ⚠️ 按用户要求，**需要配置外部 API 密钥的技能已跳过**：
   - `gzh-explosive-content-detector`（公众号热门文章查询，需 RED FOX API Key）
   - `huashu-wechat-image`（封面配图 AI 模式，需 GEMINI API Key）
+  - `aws-wechat-article-images`（公众号配图，需生图 API Key）
+  - `aws-wechat-article-publish`（公众号 API 发布，需微信 APPID/APPSECRET）
+  - `wechat-director`（视觉导演配图，需生图 API Key）
 - ✅ 技能在**新会话启动时**注入生效。本文档中的技能下次新会话即可自动匹配使用。
 
 ---
@@ -161,6 +164,63 @@
 
 > 已按用户要求**跳过需密钥**的两个：`gzh-explosive-content-detector`（RED FOX API）、`huashu-wechat-image`（GEMINI API）。
 
+### ✍️ 公众号/知乎写作技能（本次多平台新搜索，30 个）
+
+> 2026-08-08 应 Galvin 要求，在 GitHub 等多平台检索「公众号/知乎写作模式」的 Skill，筛选出**无需外部密钥**的 30 个并全部安装验证。按能力分 5 组：
+
+**① 公众号写作风格（2 个）**
+
+| 技能名 | 来源仓库（溯源） | 用途 |
+|--------|-----------------|------|
+| `wechat-writing-style` | [yaoleifly/wechat-writing-style](https://github.com/yaoleifly/wechat-writing-style) | 微信公众号中文写作风格指南：结论先行、口语化高密度、短段落、具体化举例；润色/改写/敏感性审查/标题优化 |
+| `wechat-writer` | [DavidLam-oss/wechat-writing-team](https://github.com/DavidLam-oss/wechat-writing-team) | 公众号写作全流程 v3.5：素材发芽→访谈挖掘→选题质检→正文写作→归档，支持 /write /interview /sprout /harvest 子命令 |
+
+**② 公众号一条龙全流程（6 个，aiworkskills 套件）**
+
+| 技能名 | 来源仓库（溯源） | 用途 |
+|--------|-----------------|------|
+| `aws-wechat-article-main` | [aiworkskills/wechat-article-skills](https://github.com/aiworkskills/wechat-article-skills) | 公众号一条龙总控入口：选题→写稿→审稿→排版→配图→发布 8 子 skill 串联 |
+| `aws-wechat-article-topics` | 同上 | 公众号选题、爆款标题、热点追踪、系列策划 |
+| `aws-wechat-article-writing` | 同上 | 公众号长文写作引擎：从提纲/话题生成初稿，改写/续写/润色/开头结尾优化 |
+| `aws-wechat-article-review` | 同上 | 发布前合规审查：敏感词扫描、错别字、政治合规、平台规范校验 |
+| `aws-wechat-article-formatting` | 同上 | Markdown 一键转公众号可粘贴 HTML，多主题/字号/段落样式 |
+| `aws-wechat-article-assets` | 同上 | 业务资料库与 .aws 预设包：主题/配色/字体管理、素材入库 |
+
+> 同仓库的 `aws-wechat-article-images`（需生图 Key）、`aws-wechat-article-publish`（需微信 API 密钥）、`aws-wechat-sticker`（配图）**已跳过**。
+
+**③ 公众号长文磨稿系统（12 个，grindraft）**
+
+| 技能名 | 来源仓库（溯源） | 用途 |
+|--------|-----------------|------|
+| `grindraft-init` / `grindraft-seed` | [Patrick-mufeng/grindraft-skill](https://github.com/Patrick-mufeng/grindraft-skill) | 磨稿系统初始化 / 选题种子库 |
+| `grindraft-bump` | 同上 | 灵感增量、素材积累 |
+| `grindraft-trends` / `grindraft-recommend` | 同上 | 热点趋势追踪 / 选题推荐 |
+| `grindraft-format` / `grindraft-polish` | 同上 | 排版 / 润色打磨 |
+| `grindraft-humanize` | 同上 | 去 AI 味、人性化改写 |
+| `grindraft-persona` | 同上 | 账号人设 / 读者画像 |
+| `grindraft-predict` / `grindraft-score-blind` / `grindraft-retro` | 同上 | 盲预测评分 / 发布后复盘进化（每写一篇下一篇更准） |
+| `grindraft-publish` | 同上 | 发布输出 |
+
+**④ 知乎写作（2 个）**
+
+| 技能名 | 来源仓库（溯源） | 用途 |
+|--------|-----------------|------|
+| `salt-story` | [yfge/salt-story](https://github.com/yfge/salt-story) | 知乎盐选付费故事写作：反转、无 AI 味、对齐盐选官方投稿标准（1万-10万字短篇） |
+| `zhiforge` | [yfge/zhiforge](https://github.com/yfge/zhiforge) | 知炼：知识库(Markdown博客)→知乎回答自动转化闭环（热点搜索→知识库匹配→撰写→审核→发布→回存） |
+
+**⑤ 写作方法论 / 去 AI 味 / 多平台分发（8 个）**
+
+| 技能名 | 来源仓库（溯源） | 用途 |
+|--------|-----------------|------|
+| `writing-assistant` | [Agentchengfeng/writing-assistant-skill](https://github.com/Agentchengfeng/writing-assistant-skill) | 自媒体写作交互式助手：用户画像 + 写作方法库 |
+| `workflow-producer` | [dongbeixiaohuo/writing-agent](https://github.com/dongbeixiaohuo/writing-agent) | 中文长文/公众号/观点文工作流总导演（多阶段产物规划） |
+| `style-modeler` | 同上 | 从作者文章样本建立/更新可复用写作风格档案 |
+| `web-article-extractor` | 同上 | 网页文章素材提取 |
+| `stop-ai-slop-zh` | [VincentOld/stop-slop-zh](https://github.com/VincentOld/stop-slop-zh) | 消除中文 AI 写作痕迹：拆排比三件套、去名词化、具体细节化 |
+| `floodsung` | [floodsung/floodsung-skill](https://github.com/floodsung/floodsung-skill) | 知乎大 V 风格数字分身：用本人语料（152 文章+178 想法+254 回答）写作 |
+| `content-pipeline` | [OrangeViolin/content-pipeline](https://github.com/OrangeViolin/content-pipeline) | 内容生产分发管线：素材→出稿→排版→封面→多平台转换（公众号/小红书/即刻/播客） |
+| `publish-all` | [iPythoning/publish-all](https://github.com/iPythoning/publish-all) | 一篇 Markdown 分发多平台：博客+公众号 Word+知乎 Markdown+小红书文案 |
+
 ---
 
 ## 二、按「你想做的事」快速索引
@@ -175,7 +235,14 @@
 | 做视频 / 动画 / 幻灯片 | `hyperframes`（路由器自动分发） |
 | 画流程图 / 思维导图 / 架构图 | `excalidraw-diagram` 或 markdown-viewer 系列 |
 | 做 PPT / 信息卡片 | `html-ppt` / `infocard` |
-| 写公众号文章 / 排版 | `wechat-writer-kit` / `wechat-article-typeset` |
+| 写公众号文章 / 排版 | `wechat-writer-kit` / `wechat-article-typeset` / `aws-wechat-article-main` / `wechat-writing-style` |
+| 公众号一条龙（选题→写→审→排） | `aws-wechat-article-main`（总控）/ `aws-wechat-article-topics` / `aws-wechat-article-review` / `aws-wechat-article-formatting` |
+| 公众号长文磨稿 / 复盘进化 | `grindraft-init` → ... → `grindraft-retro`（12 个系列） |
+| 写知乎盐选付费故事 | `salt-story` |
+| 知识库转知乎回答 | `zhiforge` |
+| 去除 AI 味（中文） | `stop-ai-slop-zh` / `grindraft-humanize` |
+| 模仿某作者风格写作 | `style-modeler` / `floodsung` / `wechat-writing-style` |
+| 一篇稿子分发多平台 | `content-pipeline` / `publish-all` |
 | 公众号文章转 Markdown | `wechat-article-to-markdown` |
 | 开发前澄清需求 / 按 TDD 写代码 | `brainstorming` / `test-driven-development` |
 | 系统性排障 | `systematic-debugging` |
