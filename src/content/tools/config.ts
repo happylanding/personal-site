@@ -17,6 +17,8 @@ export interface ToolData {
   command?: string;
   /** 使用方法步骤（script 类型，无 command 时展示步骤卡） */
   usage?: string[];
+  /** 使用方法步骤（英文版） */
+  usageEn?: string[];
   downloadUrl?: string;
   version?: string;
   repo?: string;

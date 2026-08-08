@@ -101,6 +101,8 @@ const toolsCollection = defineCollection({
     command: z.string().optional(),
     /** 使用方法步骤（script 类型，无 command 时展示步骤卡） */
     usage: z.array(z.string()).optional(),
+    /** 使用方法步骤（英文版） */
+    usageEn: z.array(z.string()).optional(),
     /** 站内下载地址（script 类型，如 /downloads/xxx.zip） */
     downloadUrl: z.string().optional(),
     /** 版本号（可选） */
