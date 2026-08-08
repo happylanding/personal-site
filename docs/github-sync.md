@@ -115,8 +115,14 @@ git push origin main
 
 `main` 是 Cloudflare 连接的部署分支。临时分支（如 `auto/fix-xxx`）如果也推上去，会污染 GitHub 仓库且触发无意义的 Cloudflare 构建。所以：
 - `main.push` → 构建 + 同步
-- 其他分支 push → 只构建验证，不同步
+- 其他分支 push → 只构建验证，不同步（用 `$` 兜底匹配，**不要用 `*` 通配符**，否则 main 会被精确匹配和通配匹配**并行跑两条流水线**，白白重复构建、浪费资源）
 - 每天 02:00 定时任务兜底同步一次，防止漏推
+
+> `main` 精确匹配优先，`$` 兜底只会匹配未被 glob 命中的分支，两者不会冲突。
+
+### 2.1 为什么同步任务需要 `force: true`？
+
+因为 CNB 与 GitHub 两个仓库**没有共享 Git 历史**（CNB 是从 P0 源码导入新建的、GitHub 上另有原始提交），git-sync 推送时对远端来说属于 **non-fast-forward**，默认会被拒。`.cnb.yml` 里两个同步任务都开启了 `force: true`，以 CNB 的 `main` 为准覆盖式推送，避免首次同步就失败。
 
 ### 3. 为什么需要定时任务兜底？
 
@@ -124,7 +130,7 @@ git push origin main
 
 ### 4. 关于 force push
 
-git-sync 默认非 force。若后续遇到「CNB 与 GitHub 历史分叉」需要强推，可在同步任务 settings 里加 `force: true`。正常情况下不需要。
+**本项目已开启 `force: true`（必须）**，原因见「2.1」：两仓库无共享历史，不 force 首次推送就会因 non-fast-forward 失败。开启后以 CNB 的 `main` 为准覆盖推送，线上内容一致，无需担心。
 
 ### 5. 关于初始历史
 

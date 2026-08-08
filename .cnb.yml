@@ -10,9 +10,14 @@
 #   4. 提交本文件后，每次 push 到 main 都会自动构建验证并同步到 GitHub
 #
 # 触发说明：
-#   - push 到 main            → 构建验证 + 同步 main 到 GitHub
-#   - 任意分支 push            → 仅构建验证（不触发同步，避免把临时分支推上去）
+#   - push 到 main            → 构建验证 + 同步 main 到 GitHub（main 被精确匹配，$ 兜底不会重复执行）
+#   - 任意非 main 分支 push   → 仅构建验证（$ 兜底匹配，不触发同步，避免把临时分支推上去）
 #   - 每天 02:00 定时任务      → 兜底同步，防止漏推
+#
+# 说明：
+#   - 两仓库（CNB 与 GitHub）没有共享 Git 历史，同步任务必须开启 force: true，
+#     否则首次/后续推送会因 non-fast-forward 被拒；开启后以 CNB 的 main 为准覆盖推送。
+#   - 分支匹配用 $ 兜底而不是 "*"，避免 main 同时被精确匹配和通配符匹配并行执行两条流水线。
 
 main:
   push:
@@ -34,6 +39,7 @@ main:
             username: ${GITHUB_USERNAME}
             password: ${GITHUB_ACCESS_TOKEN}
             branch: main
+            force: true
             git_user: ${GITHUB_USERNAME}
             git_email: galvin@users.noreply.github.com
   "crontab: 0 2 * * *":
@@ -49,10 +55,11 @@ main:
             username: ${GITHUB_USERNAME}
             password: ${GITHUB_ACCESS_TOKEN}
             branch: main
+            force: true
             git_user: ${GITHUB_USERNAME}
             git_email: galvin@users.noreply.github.com
 
-"*":
+$:
   push:
     - name: build-check
       docker:
