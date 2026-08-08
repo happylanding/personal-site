@@ -30,7 +30,8 @@ src/
 │   ├── ArticleTOC.astro        # 文章内目录（h2/h3 自动收集 + 滚动高亮）
 │   ├── BackToTop.astro         # 回到顶部按钮
 │   ├── Breadcrumb.astro        # 面包屑导航
-│   ├── ColumnIcon.astro        # 专栏图标（insights/ai/tips/books）
+│   ├── ColumnIcon.astro        # 专栏图标（insights/ai/tips/books，复用 Icon.astro）
+│   ├── Icon.astro              # 全站统一图标库（线性描边/1.6/round，含栏目+功能+箭头）
 │   ├── Currently.astro         # 首页"正在做"模块
 │   ├── Footer.astro            # 页脚
 │   ├── Header.astro            # 顶部导航（含汉堡菜单）

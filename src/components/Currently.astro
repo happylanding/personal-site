@@ -28,6 +28,7 @@
  */
 import { useTranslations, getLangFromUrl } from "../i18n/utils";
 import { getCollection } from "astro:content";
+import Icon from "./Icon.astro";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -311,9 +312,11 @@ const grid = rows.length > 0 ? rows.slice(0, 4) : [];
     >
       <div class="mb-4 flex items-center justify-between">
         <h2
-          class="font-mono text-xs font-semibold uppercase tracking-widest text-black/40 dark:text-white/40"
+          class="font-mono text-xs font-semibold uppercase tracking-widest text-black/40 dark:text-white/40 flex items-center gap-1.5"
         >
-          {lang === "en" ? "📡 CURRENTLY" : "📡 最近在做什么"}
+          <span class="inline-block w-1.5 h-1.5 rounded-full bg-green-600 dark:bg-green-400 animate-pulse" aria-hidden="true"></span>
+          <Icon name="radio" class="w-3.5 h-3.5" />
+          {lang === "en" ? "CURRENTLY" : "最近在做什么"}
         </h2>
         <span class="font-mono text-[11px] text-black/25 dark:text-white/25">
           {lang === "en" ? "auto · from posts" : "自动 · 来自站内文章"}
@@ -347,7 +350,7 @@ const grid = rows.length > 0 ? rows.slice(0, 4) : [];
               class="shrink-0 font-mono text-xs text-black/25 dark:text-white/25 opacity-0 transition-opacity group-hover:opacity-100"
               aria-hidden="true"
             >
-              ↗
+              <Icon name="arrowUpRight" class="w-3.5 h-3.5" />
             </span>
           </a>
         ))}

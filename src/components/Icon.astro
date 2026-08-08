@@ -1,0 +1,345 @@
+---
+/**
+ * Icon — 全站统一图标库
+ *
+ * 以 4 个栏目的图标库（ColumnIcon，见 src/lib/sections.ts 配色）为统一标准：
+ *   - 线性描边：fill="none" stroke="currentColor"
+ *   - 描边粗细统一 stroke-width="1.6"
+ *   - 圆头端点/连接：stroke-linecap="round" stroke-linejoin="round"
+ *   - 统一 viewBox="0 0 24 24"
+ *
+ * 所有图标共享同一个 svg 容器，仅内部 path 不同，保证视觉完全一致。
+ * 用法：<Icon name="sparkles" class="w-5 h-5" />
+ */
+
+type IconName =
+  // 栏目图标（与 ColumnIcon 一致，供 ColumnIcon 复用）
+  | "insights"
+  | "ai"
+  | "tips"
+  | "books"
+  | "invest"
+  // 精选 / 状态
+  | "star"
+  | "starOutline"
+  | "sparkles"
+  | "radio"
+  | "warning"
+  // 导航 / 页面
+  | "home"
+  | "user"
+  | "mail"
+  | "search"
+  | "close"
+  | "menu"
+  | "bookmark"
+  | "sun"
+  | "moon"
+  // 箭头
+  | "arrowUp"
+  | "arrowRight"
+  | "arrowLeft"
+  | "arrowUpRight"
+  | "chevronDown"
+  | "chevronRight"
+  // 功能
+  | "download"
+  | "bookOpen"
+  | "fileText"
+  | "cart"
+  | "link"
+  | "list"
+  | "listTree";
+
+interface Props {
+  name: IconName;
+  class?: string;
+  /** 覆盖默认描边粗细（全站统一标准为 1.6，通常无需改动） */
+  strokeWidth?: number;
+  style?: string;
+}
+
+const { name, class: cls = "w-6 h-6", strokeWidth = 1.6, style } = Astro.props;
+---
+
+<svg
+  class={cls}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width={strokeWidth}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  style={style}
+  aria-hidden="true"
+>
+  {
+    name === "insights" && (
+      <>
+        <path d="M12 2c-2.67 0-5 2.16-5 5 0 1.26.46 2.5 1.18 3.47A8 8 0 0 0 12 22a8 8 0 0 0 3.82-11.53C16.54 9.5 17 8.26 17 7c0-2.84-2.33-5-5-5Z"/>
+        <path d="M10 17.5h4"/>
+        <path d="M11 15h2"/>
+        <line x1="12" y1="8" x2="12" y2="11"/>
+      </>
+    )
+  }
+  {
+    name === "ai" && (
+      <>
+        <rect x="4" y="4" width="16" height="16" rx="3"/>
+        <path d="M12 8.5v7"/>
+        <path d="M8.5 12h7"/>
+        <path d="M12 2v2"/>
+        <path d="M12 20v2"/>
+        <path d="M2 12h2"/>
+        <path d="M20 12h2"/>
+      </>
+    )
+  }
+  {
+    name === "tips" && (
+      <>
+        <circle cx="4" cy="12" r="2"/>
+        <circle cx="12" cy="4" r="2"/>
+        <circle cx="12" cy="20" r="2"/>
+        <circle cx="20" cy="12" r="2"/>
+        <circle cx="8.34" cy="6.34" r="2"/>
+        <circle cx="15.66" cy="6.34" r="2"/>
+        <circle cx="8.34" cy="17.66" r="2"/>
+        <circle cx="15.66" cy="17.66" r="2"/>
+      </>
+    )
+  }
+  {
+    name === "books" && (
+      <>
+        <path d="M4 5v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2Z"/>
+        <path d="M8 3v18"/>
+        <path d="M16 3v18"/>
+        <line x1="10" y1="8" x2="14" y2="8"/>
+        <line x1="10" y1="12" x2="14" y2="12"/>
+      </>
+    )
+  }
+  {
+    name === "invest" && (
+      <>
+        <polyline points="2 14 6 9 10 13 14 7 18 10 22 6"/>
+        <circle cx="22" cy="6" r="1.5"/>
+        <path d="M2 18h20"/>
+        <circle cx="6" cy="18" r="1.5"/>
+        <circle cx="10" cy="18" r="1.5"/>
+        <circle cx="18" cy="18" r="1.5"/>
+      </>
+    )
+  }
+  {
+    name === "star" && (
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor" stroke="none" stroke-width="0" />
+    )
+  }
+  {
+    name === "starOutline" && (
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    )
+  }
+  {
+    name === "sparkles" && (
+      <path d="M12 2.5 14.4 9.6 21.5 12 14.4 14.4 12 21.5 9.6 14.4 2.5 12 9.6 9.6Z"/>
+    )
+  }
+  {
+    name === "radio" && (
+      <path d="M22 12h-4l-3 8-6-16-3 8H2"/>
+    )
+  }
+  {
+    name === "warning" && (
+      <>
+        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 20h16a2 2 0 0 0 1.73-2Z"/>
+        <path d="M12 9v4"/>
+        <path d="M12 17h.01"/>
+      </>
+    )
+  }
+  {
+    name === "home" && (
+      <>
+        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </>
+    )
+  }
+  {
+    name === "user" && (
+      <>
+        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </>
+    )
+  }
+  {
+    name === "mail" && (
+      <>
+        <rect width="20" height="16" x="2" y="4" rx="2"/>
+        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+      </>
+    )
+  }
+  {
+    name === "search" && (
+      <>
+        <circle cx="11" cy="11" r="8"/>
+        <path d="m21 21-4.3-4.3"/>
+      </>
+    )
+  }
+  {
+    name === "close" && (
+      <>
+        <path d="M18 6 6 18"/>
+        <path d="m6 6 12 12"/>
+      </>
+    )
+  }
+  {
+    name === "menu" && (
+      <>
+        <path d="M4 6h16"/>
+        <path d="M4 12h16"/>
+        <path d="M4 18h16"/>
+      </>
+    )
+  }
+  {
+    name === "bookmark" && (
+      <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
+    )
+  }
+  {
+    name === "sun" && (
+      <>
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2"/>
+        <path d="M12 20v2"/>
+        <path d="m4.93 4.93 1.41 1.41"/>
+        <path d="m17.66 17.66 1.41 1.41"/>
+        <path d="M2 12h2"/>
+        <path d="M20 12h2"/>
+        <path d="m6.34 17.66-1.41 1.41"/>
+        <path d="m19.07 4.93-1.41 1.41"/>
+      </>
+    )
+  }
+  {
+    name === "moon" && (
+      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+    )
+  }
+  {
+    name === "arrowUp" && (
+      <>
+        <path d="m5 12 7-7 7 7"/>
+        <path d="M12 19V5"/>
+      </>
+    )
+  }
+  {
+    name === "arrowRight" && (
+      <>
+        <path d="M5 12h14"/>
+        <path d="m12 5 7 7-7 7"/>
+      </>
+    )
+  }
+  {
+    name === "arrowLeft" && (
+      <>
+        <path d="M19 12H5"/>
+        <path d="m12 19-7-7 7-7"/>
+      </>
+    )
+  }
+  {
+    name === "arrowUpRight" && (
+      <>
+        <path d="M7 7h10v10"/>
+        <path d="M7 17 17 7"/>
+      </>
+    )
+  }
+  {
+    name === "chevronDown" && (
+      <path d="m6 9 6 6 6-6"/>
+    )
+  }
+  {
+    name === "chevronRight" && (
+      <path d="m9 18 6-6-6-6"/>
+    )
+  }
+  {
+    name === "download" && (
+      <>
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </>
+    )
+  }
+  {
+    name === "bookOpen" && (
+      <>
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+      </>
+    )
+  }
+  {
+    name === "fileText" && (
+      <>
+        <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+        <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+        <path d="M16 13H8"/>
+        <path d="M16 17H8"/>
+        <path d="M10 9H8"/>
+      </>
+    )
+  }
+  {
+    name === "cart" && (
+      <>
+        <circle cx="8" cy="21" r="1"/>
+        <circle cx="19" cy="21" r="1"/>
+        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+      </>
+    )
+  }
+  {
+    name === "link" && (
+      <>
+        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+      </>
+    )
+  }
+  {
+    name === "list" && (
+      <>
+        <path d="M3.75 6.75h16.5"/>
+        <path d="M3.75 12h16.5"/>
+        <path d="M3.75 17.25h16.5"/>
+      </>
+    )
+  }
+  {
+    name === "listTree" && (
+      <>
+        <path d="M3.75 12h16.5"/>
+        <path d="M3.75 15.75h16.5"/>
+        <path d="M3.75 19.5h16.5"/>
+        <path d="M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z"/>
+      </>
+    )
+  }
+</svg>

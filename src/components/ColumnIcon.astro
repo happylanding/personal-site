@@ -1,7 +1,10 @@
 ---
 // Column icon SVGs — clean, professional line icons
+// 复用全站统一图标库 Icon.astro（与 4 栏目图标同风格：线性描边 / stroke-width 1.6 / round）
+// 栏目专属色由 SECTION_COLORS 提供
 import type { SectionKey } from "../lib/sections";
 import { SECTION_COLORS } from "../lib/sections";
+import Icon from "./Icon.astro";
 
 export interface Props {
   section: SectionKey;
@@ -12,67 +15,4 @@ const { section, class: cls = "w-6 h-6" } = Astro.props;
 const sectionColor = SECTION_COLORS[section];
 ---
 
-{
-  section === "insights" && (
-    <svg class={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style={`color:${sectionColor}`}>
-      <path d="M12 2c-2.67 0-5 2.16-5 5 0 1.26.46 2.5 1.18 3.47A8 8 0 0 0 12 22a8 8 0 0 0 3.82-11.53C16.54 9.5 17 8.26 17 7c0-2.84-2.33-5-5-5Z"/>
-      <path d="M10 17.5h4"/>
-      <path d="M11 15h2"/>
-      <line x1="12" y1="8" x2="12" y2="11"/>
-    </svg>
-  )
-}
-
-{
-  section === "ai" && (
-    <svg class={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style={`color:${sectionColor}`}>
-      <rect x="4" y="4" width="16" height="16" rx="3"/>
-      <path d="M12 8.5v7"/>
-      <path d="M8.5 12h7"/>
-      <path d="M12 2v2"/>
-      <path d="M12 20v2"/>
-      <path d="M2 12h2"/>
-      <path d="M20 12h2"/>
-    </svg>
-  )
-}
-
-{
-  section === "tips" && (
-    <svg class={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style={`color:${sectionColor}`}>
-      <circle cx="4" cy="12" r="2"/>
-      <circle cx="12" cy="4" r="2"/>
-      <circle cx="12" cy="20" r="2"/>
-      <circle cx="20" cy="12" r="2"/>
-      <circle cx="8.34" cy="6.34" r="2"/>
-      <circle cx="15.66" cy="6.34" r="2"/>
-      <circle cx="8.34" cy="17.66" r="2"/>
-      <circle cx="15.66" cy="17.66" r="2"/>
-    </svg>
-  )
-}
-
-{
-  section === "books" && (
-    <svg class={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style={`color:${sectionColor}`}>
-      <path d="M4 5v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2Z"/>
-      <path d="M8 3v18"/>
-      <path d="M16 3v18"/>
-      <line x1="10" y1="8" x2="14" y2="8"/>
-      <line x1="10" y1="12" x2="14" y2="12"/>
-    </svg>
-  )
-}
-
-{
-  section === "invest" && (
-    <svg class={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style={`color:${sectionColor}`}>
-      <polyline points="2 14 6 9 10 13 14 7 18 10 22 6"/>
-      <circle cx="22" cy="6" r="1.5"/>
-      <path d="M2 18h20"/>
-      <circle cx="6" cy="18" r="1.5"/>
-      <circle cx="10" cy="18" r="1.5"/>
-      <circle cx="18" cy="18" r="1.5"/>
-    </svg>
-  )
-}
+<Icon name={section} class={cls} style={`color:${sectionColor}`} />

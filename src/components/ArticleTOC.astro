@@ -18,6 +18,7 @@ interface Props {
   countFormat?: string;
 }
 
+import Icon from "./Icon.astro";
 const { label = "目录", countFormat = "{count} 节" } = Astro.props;
 ---
 
@@ -25,9 +26,7 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
   <!-- 桌面端：右侧 sticky 目录栏（lg+ 显示；标题数 >= 2 时显示，JS 控制 .toc-hide） -->
   <nav id="article-toc-rail" class="article-toc-rail" aria-label={label}>
     <p class="article-toc-rail-label">
-      <svg class="article-toc-list-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-      </svg>
+      <Icon name="list" class="article-toc-list-icon" />
       {label}
     </p>
     <ul id="article-toc-rail-list" class="article-toc-list"></ul>
@@ -36,14 +35,10 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
   <!-- 移动端 / 平板：文章内可折叠目录卡片（<lg 显示；JS 在标题数不足 2 时加 hidden 隐藏） -->
   <div id="article-toc-mobile" class="article-toc-mobile lg:hidden">
     <button id="article-toc-toggle" class="article-toc-toggle" type="button" aria-expanded="false" aria-controls="article-toc-mobile-body">
-      <svg class="article-toc-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-      </svg>
+      <Icon name="list" class="article-toc-toggle-icon" />
       <span class="article-toc-label">{label}</span>
       <span id="article-toc-count" class="article-toc-count hidden" data-count-format={countFormat}></span>
-      <svg class="article-toc-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-      </svg>
+      <Icon name="chevronDown" class="article-toc-chevron" />
     </button>
     <div id="article-toc-mobile-body" class="article-toc-mobile-body hidden">
       <ul id="article-toc-mobile-list" class="article-toc-list"></ul>

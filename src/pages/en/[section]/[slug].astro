@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../../components/Breadcrumb.astro";
 import ColumnIcon from "../../../components/ColumnIcon.astro";
+import Icon from "../../../components/Icon.astro";
 import ArticleTOC from "../../../components/ArticleTOC.astro";
 import { useTranslations } from "../../../i18n/utils";
 
@@ -67,7 +68,9 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
           <ColumnIcon section={section as "insights"|"ai"|"tips"|"books"|"invest"} class="w-3 h-3" /> {t(`columns.${section}.name`)}
         </span>
         {article.data.featured && (
-          <span class="text-xs px-2 py-0.5 rounded-full bg-black dark:bg-white text-white dark:text-black">★ {t("articles.featured")}</span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-black dark:bg-white text-white dark:text-black inline-flex items-center gap-1">
+            <Icon name="star" class="w-3 h-3" /> {t("articles.featured")}
+          </span>
         )}
       </div>
 
@@ -138,37 +141,37 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
         <div class="flex flex-wrap gap-3">
           {article.data.epubUrl && (
             <a href={article.data.epubUrl} class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-black dark:bg-white text-white dark:text-black text-sm hover:opacity-80 transition-opacity" download>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <Icon name="download" class="w-4 h-4" />
               EPUB {t("articles.download")}
             </a>
           )}
           {article.data.mobiUrl && (
             <a href={article.data.mobiUrl} class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-black/10 dark:border-white/10 text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors" download>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <Icon name="download" class="w-4 h-4" />
               MOBI {t("articles.download")}
             </a>
           )}
           {article.data.azw3Url && (
             <a href={article.data.azw3Url} class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-black/10 dark:border-white/10 text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors" download>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <Icon name="download" class="w-4 h-4" />
               AZW3 {t("articles.download")}
             </a>
           )}
           {article.data.fb2Url && (
             <a href={article.data.fb2Url} class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-black/10 dark:border-white/10 text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors" download>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <Icon name="download" class="w-4 h-4" />
               FB2 {t("articles.download")}
             </a>
           )}
           {article.data.txtUrl && (
             <a href={article.data.txtUrl} class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-black/10 dark:border-white/10 text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors" download>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <Icon name="download" class="w-4 h-4" />
               TXT {t("articles.download")}
             </a>
           )}
           {article.data.pdfUrl && (
             <a href={article.data.pdfUrl} class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-black/10 dark:border-white/10 text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors" download>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <Icon name="download" class="w-4 h-4" />
               PDF {t("articles.download")}
             </a>
           )}
@@ -185,7 +188,7 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
               href={`/en/${section}/${prevArticle.slug}`}
               class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors"
             >
-              <p class="text-xs text-black/30 dark:text-white/30 mb-1">← Older</p>
+              <p class="text-xs text-black/30 dark:text-white/30 mb-1 inline-flex items-center gap-1"><Icon name="arrowLeft" class="w-3 h-3" /> Older</p>
               <p class="text-sm font-medium group-hover:opacity-70 transition-opacity line-clamp-2">
                 {prevArticle.data.titleEn || prevArticle.data.title}
               </p>
@@ -198,7 +201,7 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
               href={`/en/${section}/${nextArticle.slug}`}
               class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors sm:text-right"
             >
-              <p class="text-xs text-black/30 dark:text-white/30 mb-1">Newer →</p>
+              <p class="text-xs text-black/30 dark:text-white/30 mb-1 inline-flex items-center gap-1">Newer <Icon name="arrowRight" class="w-3 h-3" /></p>
               <p class="text-sm font-medium group-hover:opacity-70 transition-opacity line-clamp-2">
                 {nextArticle.data.titleEn || nextArticle.data.title}
               </p>
