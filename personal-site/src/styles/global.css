@@ -1,0 +1,264 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* ===== Dark mode: class strategy ===== */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ===== Theme tokens ===== */
+@theme {
+  --font-serif: "Playfair Display", "Noto Serif SC", Georgia, "SimSun", serif;
+  --font-sans: "Source Sans 3", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-mono: "Cascadia Code", "Consolas", monospace;
+  --font-hand: "Caveat", cursive;
+
+  --color-accent: #333333;
+  --color-accent-light: #666666;
+}
+
+/* ===== Base ===== */
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* ===== Handwriting font for English motto ===== */
+.font-hand {
+  font-family: var(--font-hand);
+  font-weight: 500;
+}
+
+/* ===== Scroll reveal (Effect A) ===== */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+[data-reveal].revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== Hero mask line reveal (oil 同款 lmask) ===== */
+.lmask {
+  display: block;
+  overflow: hidden;
+}
+
+.lmask-inner {
+  display: block;
+  transform: translateY(112%);
+  animation: lmask-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--lmask-delay, 0s);
+}
+
+@keyframes lmask-rise {
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ===== Card 3D roll-in (oil 同款 card-roll-hitbox，纯 CSS 变量驱动) ===== */
+.roll-card {
+  opacity: 0;
+  transform: perspective(700px) rotateX(-12deg) translateY(16px);
+  transform-origin: center top;
+  transition: opacity 0.55s ease-out, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s, border-color 0.3s;
+}
+
+.roll-card.roll-in {
+  opacity: 1;
+  transform: perspective(700px) rotateX(0deg) translateY(0);
+}
+
+/* hover 时保留 hover-lift 效果 */
+.roll-card:hover {
+  transform: perspective(700px) rotateX(0deg) translateY(-3px);
+}
+
+/* ===== Ghost number (幽灵编号) ===== */
+.ghost-num {
+  position: absolute;
+  top: -6px;
+  right: 10px;
+  font-size: 4.5rem;
+  font-weight: 900;
+  font-family: var(--font-serif);
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* ===== Reading progress (阅读进度条) ===== */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 80;
+  height: 3px;
+  pointer-events: none;
+}
+.reading-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #b45309, #f59e0b);
+}
+.dark .reading-progress-bar {
+  background: linear-gradient(90deg, #d97706, #fbbf24);
+}
+.reading-progress-num {
+  position: absolute;
+  right: 10px;
+  top: 6px;
+  font-size: 10px;
+  opacity: 0.35;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reading-progress-bar {
+    transition: none;
+  }
+}
+
+/* ===== Stagger children if needed ===== */
+[data-reveal-stagger] > * {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+[data-reveal-stagger] > *.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== Hover micro-interactions (Effect B) ===== */
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.dark .hover-lift:hover {
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.05);
+}
+
+.hover-scale-text {
+  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.hover-scale-text:hover {
+  transform: scale(1.05);
+}
+
+.hover-float {
+  transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1), opacity 0.35s ease;
+}
+
+.hover-float:hover {
+  transform: translateY(-4px);
+  opacity: 0.85;
+}
+
+.hover-glow {
+  transition: color 0.35s ease, text-shadow 0.35s ease;
+}
+
+.hover-glow:hover {
+  color: #b45309;
+  text-shadow: 0 0 12px rgba(180, 83, 9, 0.35), 0 0 24px rgba(180, 83, 9, 0.15);
+}
+
+.dark .hover-glow:hover {
+  color: #f59e0b;
+  text-shadow: 0 0 12px rgba(245, 158, 11, 0.4), 0 0 24px rgba(245, 158, 11, 0.2);
+}
+
+.hover-underline {
+  position: relative;
+}
+
+.hover-underline::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.25s ease;
+}
+
+.hover-underline:hover::after {
+  width: 100%;
+}
+
+/* ===== Article prose overrides ===== */
+/* Headings → site serif font */
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4 {
+  font-family: var(--font-serif) !important;
+  font-weight: 700 !important;
+}
+
+/* Inline code → warm accent color */
+.article-content :not(pre) > code {
+  color: #c2410c;
+}
+
+.dark .article-content :not(pre) > code {
+  color: #fb923c;
+}
+
+/* ===== Scrollbar styling ===== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4d4d4;
+  border-radius: 3px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #404040;
+}
+
+/* ===== View transition (Effect C) ===== */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  animation: fade-out 0.15s ease-out;
+}
+
+::view-transition-new(root) {
+  animation: fade-in 0.25s ease-in;
+}
+
+@keyframes fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

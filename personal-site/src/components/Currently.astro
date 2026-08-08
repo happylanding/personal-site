@@ -1,0 +1,51 @@
+---
+import { useTranslations, getLangFromUrl } from "../i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+// 这些数据可以从一个配置文件或环境变量中读取
+const currentActivity = {
+  zh: {
+    reading: "《思考，快与慢》— 丹尼尔·卡尼曼",
+    coding: "使用 Astro + Tailwind CSS 构建个人网站",
+    writing: "关于个人知识管理的文章",
+    learning: "Cloudflare Pages 部署与边缘计算",
+  },
+  en: {
+    reading: "Thinking, Fast and Slow — Daniel Kahneman",
+    coding: "Building personal site with Astro + Tailwind CSS",
+    writing: "An article about personal knowledge management",
+    learning: "Cloudflare Pages deployment & edge computing",
+  },
+};
+
+const data = lang === "en" ? currentActivity.en : currentActivity.zh;
+---
+
+<div class="rounded-2xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] p-6">
+  <h2
+    class="mb-4 font-mono text-xs font-semibold uppercase tracking-widest
+           text-black/40 dark:text-white/40"
+  >
+    {lang === "en" ? "📡 CURRENTLY" : "📡 最近在做什么"}
+  </h2>
+  <div class="space-y-3 text-sm">
+    <div class="flex items-start gap-3">
+      <span class="mt-0.5 shrink-0 font-mono text-xs text-black/30 dark:text-white/30">READING</span>
+      <span class="text-black/70 dark:text-white/70">{data.reading}</span>
+    </div>
+    <div class="flex items-start gap-3">
+      <span class="mt-0.5 shrink-0 font-mono text-xs text-black/30 dark:text-white/30">CODING</span>
+      <span class="text-black/70 dark:text-white/70">{data.coding}</span>
+    </div>
+    <div class="flex items-start gap-3">
+      <span class="mt-0.5 shrink-0 font-mono text-xs text-black/30 dark:text-white/30">WRITING</span>
+      <span class="text-black/70 dark:text-white/70">{data.writing}</span>
+    </div>
+    <div class="flex items-start gap-3">
+      <span class="mt-0.5 shrink-0 font-mono text-xs text-black/30 dark:text-white/30">LEARNING</span>
+      <span class="text-black/70 dark:text-white/70">{data.learning}</span>
+    </div>
+  </div>
+</div>

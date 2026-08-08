@@ -1,0 +1,223 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import ColumnIcon from "../../components/ColumnIcon.astro";
+import ArticleTOC from "../../components/ArticleTOC.astro";
+import TOCPanel from "../../components/TOCPanel.astro";
+import { getLangFromUrl, useTranslations } from "../../i18n/utils";
+
+export async function getStaticPaths() {
+  const articles = await getCollection("articles", ({ data }) => !data.draft);
+  return articles.map((article) => ({
+    params: { section: article.data.section, slug: article.slug },
+  }));
+}
+
+const { section, slug } = Astro.params;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const allArticles = await getCollection("articles", ({ data }) => !data.draft);
+const article = allArticles.find((a) => a.slug === slug && a.data.section === section);
+if (!article) return Astro.redirect("/404");
+
+const { Content } = await article.render();
+
+const displayTitle = lang === "en" ? (article.data.titleEn || article.data.title) : article.data.title;
+const displayDesc = lang === "en" ? (article.data.descriptionEn || article.data.description) : article.data.description;
+const displayTags = lang === "en"
+  ? (article.data.tagsEn.length > 0 ? article.data.tagsEn : article.data.tags)
+  : article.data.tags;
+const dateStr = article.data.date.toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", {
+  year: "numeric", month: "long", day: "numeric",
+});
+const isBook = section === "books";
+
+// 同栏目内按时间排序，用于上一篇 / 下一篇
+const sectionArticles = allArticles
+  .filter((a) => a.data.section === section)
+  .sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
+const idx = sectionArticles.findIndex((a) => a.slug === slug);
+const prevArticle = idx > 0 ? sectionArticles[idx - 1] : undefined;
+const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticles[idx + 1] : undefined;
+---
+
+<BaseLayout title={displayTitle} description={displayDesc}>
+  <Breadcrumb
+    crumbs={[
+      { label: t(`columns.${section}.name`), href: lang === "en" ? `/en/${section}/` : `/${section}/` },
+      { label: displayTitle, href: "#" },
+    ]}
+  />
+
+  <article class="max-w-2xl mx-auto" data-reveal>
+    <header class="mb-10">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/50 dark:text-white/50 inline-flex items-center gap-1">
+          <ColumnIcon section={section as "insights"|"tips"|"books"|"invest"} class="w-3 h-3" /> {t(`columns.${section}.name`)}
+        </span>
+        {article.data.featured && (
+          <span class="text-xs px-2 py-0.5 rounded-full bg-black dark:bg-white text-white dark:text-black">★ Featured</span>
+        )}
+      </div>
+
+      <h1 class="text-3xl md:text-4xl font-serif font-bold leading-tight mb-4">
+        {displayTitle}
+      </h1>
+
+      {displayDesc && (
+        <p class="text-base text-black/50 dark:text-white/50 mb-4 leading-relaxed">{displayDesc}</p>
+      )}
+
+      <div class="flex flex-wrap items-center gap-4 text-sm text-black/30 dark:text-white/30 font-mono">
+        <time datetime={article.data.date.toISOString()}>
+          {t("articles.publishedOn")} {dateStr}
+        </time>
+        {article.data.author && (
+          <span>{t("articles.author")}: {article.data.author}</span>
+        )}
+      </div>
+
+      {displayTags.length > 0 && (
+        <div class="flex flex-wrap gap-2 mt-4">
+          {displayTags.map((tag: string) => (
+            <span class="text-xs px-2 py-1 rounded-md bg-black/5 dark:bg-white/5 text-black/40 dark:text-white/40">
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {isBook && article.data.coverImage && (
+        <div class="mt-6">
+          <img src={article.data.coverImage} alt={displayTitle} class="w-32 rounded-lg shadow-md" />
+        </div>
+      )}
+    </header>
+
+    <div class="prose dark:prose-invert article-content max-w-none">
+      <ArticleTOC />
+      <Content />
+    </div>
+
+    <!-- Book-specific: format download section -->
+    {isBook && (
+      <div class="mt-12 p-6 rounded-xl border border-black/10 dark:border-white/10" data-reveal>
+        <h3 class="font-bold font-serif mb-3">{t("articles.download")}</h3>
+        <p class="text-xs text-black/40 dark:text-white/40 mb-4">
+          {t("articles.formatNote") || "支持多种电子书格式，点击对应按钮下载"}
+        </p>
+        <div class="flex flex-wrap gap-3">
+          {article.data.epubUrl && (
+            <a
+              href={article.data.epubUrl}
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-black dark:bg-white text-white dark:text-black text-sm hover:opacity-80 transition-opacity"
+              download
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              EPUB {t("articles.download")}
+            </a>
+          )}
+          {article.data.mobiUrl && (
+            <a
+              href={article.data.mobiUrl}
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-black/10 dark:border-white/10 text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+              download
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              MOBI {t("articles.download")}
+            </a>
+          )}
+          {article.data.azw3Url && (
+            <a
+              href={article.data.azw3Url}
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-black/10 dark:border-white/10 text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+              download
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              AZW3 {t("articles.download")}
+            </a>
+          )}
+          {article.data.fb2Url && (
+            <a
+              href={article.data.fb2Url}
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-black/10 dark:border-white/10 text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+              download
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              FB2 {t("articles.download")}
+            </a>
+          )}
+          {article.data.txtUrl && (
+            <a
+              href={article.data.txtUrl}
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-black/10 dark:border-white/10 text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+              download
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              TXT {t("articles.download")}
+            </a>
+          )}
+          {article.data.pdfUrl && (
+            <a
+              href={article.data.pdfUrl}
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-black/10 dark:border-white/10 text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+              download
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              PDF {t("articles.download")}
+            </a>
+          )}
+        </div>
+      </div>
+    )}
+
+    <!-- 书籍：目录预览面板（读预生成的 .toc.json） -->
+    {isBook && article.data.pdfUrl && (
+      <TOCPanel
+        tocUrl={`${article.data.pdfUrl.replace(/\.pdf$/, "")}.toc.json`}
+        format="PDF"
+        title={lang === "en" ? "Table of Contents" : "目录预览"}
+      />
+    )}
+    {isBook && article.data.epubUrl && (
+      <TOCPanel
+        tocUrl={`${article.data.epubUrl.replace(/\.epub$/, "")}.toc.json`}
+        format="EPUB"
+        title={lang === "en" ? "Table of Contents" : "目录预览"}
+      />
+    )}
+
+    <!-- 上一篇 / 下一篇 -->
+    <nav class="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4" data-reveal>
+      {prevArticle ? (
+        <a
+          href={lang === "en" ? `/en/${section}/${prevArticle.slug}` : `/${section}/${prevArticle.slug}`}
+          class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors"
+        >
+          <p class="text-xs text-black/30 dark:text-white/30 mb-1">← {lang === "en" ? "Older" : "上一篇"}</p>
+          <p class="text-sm font-medium group-hover:opacity-70 transition-opacity line-clamp-2">
+            {lang === "en" ? (prevArticle.data.titleEn || prevArticle.data.title) : prevArticle.data.title}
+          </p>
+        </a>
+      ) : (
+        <span></span>
+      )}
+      {nextArticle ? (
+        <a
+          href={lang === "en" ? `/en/${section}/${nextArticle.slug}` : `/${section}/${nextArticle.slug}`}
+          class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors sm:text-right"
+        >
+          <p class="text-xs text-black/30 dark:text-white/30 mb-1">{lang === "en" ? "Newer" : "下一篇"} →</p>
+          <p class="text-sm font-medium group-hover:opacity-70 transition-opacity line-clamp-2">
+            {lang === "en" ? (nextArticle.data.titleEn || nextArticle.data.title) : nextArticle.data.title}
+          </p>
+        </a>
+      ) : (
+        <span></span>
+      )}
+    </nav>
+
+  </article>
+</BaseLayout>

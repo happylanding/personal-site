@@ -1,0 +1,89 @@
+---
+import "../styles/global.css";
+import { getLangFromUrl, useTranslations } from "../i18n/utils";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import BackToTop from "../components/BackToTop.astro";
+import MouseGlow from "../components/MouseGlow.astro";
+import ScrollReveal from "../components/ScrollReveal.astro";
+import ReadingProgress from "../components/ReadingProgress.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const defaultTitle = t("site.title") + " — " + t("site.subtitle");
+const defaultDesc = t("site.description");
+
+const pageTitle = Astro.props.title ? `${Astro.props.title} — ${t("site.title")}` : defaultTitle;
+const pageDesc = Astro.props.description || defaultDesc;
+const ogImg = Astro.props.ogImage || "/favicon.svg";
+const path = Astro.url.pathname;
+const canonical = lang === "en" ? path : path.replace(/^\/en/, "") || "/";
+const alternateEn = lang === "zh" ? `/en${path}` : path;
+const alternateZh = lang === "en" ? path.replace(/^\/en/, "") || "/" : path;
+---
+
+<!doctype html>
+<html lang={lang} class="">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content={pageDesc} />
+
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDesc} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content={ogImg} />
+    <meta property="og:site_name" content={t("site.title")} />
+
+    <link rel="canonical" href={new URL(canonical, Astro.site).href} />
+    <link rel="alternate" hreflang="zh" href={new URL(alternateZh, Astro.site).href} />
+    <link rel="alternate" hreflang="en" href={new URL(alternateEn, Astro.site).href} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Fonts: V2 人文温暖 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Source+Sans+3:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=Caveat:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- FOUC prevention: set dark before render -->
+    <script is:inline>
+      (function () {
+        const t = localStorage.getItem("theme");
+        if (t === "dark" || (!t && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("dark");
+        }
+      })();
+    </script>
+
+    <title>{pageTitle}</title>
+  </head>
+  <body class="bg-white dark:bg-black text-black dark:text-white font-sans transition-colors duration-300">
+    <ReadingProgress />
+    <MouseGlow />
+    <Header />
+    <main class="mx-auto max-w-4xl px-6 py-12 min-h-[60vh]">
+      <slot />
+      <ScrollReveal />
+    </main>
+    <Footer />
+    <BackToTop />
+  </body>
+</html>
+
+<!-- Page transitions (effect C) -->
+<style is:global>
+  @view-transition {
+    navigation: auto;
+  }
+</style>

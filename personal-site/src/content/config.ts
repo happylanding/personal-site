@@ -1,0 +1,46 @@
+import { defineCollection, z } from "astro:content";
+
+const articlesCollection = defineCollection({
+  type: "content",
+  schema: z.object({
+    title: z.string(),
+    titleEn: z.string().optional(),
+    description: z.string().optional(),
+    descriptionEn: z.string().optional(),
+    date: z.date(),
+    updated: z.date().optional(),
+    tags: z.array(z.string()).default([]),
+    tagsEn: z.array(z.string()).default([]),
+    /** 所属专栏 */
+    section: z.enum(["insights", "ai", "tips", "books", "invest"]).default("tips"),
+    draft: z.boolean().default(false),
+    featured: z.boolean().default(false),
+    /** 英文正文（可选），填写后在英文页面优先展示 */
+    bodyEn: z.string().optional(),
+    /** 书籍专区专属字段 */
+    coverImage: z.string().optional(),
+    author: z.string().optional(),
+    authorEn: z.string().optional(),
+    /** 各格式下载链接 */
+    epubUrl: z.string().optional(),
+    pdfUrl: z.string().optional(),
+    mobiUrl: z.string().optional(),
+    azw3Url: z.string().optional(),
+    fb2Url: z.string().optional(),
+    txtUrl: z.string().optional(),
+    /** 合法在线阅读链接（公版书） */
+    readUrl: z.string().optional(),
+    /** 书评文章链接 */
+    reviewUrl: z.string().optional(),
+    /** 购买链接 */
+    buyUrl: z.string().optional(),
+    rating: z.number().min(0).max(5).optional(),
+    /** 投资复盘专属字段 */
+    ticker: z.string().optional(),
+    pnl: z.string().optional(),
+  }),
+});
+
+export const collections = {
+  articles: articlesCollection,
+};

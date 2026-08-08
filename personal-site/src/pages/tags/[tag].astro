@@ -1,0 +1,55 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import ScrollReveal from "../../components/ScrollReveal.astro";
+import { getLangFromUrl, useTranslations } from "../../i18n/utils";
+
+export async function getStaticPaths() {
+  const articles = await getCollection("articles", ({ data }) => !data.draft);
+  const tags = [...new Set(articles.flatMap((a) => a.data.tags))];
+  return tags.map((tag) => ({ params: { tag }, props: { tag } }));
+}
+
+const { tag } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const allArticles = await getCollection("articles", ({ data }) => !data.draft);
+const filtered = allArticles
+  .filter((a) => a.data.tags.includes(tag))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<BaseLayout title={`#${tag}`} description={`${t("tags.articleCount")} ${filtered.length}`}>
+  <Breadcrumb
+    crumbs={[
+      { label: t("tags.title"), href: "/tags/" },
+      { label: `#${tag}`, href: "#" },
+    ]}
+  />
+
+  <section data-reveal>
+    <h1 class="text-3xl font-serif font-bold mb-4">#{tag}</h1>
+    <p class="text-sm text-black/40 dark:text-white/40 mb-8">{filtered.length} {t("tags.articleCount")}</p>
+
+    <div class="space-y-1">
+      {filtered.map((article) => {
+        const title = lang === "en" ? (article.data.titleEn || article.data.title) : article.data.title;
+        return (
+          <a
+            href={lang === "en" ? `/en/${article.data.section}/${article.slug}` : `/${article.data.section}/${article.slug}`}
+            class="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-colors group"
+          >
+            <span class="text-sm group-hover:opacity-70 transition-opacity font-medium">{title}</span>
+            <time class="text-xs text-black/25 dark:text-white/25 font-mono flex-shrink-0 ml-4">
+              {article.data.date.toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", { month: "short", day: "numeric" })}
+            </time>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+
+  <ScrollReveal />
+</BaseLayout>

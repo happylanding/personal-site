@@ -1,0 +1,372 @@
+---
+import { getLangFromUrl, useTranslations } from "../i18n/utils";
+import ThemeToggle from "./ThemeToggle.astro";
+import LanguageSwitcher from "./LanguageSwitcher.astro";
+import ColumnIcon from "./ColumnIcon.astro";
+import SearchDialog from "./SearchDialog.astro";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const columns = ["insights", "ai", "tips", "books"] as const;
+const isCurrentSection = (s: string) => Astro.url.pathname.includes(`/${s}`);
+---
+
+<header class="sticky top-0 z-[70] w-full border-b border-black/10 dark:border-white/10 bg-white/80 dark:bg-black/80 backdrop-blur-md transition-colors duration-300">
+  <nav class="mx-auto max-w-4xl flex items-center justify-between px-4 sm:px-6 py-3">
+    <!-- Logo / Site title -->
+    <a
+      href={lang === "en" ? "/en/" : "/"}
+      class="text-base sm:text-lg md:text-xl font-bold tracking-tight text-black dark:text-white hover:opacity-70 transition-opacity shrink-0"
+    >
+      {t("site.title")}
+    </a>
+
+    <!-- Right section: desktop links + shared controls + mobile hamburger -->
+    <div class="flex items-center gap-0.5 sm:gap-1.5">
+      <!-- Desktop-only nav links (hidden on mobile) -->
+      <div class="hidden md:flex items-center gap-1">
+        <a
+          href={lang === "en" ? "/en/" : "/"}
+          class={`px-3 py-2 text-sm rounded-lg transition-colors ${
+            Astro.url.pathname === "/" || Astro.url.pathname === "/en/" || Astro.url.pathname === "/en"
+              ? "bg-black/10 dark:bg-white/10 font-semibold"
+              : "hover:bg-black/5 dark:hover:bg-white/5"
+          }`}
+        >
+          {t("nav.home")}
+        </a>
+
+        <!-- Columns dropdown -->
+        <div class="relative group">
+          <button
+            class={`px-3 py-2 text-sm rounded-lg transition-colors flex items-center gap-1 ${
+              columns.some((c) => isCurrentSection(c))
+                ? "bg-black/10 dark:bg-white/10 font-semibold"
+                : "hover:bg-black/5 dark:hover:bg-white/5"
+            }`}
+          >
+            {t("home.exploreColumns")}
+            <svg class="w-3 h-3 mt-px opacity-50 group-hover:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <!-- Dropdown menu -->
+          <div class="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+            <div class="bg-white dark:bg-neutral-900 border border-black/10 dark:border-white/10 rounded-xl shadow-lg py-2 min-w-[200px]">
+              {columns.map((col) => {
+                const colPath = lang === "en" ? `/en/${col}/` : `/${col}/`;
+                return (
+                  <a
+                    href={colPath}
+                    class={`block px-4 py-2.5 text-sm transition-colors ${
+                      isCurrentSection(col)
+                        ? "bg-black/5 dark:bg-white/5 font-semibold"
+                        : "hover:bg-black/5 dark:hover:bg-white/5"
+                    }`}
+                  >
+                    <ColumnIcon section={col} class="w-3.5 h-3.5 inline-block mr-1.5" />
+                    {t(`columns.${col}.name`)}
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <a
+          href={lang === "en" ? "/en/about/" : "/about/"}
+          class={`px-3 py-2 text-sm rounded-lg transition-colors ${isCurrentSection("about") ? "bg-black/10 dark:bg-white/10 font-semibold" : "hover:bg-black/5 dark:hover:bg-white/5"}`}
+        >
+          {t("nav.about")}
+        </a>
+
+        <a
+          href={lang === "en" ? "/en/contact/" : "/contact/"}
+          class={`px-3 py-2 text-sm rounded-lg transition-colors ${isCurrentSection("contact") ? "bg-black/10 dark:bg-white/10 font-semibold" : "hover:bg-black/5 dark:hover:bg-white/5"}`}
+        >
+          {t("nav.contact")}
+        </a>
+      </div>
+
+      <!-- Divider (desktop only — between nav links and control buttons) -->
+      <div class="hidden md:block mx-2 w-px h-6 bg-black/10 dark:bg-white/10"></div>
+
+      <!-- ──────── Shared controls (rendered ONCE, visible on ALL screen sizes) ──────── -->
+      <SearchDialog />
+      <ThemeToggle />
+      <LanguageSwitcher lang={lang} />
+
+      <!-- Hamburger button (mobile only, always last) -->
+      <button
+        id="hamburger-btn"
+        class="md:hidden relative w-[42px] h-[42px] flex flex-col items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 dark:active:bg-white/10 gap-[5px] transition-all duration-200 -mr-1"
+        aria-label={t("nav.menu")}
+        aria-expanded="false"
+        aria-controls="mobile-overlay"
+      >
+        <span class="hamburger-line block w-[18px] h-[2px] rounded-full bg-current origin-center transition-all duration-300 ease-out"></span>
+        <span class="hamburger-line block w-[18px] h-[2px] rounded-full bg-current origin-center transition-all duration-300 ease-out"></span>
+        <span class="hamburger-line block w-[18px] h-[2px] rounded-full bg-current origin-center transition-all duration-300 ease-out"></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile: full-screen overlay navigation panel -->
+  <div
+    id="mobile-overlay"
+    class="fixed top-0 left-0 w-screen h-screen z-[60] pointer-events-none md:hidden"
+    aria-hidden="true"
+  >
+    <!-- backdrop -->
+    <div
+      id="mobile-overlay-bg"
+      class="absolute inset-0 bg-white dark:bg-neutral-950 opacity-0 transition-opacity duration-300 ease-out"
+    ></div>
+
+    <!-- nav panel — scrollable for short screens -->
+    <nav
+      id="mobile-nav-panel"
+      class="relative z-10 h-[calc(100vh-3.5rem)] min-h-[calc(100vh-3.5rem)] overflow-y-auto overscroll-contain flex flex-col justify-start pt-4 pb-[max(1.5rem,calc(env(safe-area-inset-bottom,0px)+1rem))] px-5 opacity-0 translate-y-6 transition-all duration-400 ease-out"
+    >
+      <div class="max-w-sm mx-auto w-full space-y-0">
+        <!-- Home -->
+        <a
+          href={lang === "en" ? "/en/" : "/"}
+          class="mobile-nav-item group"
+          style="transition-delay: 0.06s"
+        >
+          <span class="mobile-nav-icon">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" />
+            </svg>
+          </span>
+          <span class="mobile-nav-label">{t("nav.home")}</span>
+          <span class="mobile-nav-arrow opacity-0 group-hover:opacity-30 transition-opacity">→</span>
+        </a>
+
+        <!-- divider: columns -->
+        <div class="mobile-nav-section-label" style="transition-delay: 0.12s">
+          <span class="text-[10px] uppercase tracking-[0.15em] opacity-40 font-medium">
+            {t("home.exploreColumns")}
+          </span>
+        </div>
+
+        <!-- columns -->
+        {columns.map((col, i) => {
+          const colPath = lang === "en" ? `/en/${col}/` : `/${col}/`;
+          return (
+            <a
+              href={colPath}
+              class="mobile-nav-item group"
+              style={`transition-delay: ${0.18 + i * 0.06}s`}
+            >
+              <span class="mobile-nav-icon">
+                <ColumnIcon section={col} class="w-5 h-5" />
+              </span>
+              <span class="mobile-nav-label">{t(`columns.${col}.name`)}</span>
+              <span class="mobile-nav-arrow opacity-0 group-hover:opacity-30 transition-opacity">→</span>
+            </a>
+          );
+        })}
+
+        <!-- divider: more -->
+        <div class="mobile-nav-section-label" style="transition-delay: 0.44s">
+          <span class="text-[10px] uppercase tracking-[0.15em] opacity-40 font-medium">
+            {lang === "en" ? "More" : "更多"}
+          </span>
+        </div>
+
+        <!-- About -->
+        <a
+          href={lang === "en" ? "/en/about/" : "/about/"}
+          class="mobile-nav-item group"
+          style="transition-delay: 0.50s"
+        >
+          <span class="mobile-nav-icon">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </span>
+          <span class="mobile-nav-label">{t("nav.about")}</span>
+          <span class="mobile-nav-arrow opacity-0 group-hover:opacity-30 transition-opacity">→</span>
+        </a>
+
+        <!-- Contact -->
+        <a
+          href={lang === "en" ? "/en/contact/" : "/contact/"}
+          class="mobile-nav-item group"
+          style="transition-delay: 0.56s"
+        >
+          <span class="mobile-nav-icon">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </span>
+          <span class="mobile-nav-label">{t("nav.contact")}</span>
+          <span class="mobile-nav-arrow opacity-0 group-hover:opacity-30 transition-opacity">→</span>
+        </a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  /* ── hamburger → X animation ── */
+  #hamburger-btn.active .hamburger-line:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  #hamburger-btn.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  #hamburger-btn.active .hamburger-line:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* ── overlay open state ── */
+  /* :global() required — class added to <html> outside component scope */
+  :global(.mobile-overlay-open) {
+    overflow: hidden;
+    touch-action: none;
+  }
+  :global(.mobile-overlay-open) #mobile-overlay {
+    pointer-events: auto;
+  }
+  :global(.mobile-overlay-open) #mobile-overlay-bg {
+    opacity: 1;
+  }
+  :global(.mobile-overlay-open) #mobile-nav-panel {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── safe-area is now handled inline via pt/pb calc on nav-panel ── */
+
+  /* ── nav items: stagger fade + slide ── */
+  .mobile-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 1rem;
+    min-height: 44px;
+    border-radius: 12px;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                background-color 0.15s ease;
+    transition-delay: 0s, 0s, 0s;
+    -webkit-tap-highlight-color: transparent;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  :global(.mobile-overlay-open) .mobile-nav-item {
+    opacity: 1;
+    transform: translateY(0);
+    transition-duration: 0.4s, 0.4s, 0.15s;
+  }
+
+  .mobile-nav-item:active {
+    background-color: rgba(0, 0, 0, 0.06);
+  }
+  :global(.dark) .mobile-nav-item:active {
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .mobile-nav-icon {
+    flex-shrink: 0;
+    width: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    opacity: 0.5;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .mobile-nav-item:active .mobile-nav-icon {
+    opacity: 0.8;
+    transform: scale(0.95);
+  }
+
+  .mobile-nav-label {
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.3;
+  }
+
+  .mobile-nav-arrow {
+    margin-left: auto;
+    font-size: 1rem;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .mobile-nav-item:active .mobile-nav-arrow {
+    opacity: 0.4;
+    transform: translateX(2px);
+  }
+
+  .mobile-nav-section-label {
+    padding: 0.75rem 1rem 0.25rem;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  :global(.mobile-overlay-open) .mobile-nav-section-label {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<script>
+  (function () {
+    var btn = document.getElementById("hamburger-btn");
+    var overlay = document.getElementById("mobile-overlay");
+    var html = document.documentElement;
+    var CLS = "mobile-overlay-open";
+    var isOpen = false;
+
+    if (!btn || !overlay) return;
+
+    function open() {
+      if (isOpen) return;
+      isOpen = true;
+      btn.classList.add("active");
+      btn.setAttribute("aria-expanded", "true");
+      overlay.setAttribute("aria-hidden", "false");
+      html.classList.add(CLS);
+    }
+
+    function close() {
+      if (!isOpen) return;
+      isOpen = false;
+      btn.classList.remove("active");
+      btn.setAttribute("aria-expanded", "false");
+      overlay.setAttribute("aria-hidden", "true");
+      html.classList.remove(CLS);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      isOpen ? close() : open();
+    });
+
+    // close on any click within the overlay
+    // (hamburger btn uses stopPropagation so its clicks won't reach here)
+    overlay.addEventListener("click", function () {
+      close();
+    });
+
+    // close on Escape
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && isOpen) close();
+    });
+
+    // reset on Astro view-transition swap
+    document.addEventListener("astro:after-swap", function () {
+      if (isOpen) close();
+    });
+  })();
+</script>

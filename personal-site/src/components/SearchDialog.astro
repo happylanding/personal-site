@@ -1,0 +1,401 @@
+---
+import { getCollection } from "astro:content";
+import { getLangFromUrl, useTranslations } from "../i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const langPrefix = lang === "en" ? "/en/" : "/";
+
+const allArticles = await getCollection("articles", function (entry) {
+  return !entry.data.draft;
+});
+
+// 构建精简索引（标题、摘要、链接）
+const searchData = allArticles.map(function (post) {
+  var title = lang === "en" ? (post.data.titleEn || post.data.title) : post.data.title;
+  var excerpt = lang === "en" ? (post.data.descriptionEn || post.data.description) : post.data.description;
+  var href = langPrefix + post.data.section + "/" + post.slug + "/";
+  return {
+    title: title,
+    excerpt: excerpt || "",
+    href: href,
+  };
+});
+---
+
+<!-- Search trigger button -->
+<button
+  id="search-trigger"
+  type="button"
+  class="w-[42px] h-[42px] flex items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 dark:active:bg-white/10 transition-all duration-200"
+  aria-label={t("search.placeholder")}
+  title={t("search.placeholder")}
+>
+  <svg class="w-[18px] h-[18px] opacity-60" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" />
+  </svg>
+</button>
+
+<!-- Search overlay -->
+<div
+  id="search-overlay"
+  class="fixed inset-0 z-[100] flex items-start justify-center pt-[max(1rem,calc(env(safe-area-inset-top,0px)+0.5rem))] sm:pt-[max(8vh,env(safe-area-inset-top,3rem))] opacity-0 pointer-events-none transition-opacity duration-200"
+  aria-hidden="true"
+>
+  <!-- Backdrop -->
+  <div id="search-backdrop" class="absolute inset-0 bg-black/30 dark:bg-black/60 backdrop-blur-sm"></div>
+
+  <!-- Search panel -->
+  <div
+    id="search-panel"
+    class="relative w-full max-w-lg mx-3 sm:mx-4 bg-white dark:bg-neutral-900 border border-black/10 dark:border-white/10 rounded-xl shadow-2xl transform scale-95 transition-transform duration-200 overflow-hidden"
+  >
+    <!-- Input bar -->
+    <form autocomplete="off" class="flex items-center px-3 sm:px-4 py-3 border-b border-black/5 dark:border-white/5">
+      <svg class="shrink-0 w-[18px] h-[18px] mr-2.5 opacity-40" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z" />
+      </svg>
+      <input
+        id="search-input"
+        type="search"
+        class="flex-1 bg-transparent border-none outline-none text-[15px] sm:text-base placeholder:text-black/30 dark:placeholder:text-white/30"
+        placeholder={t("search.placeholder")}
+        autocomplete="off"
+        enterkeyhint="search"
+      />
+      <!-- close button -->
+      <button
+        id="search-close-btn"
+        type="button"
+        class="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 dark:active:bg-white/10 ml-1"
+        aria-label="关闭搜索"
+      >
+        <svg class="w-4 h-4 opacity-40" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M18 6L6 18M6 6l12 12" />
+        </svg>
+      </button>
+    </form>
+
+    <!-- Results area -->
+    <div id="search-results" class="max-h-[55dvh] sm:max-h-[60vh] overflow-y-auto overscroll-contain">
+      <!-- Loading -->
+      <div id="search-loading" class="hidden px-4 py-8 text-center text-sm opacity-50">
+        ...
+      </div>
+      <!-- No results -->
+      <div id="search-empty" class="hidden px-4 py-8 text-center text-sm opacity-50">
+        {t("search.noResults")}
+      </div>
+      <!-- Default hints -->
+      <div id="search-hints" class="px-4 py-4 text-xs opacity-40 space-y-1.5">
+        <div class="flex items-center gap-2"><kbd class="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-[10px]">ESC</kbd> 关闭</div>
+        <div class="flex items-center gap-2"><kbd class="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-[10px]">↑↓</kbd> 导航</div>
+        <div class="flex items-center gap-2"><kbd class="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-[10px]">↵</kbd> 打开</div>
+      </div>
+      <!-- Results: JavaScript 动态生成 -->
+    </div>
+
+    <!-- Footer -->
+    <div class="px-4 py-2 border-t border-black/5 dark:border-white/5 text-[10px] opacity-30 text-center">
+      {searchData.length} {lang === "zh" ? "篇文章" : "posts"}
+    </div>
+  </div>
+</div>
+
+<style>
+  /* :global() required — "search-overlay-open" is added to <html> via JS, outside component scope */
+  :global(.search-overlay-open) {
+    overflow: hidden;
+  }
+
+  /* overlay visible state */
+  #search-overlay.search-overlay-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #search-overlay.search-overlay-visible #search-panel {
+    transform: scale(1);
+  }
+
+  /* result item */
+  .search-result-item {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+    transition: background-color 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  :global(.dark) .search-result-item {
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+  .search-result-item:hover,
+  .search-result-item.active {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+  :global(.dark) .search-result-item:hover,
+  :global(.dark) .search-result-item.active {
+    background-color: rgba(255, 255, 255, 0.04);
+  }
+
+  .search-result-title {
+    font-weight: 500;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    margin-bottom: 0.2rem;
+  }
+  .search-result-title mark {
+    background-color: rgba(250, 204, 21, 0.3);
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+  :global(.dark) .search-result-title mark {
+    background-color: rgba(250, 204, 21, 0.25);
+  }
+
+  .search-result-excerpt {
+    font-size: 0.8125rem;
+    opacity: 0.55;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
+
+<script define:vars={{ __idx: searchData }}>
+  (function () {
+    var index = __idx;
+    var isOpen = false;
+    var activeIdx = -1;
+    var atTop = true;
+    var debounceTimer = -1;
+    var CLS_OPEN = "search-overlay-visible";
+    var BODY_CLS = "search-overlay-open";
+    var SEARCH_QS = "q";
+
+    var trigger = document.getElementById("search-trigger");
+    var overlay = document.getElementById("search-overlay");
+    var backdrop = document.getElementById("search-backdrop");
+    var panel = document.getElementById("search-panel");
+    var input = document.getElementById("search-input");
+    var closeBtn = document.getElementById("search-close-btn");
+    var results = document.getElementById("search-results");
+    var loadingEl = document.getElementById("search-loading");
+    var emptyEl = document.getElementById("search-empty");
+    var hintsEl = document.getElementById("search-hints");
+    var html = document.documentElement;
+
+    if (!trigger || !overlay || !input || !closeBtn || !results) return;
+
+    // ── highlight match in text ──
+    function highlight(text, q) {
+      if (!q || !text) return text;
+      var re = new RegExp("(" + q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "gi");
+      return text.replace(re, "<mark>$1</mark>");
+    }
+
+    // ── fuzzy match helper ──
+    function fuzzyMatch(text, q) {
+      if (!q || !text) return false;
+      var t = text.toLowerCase();
+      var query = q.toLowerCase();
+      if (t.indexOf(query) !== -1) return true;
+      var qi = 0;
+      for (var i = 0; i < t.length && qi < query.length; i++) {
+        if (query[qi] === t[i]) qi++;
+      }
+      return qi === query.length;
+    }
+
+    // ── search ──
+    function doSearch(query) {
+      var q = query.trim();
+      if (!q) {
+        results.innerHTML = "";
+        hintsEl && hintsEl.classList.remove("hidden");
+        emptyEl && emptyEl.classList.add("hidden");
+        loadingEl && loadingEl.classList.add("hidden");
+        activeIdx = -1;
+        return;
+      }
+
+      hintsEl && hintsEl.classList.add("hidden");
+      loadingEl && loadingEl.classList.remove("hidden");
+      emptyEl && emptyEl.classList.add("hidden");
+
+      // debounced
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(function () {
+        var matches = [];
+        var words = q.toLowerCase().split(/\s+/).filter(Boolean);
+
+        for (var i = 0; i < index.length; i++) {
+          var p = index[i];
+          var score = 0;
+          var titleLower = p.title.toLowerCase();
+          var excerptLower = p.excerpt.toLowerCase();
+          var catLower = (p.category || "").toLowerCase();
+
+          for (var w = 0; w < words.length; w++) {
+            var word = words[w];
+            if (titleLower.indexOf(word) !== -1) score += 10;
+            else if (fuzzyMatch(p.title, word)) score += 6;
+            if (excerptLower.indexOf(word) !== -1) score += 4;
+            else if (fuzzyMatch(p.excerpt, word)) score += 2;
+            if (catLower.indexOf(word) !== -1) score += 3;
+          }
+
+          if (score > 0) {
+            matches.push({ post: p, score: score });
+          }
+        }
+
+        matches.sort(function (a, b) { return b.score - a.score; });
+
+        activeIdx = -1;
+        renderResults(matches.slice(0, 10), q);
+        loadingEl && loadingEl.classList.add("hidden");
+      }, 150);
+    }
+
+    // ── render ──
+    function renderResults(matches, query) {
+      if (!results) return;
+      if (matches.length === 0) {
+        emptyEl && emptyEl.classList.remove("hidden");
+        results.innerHTML = "";
+        return;
+      }
+      emptyEl && emptyEl.classList.add("hidden");
+
+      var htmlStr = "";
+      for (var i = 0; i < matches.length; i++) {
+        var p = matches[i].post;
+        var activeCls = i === activeIdx ? " active" : "";
+        htmlStr += '<a href="' + p.href + '" class="search-result-item' + activeCls + '" data-idx="' + i + '">';
+        htmlStr += '<div class="search-result-title">' + highlight(p.title, query) + "</div>";
+        if (p.excerpt) {
+          htmlStr += '<div class="search-result-excerpt">' + p.excerpt + "</div>";
+        }
+        htmlStr += "</a>";
+      }
+      results.innerHTML = htmlStr;
+    }
+
+    // ── navigate results with keyboard ──
+    function navigateResults(e) {
+      var items = results.querySelectorAll(".search-result-item");
+      if (!items.length) return;
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        if (e.key === "ArrowDown") {
+          activeIdx = Math.min(activeIdx + 1, items.length - 1);
+        } else {
+          activeIdx = Math.max(activeIdx - 1, -1);
+        }
+        for (var i = 0; i < items.length; i++) {
+          if (i === activeIdx) {
+            items[i].classList.add("active");
+            items[i].scrollIntoView({ block: "nearest" });
+          } else {
+            items[i].classList.remove("active");
+          }
+        }
+      } else if (e.key === "Enter" && activeIdx >= 0 && activeIdx < items.length) {
+        e.preventDefault();
+        items[activeIdx].click();
+      }
+    }
+
+    // ── open / close ──
+    function openSearch() {
+      if (isOpen) return;
+      isOpen = true;
+      activeIdx = -1;
+      atTop = window.scrollY < 40;
+      overlay.classList.add(CLS_OPEN);
+      overlay.setAttribute("aria-hidden", "false");
+      html.classList.add(BODY_CLS);
+      input.value = "";
+      results.innerHTML = "";
+      hintsEl && hintsEl.classList.remove("hidden");
+      emptyEl && emptyEl.classList.add("hidden");
+      input.focus();
+    }
+
+    function closeSearch() {
+      if (!isOpen) return;
+      isOpen = false;
+      overlay.classList.remove(CLS_OPEN);
+      overlay.setAttribute("aria-hidden", "true");
+      html.classList.remove(BODY_CLS);
+      input.value = "";
+      results.innerHTML = "";
+      activeIdx = -1;
+    }
+
+    // ── events ──
+    trigger.addEventListener("click", openSearch);
+    closeBtn.addEventListener("click", closeSearch);
+    backdrop.addEventListener("click", closeSearch);
+
+    // close on overlay itself click (outside panel)
+    overlay.addEventListener("click", function (e) {
+      if (e.target === overlay) closeSearch();
+    });
+
+    // close on document mousedown outside panel
+    document.addEventListener("mousedown", function (e) {
+      if (!isOpen) return;
+      if (overlay.contains(e.target)) return;
+      if (e.target === trigger) return;
+      closeSearch();
+    });
+
+    input.addEventListener("input", function () {
+      doSearch(input.value);
+    });
+
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        if (input.value) {
+          input.value = "";
+          doSearch("");
+        } else {
+          closeSearch();
+        }
+        return;
+      }
+      navigateResults(e);
+    });
+
+    // close on Escape when overlay is open
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && isOpen) {
+        closeSearch();
+      }
+    });
+
+    // touch: prevent iOS Safari double-tap zoom when tapping result items
+    overlay.addEventListener("touchstart", function (e) {}, { passive: true });
+
+    // reset on view-transition swap
+    document.addEventListener("astro:after-swap", function () {
+      if (isOpen) closeSearch();
+    });
+
+    // keyboard shortcut: Cmd/Ctrl + K
+    document.addEventListener("keydown", function (e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        openSearch();
+      }
+    });
+  })();
+</script>

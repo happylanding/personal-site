@@ -1,0 +1,27 @@
+<!-- Mouse follow glow effect (effect F) -->
+<div
+  id="mouse-glow"
+  class="pointer-events-none fixed z-10 w-72 h-72 rounded-full opacity-0 transition-opacity duration-500 hidden md:block"
+  style="background: radial-gradient(circle, rgba(128,128,128,0.08) 0%, transparent 70%); transform: translate(-50%, -50%);"
+></div>
+
+<script>
+  const glow = document.getElementById("mouse-glow");
+  let glowTicking = false;
+
+  document.addEventListener("mousemove", (e) => {
+    if (!glowTicking) {
+      requestAnimationFrame(() => {
+        glow?.style.setProperty("left", `${e.clientX}px`);
+        glow?.style.setProperty("top", `${e.clientY}px`);
+        glow?.classList.add("opacity-100");
+        glowTicking = false;
+      });
+      glowTicking = true;
+    }
+  });
+
+  document.addEventListener("mouseleave", () => {
+    glow?.classList.remove("opacity-100");
+  });
+</script>

@@ -1,0 +1,44 @@
+---
+import { getLangFromUrl, useTranslations } from "../i18n/utils";
+
+interface Crumb {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  crumbs: Crumb[];
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const { crumbs } = Astro.props;
+---
+
+<nav aria-label="Breadcrumb" class="mb-8">
+  <ol class="flex flex-wrap items-center gap-1 text-sm text-black/40 dark:text-white/40">
+    <li>
+      <a
+        href={lang === "en" ? "/en/" : "/"}
+        class="hover:text-black dark:hover:text-white transition-colors"
+      >
+        {t("breadcrumb.home")}
+      </a>
+    </li>
+    {crumbs.map((crumb, i) => (
+      <li class="flex items-center gap-1">
+        <span aria-hidden="true" class="text-black/20 dark:text-white/20">›</span>
+        {i === crumbs.length - 1 ? (
+          <span class="text-black/70 dark:text-white/70 font-medium">{crumb.label}</span>
+        ) : (
+          <a
+            href={crumb.href}
+            class="hover:text-black dark:hover:text-white transition-colors"
+          >
+            {crumb.label}
+          </a>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>

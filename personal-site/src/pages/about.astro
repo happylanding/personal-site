@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Breadcrumb from "../components/Breadcrumb.astro";
+import ScrollReveal from "../components/ScrollReveal.astro";
+import { getLangFromUrl, useTranslations } from "../i18n/utils";
+import ColumnIcon from "../components/ColumnIcon.astro";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<BaseLayout title={t("about.title")} description={t("about.description")}>
+  <Breadcrumb crumbs={[{ label: t("about.title"), href: "/about/" }]} />
+
+  <section class="max-w-2xl" data-reveal>
+    <h1 class="text-3xl font-serif font-bold mb-12">{t("about.title")}</h1>
+
+    <div class="leading-relaxed text-base space-y-6">
+      {t("about.bio").map((p: string) => (
+        <p class="text-black/70 dark:text-white/70">{p}</p>
+      ))}
+    </div>
+
+    <hr class="my-12 border-black/10 dark:border-white/10" />
+
+    <div data-reveal>
+      <h2 class="text-xl font-serif font-bold mb-6">{t("home.exploreColumns")}</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {(["insights", "ai", "tips", "books"] as const).map((s) => (
+          <a
+            href={lang === "en" ? `/en/${s}/` : `/${s}/`}
+            class="p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors"
+          >
+            <ColumnIcon section={s} class="w-7 h-7 block mb-2 opacity-60" />
+            <h3 class="font-bold text-sm mb-1">{t(`columns.${s}.name`)}</h3>
+            <p class="text-xs text-black/40 dark:text-white/40">{t(`columns.${s}.enName`)}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <ScrollReveal />
+</BaseLayout>

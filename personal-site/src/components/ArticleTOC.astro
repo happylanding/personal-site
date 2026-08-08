@@ -1,0 +1,142 @@
+---
+// ArticleTOC — 文章内目录：自动收集正文 h2/h3 标题，滚动高亮当前章节
+// 仅在文章标题数 >= 2 时展示（由脚本根据 DOM 判断显隐）
+---
+
+<nav id="article-toc" class="article-toc hidden" aria-label="目录">
+  <p class="article-toc-title">📑 目录</p>
+  <ul id="article-toc-list" class="article-toc-list"></ul>
+</nav>
+
+<script>
+  (function () {
+    var toc = document.getElementById("article-toc");
+    var list = document.getElementById("article-toc-list");
+    if (!toc || !list) return;
+
+    // 只针对文章内容容器内的 h2/h3
+    var article = document.querySelector(".article-content");
+    if (!article) return;
+
+    var headings = Array.prototype.slice.call(article.querySelectorAll("h2, h3"));
+    if (headings.length < 2) {
+      toc.classList.add("hidden");
+      return;
+    }
+
+    // 为标题生成锚点 id（保持稳定：取文本，中英文都可用）
+    var slugify = function (text) {
+      return (
+        text
+          .toLowerCase()
+          .replace(/[^\w\u4e00-\u9fa5]+/g, "-")
+          .replace(/^-+|-+$/g, "") || "section"
+      );
+    };
+
+    var items = [];
+    headings.forEach(function (h, i) {
+      var id = h.id || slugify(h.textContent || "") + "-" + i;
+      h.id = id;
+      var level = h.tagName === "H2" ? 2 : 3;
+      items.push({ id: id, text: (h.textContent || "").trim(), level: level });
+    });
+
+    // 渲染目录
+    items.forEach(function (item) {
+      var li = document.createElement("li");
+      li.className = "article-toc-item level-" + item.level;
+      var a = document.createElement("a");
+      a.href = "#" + item.id;
+      a.textContent = item.text;
+      a.className = "article-toc-link";
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+
+    toc.classList.remove("hidden");
+
+    // 滚动高亮当前章节
+    var links = Array.prototype.slice.call(list.querySelectorAll(".article-toc-link"));
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var id = entry.target.id;
+            links.forEach(function (l) {
+              l.classList.toggle("active", l.getAttribute("href") === "#" + id);
+            });
+          }
+        });
+      },
+      { rootMargin: "-80px 0px -70% 0px", threshold: 0 }
+    );
+    headings.forEach(function (h) {
+      observer.observe(h);
+    });
+  })();
+</script>
+
+<style>
+  .article-toc {
+    margin: 1.5rem 0 2.5rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 0.75rem;
+    background: rgba(0, 0, 0, 0.02);
+  }
+  .dark .article-toc {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .article-toc-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: rgba(0, 0, 0, 0.4);
+    margin-bottom: 0.5rem;
+  }
+  .dark .article-toc-title {
+    color: rgba(255, 255, 255, 0.4);
+  }
+  .article-toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .article-toc-item.level-3 {
+    padding-left: 1rem;
+  }
+  .article-toc-link {
+    display: block;
+    padding: 0.3rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    color: rgba(0, 0, 0, 0.6);
+    text-decoration: none;
+    transition: color 0.2s, background-color 0.2s;
+    border-left: 2px solid transparent;
+  }
+  .dark .article-toc-link {
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .article-toc-link:hover {
+    color: #b45309;
+    background: rgba(0, 0, 0, 0.03);
+  }
+  .dark .article-toc-link:hover {
+    color: #f59e0b;
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .article-toc-link.active {
+    color: #b45309;
+    border-left-color: #b45309;
+  }
+  .dark .article-toc-link.active {
+    color: #f59e0b;
+    border-left-color: #f59e0b;
+  }
+</style>

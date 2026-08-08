@@ -1,0 +1,58 @@
+<!-- Scroll reveal: elements with data-reveal class fade/slide in on scroll -->
+<script>
+  function initScrollReveal() {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("revealed");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: window.innerWidth < 768 ? "0px 0px -10px 0px" : "0px 0px -40px 0px" }
+    );
+
+    document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
+  }
+
+  // Card 3D roll-in (oil 同款 card-roll-hitbox)
+  function initRollCards() {
+    const cards = document.querySelectorAll(".roll-card");
+    if (!cards.length) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) {
+      cards.forEach((c) => c.classList.add("roll-in"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            // 交错延迟：基于 --roll-index，逐个翻入
+            const idx = parseInt(el.style.getPropertyValue("--roll-index") || "0", 10) || 0;
+            el.style.transitionDelay = `${idx * 0.08}s`;
+            el.classList.add("roll-in");
+            observer.unobserve(el);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+
+    cards.forEach((c) => observer.observe(c));
+  }
+
+  // Run on initial page load
+  initScrollReveal();
+  initRollCards();
+
+  // Re-run on Astro View Transition navigations
+  document.addEventListener("astro:page-load", () => {
+    initScrollReveal();
+    initRollCards();
+  });
+</script>

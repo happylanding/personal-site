@@ -1,0 +1,168 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ColumnIcon from "../components/ColumnIcon.astro";
+import Currently from "../components/Currently.astro";
+import { getLangFromUrl, useTranslations } from "../i18n/utils";
+import { getCollection } from "astro:content";
+import { SECTION_ORDER, type SectionKey } from "../lib/sections";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const allArticles = await getCollection("articles", ({ data }) => !data.draft);
+const sorted = allArticles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const latest = sorted.slice(0, 5);
+const featured = sorted.filter((a) => a.data.featured).slice(0, 4);
+
+// Count per section
+const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
+  acc[s] = allArticles.filter((a) => a.data.section === s).length;
+  return acc;
+}, {});
+---
+
+<BaseLayout>
+  <!-- ===== Hero: motto mask reveal ===== -->
+  <section class="py-16 md:py-24 text-center">
+    <!-- Location / date ribbon -->
+    <p class="text-xs tracking-[0.2em] uppercase text-black/25 dark:text-white/25 mb-8 font-mono">
+      {t("home.location")} · {new Date().toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", { year: "numeric", month: "long", day: "numeric" })}
+    </p>
+
+    <!-- English motto in handwriting font -->
+    <p class="font-hand text-3xl md:text-5xl text-black/60 dark:text-white/60 mb-4 leading-tight lmask">
+      <span class="lmask-inner" style="--lmask-delay:0.1s">{t("site.motto")}</span>
+    </p>
+
+    <!-- Chinese subtitle -->
+    <h1 class="text-2xl md:text-4xl font-serif font-bold tracking-tight mb-8 leading-snug lmask">
+      <span class="lmask-inner" style="--lmask-delay:0.24s">{t("site.subtitle")}</span>
+    </h1>
+
+    <!-- Bio paragraph -->
+    <div class="max-w-2xl mx-auto text-base md:text-lg leading-relaxed text-black/60 dark:text-white/60 font-serif space-y-3">
+      <p class="text-sm text-black/30 dark:text-white/30 mb-6">
+        {t("site.title")} · writer, learner. <br/>
+        {t("home.intro")}
+      </p>
+    </div>
+
+    <!-- Divider ornament -->
+    <div class="mt-10 mb-12 flex justify-center" aria-hidden="true">
+      <span class="block w-24 h-px bg-gradient-to-r from-transparent via-black/15 dark:via-white/15 to-transparent"></span>
+    </div>
+  </section>
+
+  <!-- ===== Currently: what I'm doing now ===== -->
+  <section class="mb-16" data-reveal>
+    <Currently />
+  </section>
+
+  <!-- ===== 4 Column cards ===== -->
+  <section class="mb-20">
+    <h2 class="text-center text-lg font-bold font-serif mb-3">{t("home.exploreColumns")}</h2>
+    <p class="text-center text-sm text-black/40 dark:text-white/40 mb-8">{t("home.columnsDesc")}</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {SECTION_ORDER.map((s, i) => {
+        const colPath = lang === "en" ? `/en/${s}/` : `/${s}/`;
+        return (
+          <a
+            href={colPath}
+            class="roll-card group block p-6 rounded-xl border border-black/10 dark:border-white/10 hover-lift transition-all duration-300 hover:border-black/30 dark:hover:border-white/30 relative overflow-hidden"
+            style={`--roll-index:${i}`}
+          >
+            <span class="ghost-num text-black/5 dark:text-white/5 select-none pointer-events-none" aria-hidden="true">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <span class="mb-3 block opacity-60 relative"><ColumnIcon section={s} class="w-8 h-8" /></span>
+            <h3 class="font-bold text-base mb-1 group-hover:opacity-70 transition-opacity hover-glow relative">
+              {t(`columns.${s}.name`)}
+            </h3>
+            <p class="text-xs text-black/40 dark:text-white/40 mb-3 relative">
+              {t(`columns.${s}.enName`)}
+            </p>
+            <p class="text-sm text-black/50 dark:text-white/50 leading-relaxed mb-3 relative">
+              {t(`columns.${s}.desc`)}
+            </p>
+            <span class="text-xs text-black/25 dark:text-white/25 font-mono relative">
+              {counts[s] || 0} {lang === "en" ? "articles" : "篇文章"}
+            </span>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+
+  <!-- ===== Divider ornament ===== -->
+  <div class="flex justify-center mb-16" aria-hidden="true">
+    <span class="block w-24 h-px bg-gradient-to-r from-transparent via-black/15 dark:via-white/15 to-transparent"></span>
+  </div>
+
+  <!-- ===== Featured articles ===== -->
+  {featured.length > 0 && (
+    <section class="mb-16" data-reveal>
+      <h2 class="text-lg font-bold font-serif mb-8">✨ {lang === "en" ? "Featured" : "精选文章"}</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {featured.map((a) => {
+          const title = lang === "en" ? (a.data.titleEn || a.data.title) : a.data.title;
+          const desc = lang === "en" ? (a.data.descriptionEn || a.data.description) : a.data.description;
+          return (
+            <a
+              href={lang === "en" ? `/en/${a.data.section}/${a.slug}` : `/${a.data.section}/${a.slug}`}
+              class="roll-card group block p-5 rounded-xl border border-black/10 dark:border-white/10 hover-lift transition-all duration-300 hover:border-black/30 dark:hover:border-white/30"
+            >
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/50 dark:text-white/50 inline-flex items-center gap-1">
+                  <ColumnIcon section={a.data.section as SectionKey} class="w-3 h-3" />
+                  {t(`columns.${a.data.section}.name`)}
+                </span>
+                <span class="text-xs text-black/25 dark:text-white/25 font-mono">
+                  {a.data.date.toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", { year: "numeric", month: "short", day: "numeric" })}
+                </span>
+              </div>
+              <h3 class="font-bold font-serif text-base mb-2 group-hover:opacity-70 transition-opacity leading-snug">{title}</h3>
+              {desc && <p class="text-sm text-black/40 dark:text-white/40 line-clamp-2 leading-relaxed">{desc}</p>}
+            </a>
+          );
+        })}
+      </div>
+    </section>
+  )}
+
+  <!-- ===== Latest articles ===== -->
+  <section data-reveal>
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-lg font-bold font-serif">{t("home.latestArticles")}</h2>
+      <a
+        href={lang === "en" ? "/en/archive/" : "/archive/"}
+        class="text-sm text-black/40 dark:text-white/40 hover:opacity-70 transition-opacity"
+      >
+        {t("home.viewAll")}
+      </a>
+    </div>
+
+    {latest.length > 0 ? (
+      <div class="space-y-2">
+        {latest.map((a) => (
+          <a
+            href={lang === "en" ? `/en/${a.data.section}/${a.slug}` : `/${a.data.section}/${a.slug}`}
+            class="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-colors group"
+          >
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="flex-shrink-0 opacity-40"><ColumnIcon section={a.data.section as SectionKey} class="w-4 h-4" /></span>
+              <span class="text-sm font-medium truncate group-hover:opacity-70 transition-opacity hover-scale-text">
+                {lang === "en" ? (a.data.titleEn || a.data.title) : a.data.title}
+              </span>
+            </div>
+            <time class="text-xs text-black/25 dark:text-white/25 font-mono flex-shrink-0 ml-4">
+              {a.data.date.toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", { month: "short", day: "numeric" })}
+            </time>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <p class="text-sm text-black/30 dark:text-white/30 italic">{t("articles.noArticles")}</p>
+    )}
+  </section>
+</BaseLayout>
