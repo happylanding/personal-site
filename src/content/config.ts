@@ -17,6 +17,8 @@ const articlesCollection = defineCollection({
     featured: z.boolean().default(false),
     /** 英文正文（可选），填写后在英文页面优先展示 */
     bodyEn: z.string().optional(),
+    /** 文章封面 / 社交分享图（可选） */
+    ogImage: z.string().optional(),
     /** 书籍专区专属字段 */
     coverImage: z.string().optional(),
     author: z.string().optional(),

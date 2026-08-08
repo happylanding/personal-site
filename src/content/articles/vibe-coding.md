@@ -8,6 +8,7 @@ tags: ["Vibe Coding", "AI编程", "网站搭建", "个人博客", "CodeBuddy"]
 tagsEn: ["Vibe Coding", "AI Programming", "Web Dev", "Personal Blog", "CodeBuddy"]
 section: tips
 featured: true
+ogImage: /images/vibe-coding/cover.png
 ---
 
 > 作者：Galvin · 共创伙伴：CodeBuddy  
@@ -67,6 +68,8 @@ featured: true
 | 我查 CSS 属性含义 | 我只要说"间距太大" |
 | "这个 Bug 修了 3 个小时" | "描述症状，3 轮对话解决" |
 
+![我们怎么分工](/images/vibe-coding/division-of-labor.png)
+
 **我的角色**：产品经理 + QA 测试 + 决策者  
 **AI 的角色**：全栈开发 + 自动化测试 + 技术文档撰写
 
@@ -79,6 +82,8 @@ featured: true
 ## 四、五个阶段：从零到上线
 
 整个项目可以分成五个阶段。
+
+![五个阶段：从零到上线](/images/vibe-coding/five-stages.png)
 
 ### 阶段一：搭骨架（约 2 小时）
 
@@ -152,6 +157,8 @@ AI 帮我选型了 Astro。理由很实在：网站本质是一堆文章，不�
 
 这里的交互流程，比"问一句、答一句"要复杂得多。
 
+![四种深度配合方式](/images/vibe-coding/four-modes.png)
+
 ### 1. 截图驱动
 
 我最常用的方式：打开网页截图，发给 AI，说一句"你看，这不对"。
@@ -193,6 +200,8 @@ AI 给几个方案，我选一个，它实施。这种"给我看看选项"的方
 ---
 
 ## 六、四个最难的问题
+
+![四个最难的问题](/images/vibe-coding/four-problems.png)
 
 ### 问题 1：`overflow-x: hidden` 的连锁反应
 
