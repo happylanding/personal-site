@@ -111,7 +111,7 @@ pnl: +12.5%
 在项目根目录运行：
 
 ```powershell
-cd D:/personal-site
+cd <项目根目录>
 npm run dev
 ```
 
@@ -125,7 +125,7 @@ npm run dev
 
 ```powershell
 # 第 1 步：进入项目目录
-cd D:/personal-site
+cd <项目根目录>
 
 # 第 2 步：提交到 Git
 git add .
@@ -144,7 +144,7 @@ git push origin main
 直接编辑对应的 `.md` 文件，修改内容后执行：
 
 ```powershell
-cd D:/personal-site
+cd <项目根目录>
 git add .
 git commit -m "fix: 修改文章标题"
 git push origin main
@@ -185,19 +185,19 @@ draft: true
 
 ```powershell
 # 本地开发预览
-cd D:/personal-site && npm run dev
+cd <项目根目录> && npm run dev
 
 # 本地构建（检查是否有错误）
-cd D:/personal-site && npm run build
+cd <项目根目录> && npm run build
 
 # 构建后本地预览生产版本
-cd D:/personal-site && npm run preview
+cd <项目根目录> && npm run preview
 
 # 查看 Git 状态
-cd D:/personal-site && git status
+cd <项目根目录> && git status
 
 # 一键提交 + 推送
-cd D:/personal-site && git add . && git commit -m "描述" && git push origin main
+cd <项目根目录> && git add . && git commit -m "描述" && git push origin main
 ```
 
 ---
