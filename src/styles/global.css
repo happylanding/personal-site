@@ -225,7 +225,10 @@ body {
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: linear-gradient(160deg, rgba(22, 163, 74, 0.05), rgba(180, 83, 9, 0.04));
   padding: 1.5rem;
-  overflow: hidden;
+  /* 用 clip 而非 hidden：overflow:hidden 会把容器变成滚动容器，
+     导致内部 .about-pin-sticky 的 position:sticky 失效并整体下移 88px，
+     与下方章节列表重叠（iPad/手机端错行）。clip 只裁切不建滚动容器。 */
+  overflow: clip;
 }
 
 .dark .about-pin {
