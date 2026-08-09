@@ -145,7 +145,7 @@ export const ui = {
         kicker: "HELLO · 自我介绍",
         title: "嗨，我是 Galvin",
         role: "终身学习者 · 数字经济从业者 · 工具折腾党",
-        location: "坐标中国",
+        location: "坐标中国·南京",
         signature: "把「终身学习」当主业，把「折腾」当副业。",
       },
       media: {
@@ -371,7 +371,7 @@ export const ui = {
         kicker: "HELLO",
         title: "Hey, I'm Galvin",
         role: "Lifelong learner · Digital economy · Tool tinkerer",
-        location: "Based in China",
+        location: "Based in Nanjing, China",
         signature: "Full-time hobby: keep learning. Side hustle: tinkering.",
       },
       media: {
