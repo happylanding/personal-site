@@ -51,6 +51,23 @@ const email = t("contact.emailValue");
 const xLink = t("contact.xLink");
 const xHandle = t("contact.xHandle");
 const wechatName = t("contact.officialAccountName");
+
+// ---- 图片区（A 精选封面画廊 + C 书架）----
+// 画廊：精选文章（排除书籍，书走书架），按栏目顺序各取一张凑成画廊
+const featuredArticles = allArticles.filter((a) => a.data.featured && a.data.section !== "books");
+const galleryArticles = (["insights", "ai", "tips"] as const)
+  .map((s) => featuredArticles.find((a) => a.data.section === s))
+  .filter((a): a is (typeof allArticles)[number] => Boolean(a))
+  .slice(0, 2);
+// 书架：3 本公版书（按出版时间排序）
+const shelfBooks = allArticles
+  .filter((a) => a.data.section === "books")
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const articleCover = (a: (typeof allArticles)[number]) =>
+  (lang === "en" ? a.data.ogImageEn || a.data.ogImage : a.data.ogImage || "").replace(/\.png$/, ".webp");
+const articleTitle = (a: (typeof allArticles)[number]) =>
+  lang === "en" ? a.data.titleEn || a.data.title : a.data.title;
 ---
 
 <Breadcrumb crumbs={[{ label: t("about.title"), href: `${prefix}/about/` }]} />
@@ -101,33 +118,84 @@ const wechatName = t("contact.officialAccountName");
     </div>
   </section>
 
-  <!-- ============ 自我介绍：全宽身份卡 ============ -->
+  <!-- ============ 自我介绍：全宽身份卡（左身份 + 右图片区 A+C） ============ -->
   <section class="about-bio" id="about-me" aria-label={t("about.bio.title")}>
     <div class="about-person-card glass-card relative overflow-hidden" data-reveal data-spotlight>
-      <span class="ghost-num text-black/5 dark:text-white/5" aria-hidden="true">01</span>
       <span class="about-person-glow" aria-hidden="true"></span>
 
-      <div class="about-person-main">
-        <div class="about-person-avatar" aria-hidden="true">
-          <Icon name="user" class="w-10 h-10" />
+      <div class="about-person-grid">
+        <!-- 左：身份信息 -->
+        <div class="about-person-main">
+          <div class="about-person-avatar" aria-hidden="true">
+            <Icon name="user" class="w-10 h-10" />
+          </div>
+
+          <div class="about-person-info">
+            <p class="about-person-kicker">{t("about.bio.kicker")}</p>
+            <h2 class="about-person-name">{t("about.bio.title")}</h2>
+
+            <ul class="about-person-roles">
+              {roles.map((r: string) => (
+                <li class="about-person-role">{r}</li>
+              ))}
+            </ul>
+
+            <p class="about-person-location">
+              <Icon name="sparkles" class="w-3.5 h-3.5" />
+              {t("about.bio.location")}
+            </p>
+
+            <p class="about-person-signature">{t("about.bio.signature")}</p>
+          </div>
         </div>
 
-        <div class="about-person-info">
-          <p class="about-person-kicker">{t("about.bio.kicker")}</p>
-          <h2 class="about-person-name">{t("about.bio.title")}</h2>
+        <!-- 右：图片区（A 精选封面画廊 + C 书架摆书） -->
+        <div class="about-person-media">
+          {galleryArticles.length > 0 && (
+            <div class="about-gallery">
+              <p class="about-media-label">{t("about.media.galleryLabel")}</p>
+              <div class="about-gallery-grid">
+                {galleryArticles.map((a) => (
+                  <a
+                    href={`${prefix}/${a.data.section}/${a.id}`}
+                    class="about-gallery-item group"
+                    data-spotlight
+                    data-tilt
+                  >
+                    <img
+                      src={articleCover(a)}
+                      alt={articleTitle(a)}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <span class="about-gallery-overlay">
+                      <span class="about-gallery-section">{t(`columns.${a.data.section}.name`)}</span>
+                      <span class="about-gallery-title">{articleTitle(a)}</span>
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
 
-          <ul class="about-person-roles">
-            {roles.map((r: string) => (
-              <li class="about-person-role">{r}</li>
-            ))}
-          </ul>
-
-          <p class="about-person-location">
-            <Icon name="sparkles" class="w-3.5 h-3.5" />
-            {t("about.bio.location")}
-          </p>
-
-          <p class="about-person-signature">{t("about.bio.signature")}</p>
+          {shelfBooks.length > 0 && (
+            <div class="about-bookshelf">
+              <p class="about-media-label">{t("about.media.booksLabel")}</p>
+              <div class="about-bookshelf-row">
+                {shelfBooks.map((b) => (
+                  <a
+                    href={`${prefix}/${b.data.section}/${b.id}`}
+                    class="about-book"
+                    data-tilt
+                    title={articleTitle(b)}
+                  >
+                    <img src={articleCover(b)} alt={articleTitle(b)} loading="lazy" decoding="async" />
+                    <span class="about-book-spine" aria-hidden="true"></span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
