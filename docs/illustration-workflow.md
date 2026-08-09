@@ -14,7 +14,7 @@
                                     【配图环节】(本流程)
                                     ① 生成封面 cover.png / cover-en.png
                                     ② frontmatter 写入 ogImage / ogImageEn
-                                    ③ （可选）正文章节配图
+                                    ③ （可选）正文章节配图（双语文章须配套 -en 英文版）
                                               │
                                               ▼
                                     构建验证 → 提交 → 部署
@@ -134,6 +134,22 @@ ogImageEn: /images/my-new-article/cover-en.png
 
 > 章节配图如需与封面同模板的自动排版能力，可参考 `scripts/cover-render.mjs` 的 `buildSvg()`。
 
+### 3.5 正文章节配图·英文版（双语文章必须）
+
+**规则：只要文章有英文正文（`articles-en/<slug>.md`），正文章节插图就必须配套英文版。** 中文正文引中文图，英文正文引英文图，避免英文页面出现中文插图。
+
+```bash
+# vibe-coding 的 4 张章节插图英文版（星野极光·分栏配色，文字全英文）
+bash scripts/gen-vibe-coding-figs-en.sh
+```
+
+约定：
+
+- 英文插图文件命名 `<图名>-en.svg` / `<图名>-en.png`，与中文版 `<图名>.svg` / `<图名>.png` 同目录（`public/images/<slug>/`）
+- 英文正文（`src/content/articles-en/<slug>.md`）引用 `-en` 版本，中文正文（`src/content/articles/<slug>.md`）引用原版
+- 中英混排字体栈统一：英文用「新罗马（Times New Roman / Liberation Serif）优先 + 宋体回退」，与封面规范一致
+- 其他文章新增章节插图时，按同一约定生成 `-en` 版本并同步引用，防止再出现「英文页图片还是中文」
+
 ---
 
 ## 四、批量处理旧文章
@@ -152,6 +168,7 @@ for f in src/content/articles/*.md; do node scripts/cover-render.mjs --article "
 - [ ] `public/images/<slug>/cover.png` 与 `cover-en.png` 存在（1200×630）
 - [ ] 封面标题完整、无单词被切断、无溢出
 - [ ] frontmatter 已加 `ogImage`（/ `ogImageEn`）
+- [ ] 有英文正文的文章：正文章节插图存在 `-en` 版本且英文正文引用它（`grep images/ src/content/articles-en/*.md` 核对）
 - [ ] `npm run build` 通过
 - [ ] 页面预览：文章页头部 banner + 社交分享图正常
 

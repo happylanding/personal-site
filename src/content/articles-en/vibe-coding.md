@@ -66,7 +66,7 @@ Looking back at the past few days of development, I realize we formed a special 
 | I look up CSS property meanings | I just say "the spacing is too big" |
 | "This bug took 3 hours to fix" | "Describe the symptom, solved in 3 rounds of conversation" |
 
-![How we divided the work](/images/vibe-coding/division-of-labor.png)
+![How we divided the work](/images/vibe-coding/division-of-labor-en.png)
 
 **My role**: Product Manager + QA tester + decision-maker
 **AI's role**: Full-stack developer + automated tester + technical writer
@@ -81,7 +81,7 @@ But this kind of lazy description also wasted a fair amount of compute. Vague ph
 
 The whole project can be divided into five stages.
 
-![Five stages: from zero to launch](/images/vibe-coding/five-stages.png)
+![Five stages: from zero to launch](/images/vibe-coding/five-stages-en.png)
 
 ### Stage 1: Build the Skeleton (~2 hours)
 
@@ -155,7 +155,7 @@ Final live address: **[galvinai.pages.dev](https://galvinai.pages.dev)** (55+ bi
 
 The interaction here is far more complex than "ask one, answer one."
 
-![Four ways of deep collaboration](/images/vibe-coding/four-modes.png)
+![Four ways of deep collaboration](/images/vibe-coding/four-modes-en.png)
 
 ### 5.1 Screenshot-Driven
 
@@ -199,7 +199,7 @@ For all the site's Chinese-English copy, I write Chinese and AI translates to En
 
 ## 6. The Four Hardest Problems
 
-![The four hardest problems](/images/vibe-coding/four-problems.png)
+![The four hardest problems](/images/vibe-coding/four-problems-en.png)
 
 ### Problem 1: The Chain Reaction of `overflow-x: hidden`
 
