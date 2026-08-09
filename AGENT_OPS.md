@@ -96,6 +96,8 @@ draft: false
 
 智能体自动执行：草稿 → 写入 `articles/` → `astro build` 验证 → `git commit` → `git push` → Cloudflare 部署。
 
+> **英文正文（推荐）**：发布后请在 `src/content/articles-en/` 写同 slug 的英文正文（`.md`，标题/描述/标签用英文）。英文文章页 `/en/:section/:slug` 会优先渲染它；若暂未写，英文页自动回退中文原文，不影响构建。详见 `MAINTENANCE.md` §5。
+
 ### 第五步：配图环节（发布后紧接着执行）
 
 每篇文章发布后**紧接着进入配图环节**，默认使用「星野极光·分栏配色」风格（详见 `docs/illustration-workflow.md`）：
@@ -117,7 +119,8 @@ ogImageEn: /images/<slug>/cover-en.png
 
 ```
 src/content/drafts/          ← 你丢草稿的地方
-src/content/articles/        ← 智能体处理完放这里
+src/content/articles/        ← 智能体处理完放这里（中文正文 + frontmatter）
+src/content/articles-en/     ← 同 slug 的英文正文（推荐补写，见 MAINTENANCE.md §5）
 ```
 
 草稿处理完后原始文件会保留在 `drafts/`，你可以手动删除或留着做备份。

@@ -22,7 +22,10 @@ const allArticles = await getCollection("articles", ({ data }) => !data.draft);
 const article = allArticles.find((a) => a.id === slug && a.data.section === section);
 if (!article) return Astro.redirect("/404");
 
-const { Content } = await render(article);
+// 英文正文优先：同 slug 的 articles-en 集合（Markdown 原文）→ frontmatter bodyEn（HTML）→ 中文原文
+const enArticles = await getCollection("articles-en", ({ data }) => !data.draft);
+const enArticle = enArticles.find((a) => a.id === slug);
+const { Content } = enArticle ? await render(enArticle) : await render(article);
 
 const displayTitle = article.data.titleEn || article.data.title;
 const displayDesc = article.data.descriptionEn || article.data.description;
@@ -32,7 +35,6 @@ const dateStr = article.data.date.toLocaleDateString("en-US", {
 });
 const isBook = section === "books";
 const displayAuthor = article.data.authorEn || article.data.author;
-const hasEnglishBody = !!article.data.bodyEn;
 const ogImage = article.data.ogImageEn || article.data.ogImage || "/favicon.svg";
 
 // 上一篇 / 下一篇（同栏目内按时间排序）
@@ -109,10 +111,21 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
     </header>
 
     {
-      hasEnglishBody ? (
+      enArticle ? (
         <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14">
           <div class="min-w-0 order-1">
-            <div class="prose dark:prose-invert article-content max-w-none" set:html={article.data.bodyEn!} />
+            <div class="prose dark:prose-invert article-content max-w-none">
+              <Content />
+            </div>
+          </div>
+          <div class="min-w-0 order-2">
+            <ArticleTOC label={t("articles.toc")} countFormat={t("articles.tocCount")} />
+          </div>
+        </div>
+      ) : article.data.bodyEn ? (
+        <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14">
+          <div class="min-w-0 order-1">
+            <div class="prose dark:prose-invert article-content max-w-none" set:html={article.data.bodyEn} />
           </div>
           <div class="min-w-0 order-2">
             <ArticleTOC label={t("articles.toc")} countFormat={t("articles.tocCount")} />

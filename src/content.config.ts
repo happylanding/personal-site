@@ -47,6 +47,46 @@ const articlesCollection = defineCollection({
 });
 
 /**
+ * 英文文章正文集合：与 articles 同 slug 一一对应（英文原文优先）。
+ * 文章路径 /en/:section/:slug 会优先渲染本集合的正文；
+ * 缺失时回退到中文原文（见 src/pages/en/[section]/[slug].astro）。
+ */
+const articlesEnCollection = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/articles-en" }),
+  schema: z.object({
+    title: z.string(),
+    titleEn: z.string().optional(),
+    description: z.string().optional(),
+    descriptionEn: z.string().optional(),
+    date: z.date(),
+    updated: z.date().optional(),
+    tags: z.array(z.string()).default([]),
+    tagsEn: z.array(z.string()).default([]),
+    section: z.enum(["insights", "ai", "tips", "books", "invest"]).default("tips"),
+    draft: z.boolean().default(false),
+    featured: z.boolean().default(false),
+    bodyEn: z.string().optional(),
+    ogImage: z.string().optional(),
+    ogImageEn: z.string().optional(),
+    coverImage: z.string().optional(),
+    author: z.string().optional(),
+    authorEn: z.string().optional(),
+    epubUrl: z.string().optional(),
+    pdfUrl: z.string().optional(),
+    mobiUrl: z.string().optional(),
+    azw3Url: z.string().optional(),
+    fb2Url: z.string().optional(),
+    txtUrl: z.string().optional(),
+    readUrl: z.string().optional(),
+    reviewUrl: z.string().optional(),
+    buyUrl: z.string().optional(),
+    rating: z.number().min(0).max(5).optional(),
+    ticker: z.string().optional(),
+    pnl: z.string().optional(),
+  }),
+});
+
+/**
  * 草稿箱：格式不限（不需要 frontmatter，也不需要日期/标签）。
  * 使用宽松 schema，避免自动生成集合的 deprecation 警告，
  * 也不会在草稿文件加入时触发校验错误。
@@ -120,6 +160,7 @@ const toolsCollection = defineCollection({
 
 export const collections = {
   articles: articlesCollection,
+  "articles-en": articlesEnCollection,
   sites: sitesCollection,
   tools: toolsCollection,
   drafts: draftsCollection,

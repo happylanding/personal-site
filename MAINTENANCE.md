@@ -43,7 +43,8 @@ src/
 │
 ├── content/
 │   ├── config.ts               # Zod schema 定义（见 §3）
-│   ├── articles/               # 已发布文章
+│   ├── articles/               # 已发布文章（中文）
+│   ├── articles-en/            # 英文文章正文（与 articles 同 slug 对应，见 §5）
 │   └── drafts/                 # 草稿箱：写完丢这里，智能体自动处理 → 发布到 articles/
 │
 ├── i18n/
@@ -94,7 +95,7 @@ docs/                           # 归档文档
 | `section` | `enum` | | 专栏：`insights` / `ai` / `tips` / `books` / `invest`（默认 `tips`） |
 | `draft` | `boolean` | | 草稿（默认 `false`） |
 | `featured` | `boolean` | | 精选（默认 `false`） |
-| `bodyEn` | `string` | | **英文正文（HTML）**，不填则英文页 fallback 到中文原文 |
+| `bodyEn` | `string` | | 英文正文（HTML），不填则英文页 fallback 到中文原文（**已由 `articles-en` 集合取代，见 §5**） |
 | `coverImage` | `string` | | 书籍封面图 |
 | `author` | `string` | | 作者 |
 | `authorEn` | `string` | | 英文作者名 |
@@ -128,7 +129,17 @@ docs/                           # 归档文档
 
 ## 5. 双语实现逻辑
 
-同 P0 前：双份页面 + 静态字典；`/en/` 前缀英文路由。`bodyEn` 未填时英文页 fallback 中文原文。
+双份页面 + 静态字典；`/en/` 前缀英文路由。**英文文章正文**采用独立内容集合：
+
+- 每个英文正文是一个独立 Markdown 文件，放在 `src/content/articles-en/`，**文件名（slug）与中文文章 `src/content/articles/` 一一对应**
+- 英文文章页 `/en/:section/:slug` 的渲染优先级：
+  1. `src/content/articles-en/<slug>.md`（英文 Markdown 原文，推荐）
+  2. frontmatter `bodyEn`（HTML 字符串，旧方式，仍兼容）
+  3. 中文原文（fallback，无英文版本时）
+- 英文正文的 frontmatter 只作为信息源，页面头部（标题/摘要/标签/日期/作者/封面）仍取中文文章 frontmatter 的 `titleEn/descriptionEn/tagsEn/authorEn/ogImageEn`，确保整页一致
+- 目录（TOC）随正文语言自动生成：英文正文 → 英文目录，中文正文 → 中文目录
+
+> 新增文章时的建议：先在 `src/content/articles/` 写中文正文 + frontmatter，再在 `src/content/articles-en/` 写同 slug 的英文正文。若暂时没有英文正文，英文页会自动回退中文原文，不影响构建。
 
 ---
 
