@@ -6,7 +6,7 @@
  *   - Hero：超大衬线渐变标题 + 遮罩上拉（lmask），与首页 Hero 呼应
  *   - 数据卡：磨砂玻璃（glass-card）+ 聚光 + 3D 倾斜 + 数字滚动（count-up）
  *   - 旅程：竖向时间线，圆点 + 连接线，章节卡片 hover 主题色
- *   - 自我介绍：左侧人物卡 + 右侧正文双栏
+ *   - 自我介绍：全宽身份卡（头像 + 姓名 + 角色徽章 + 坐标 + 签名），已移除长篇正文
  *   - 专栏：复用首页 roll-card（玻璃卡 + spotlight + tilt + ghost-num）
  *   - CTA：联系动作卡，俏皮收尾
  *
@@ -42,8 +42,11 @@ const stats: Array<{ value: number; unit: string; icon: "fileText" | "listTree" 
   { value: bookCount, unit: t("about.stats.books"), icon: "bookOpen" },
 ];
 
-const bioParagraphs = t("about.bio.paragraphs") as string[];
 const journeyChapters = t("about.journey.chapters") as string[];
+const roles = (t("about.bio.role") as string)
+  .split("·")
+  .map((s) => s.trim())
+  .filter(Boolean);
 const email = t("contact.emailValue");
 const xLink = t("contact.xLink");
 const xHandle = t("contact.xHandle");
@@ -98,31 +101,33 @@ const wechatName = t("contact.officialAccountName");
     </div>
   </section>
 
-  <!-- ============ 自我介绍：左侧人物卡 + 右侧正文 ============ -->
+  <!-- ============ 自我介绍：全宽身份卡 ============ -->
   <section class="about-bio" id="about-me" aria-label={t("about.bio.title")}>
-    <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-6" data-reveal>
-      <!-- 人物卡 -->
-      <aside class="about-person-card glass-card relative overflow-hidden" data-spotlight>
-        <span class="ghost-num text-black/5 dark:text-white/5" aria-hidden="true">01</span>
-        <div class="about-person-avatar" aria-hidden="true">
-          <Icon name="user" class="w-9 h-9" />
-        </div>
-        <p class="about-person-kicker">{t("about.bio.kicker")}</p>
-        <h2 class="about-person-name">{t("about.bio.title")}</h2>
-        <p class="about-person-role">{t("about.bio.role")}</p>
-        <p class="about-person-location">
-          <Icon name="sparkles" class="w-3.5 h-3.5" />
-          {t("about.bio.location")}
-        </p>
-        <p class="about-person-signature">{t("about.bio.signature")}</p>
-      </aside>
+    <div class="about-person-card glass-card relative overflow-hidden" data-reveal data-spotlight>
+      <span class="ghost-num text-black/5 dark:text-white/5" aria-hidden="true">01</span>
+      <span class="about-person-glow" aria-hidden="true"></span>
 
-      <!-- 正文双栏 -->
-      <div class="about-bio-body">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-          {bioParagraphs.map((p: string, i: number) => (
-            <p class="about-bio-paragraph" data-reveal style={`--reveal-index:${i}`}>{p}</p>
-          ))}
+      <div class="about-person-main">
+        <div class="about-person-avatar" aria-hidden="true">
+          <Icon name="user" class="w-10 h-10" />
+        </div>
+
+        <div class="about-person-info">
+          <p class="about-person-kicker">{t("about.bio.kicker")}</p>
+          <h2 class="about-person-name">{t("about.bio.title")}</h2>
+
+          <ul class="about-person-roles">
+            {roles.map((r: string) => (
+              <li class="about-person-role">{r}</li>
+            ))}
+          </ul>
+
+          <p class="about-person-location">
+            <Icon name="sparkles" class="w-3.5 h-3.5" />
+            {t("about.bio.location")}
+          </p>
+
+          <p class="about-person-signature">{t("about.bio.signature")}</p>
         </div>
       </div>
     </div>

@@ -13,7 +13,6 @@ export const ui = {
       tips: "实用技巧",
       books: "书籍资源",
       about: "关于",
-      contact: "联系",
       all: "全部",
       menu: "打开菜单",
     },
@@ -149,12 +148,6 @@ export const ui = {
         role: "终身学习者 · 数字经济从业者 · 工具折腾党",
         location: "坐标中国",
         signature: "把「终身学习」当主业，把「折腾」当副业。",
-        paragraphs: [
-          "你好呀，我是 Galvin，一个把「终身学习」当主业、把折腾当副业的人。",
-          "这个网站是我的数字小窝：一边玩转 AI，一边研究怎么让工具更听话，偶尔把脑子里跑过的想法写成文章。",
-          "我坚信技术不该是冷冰冰的代码，而该是个靠谱的小帮手——帮你省时间，顺便帮你偷点懒（嘘，这是加分项）。从 WPS 到各种 AI 神器，我都喜欢亲自下场试一试。",
-          "如果你也对这些话题上头，欢迎来撩：邮件、微信都行，留言必回（除非消息太多，那就……排着队慢慢回 😄）。",
-        ],
       },
       journey: {
         kicker: "MY STORY · 一段旅程",
@@ -244,7 +237,6 @@ export const ui = {
       tips: "Tips",
       books: "Books",
       about: "About",
-      contact: "Contact",
       all: "All",
       menu: "Open menu",
     },
@@ -380,12 +372,6 @@ export const ui = {
         role: "Lifelong learner · Digital economy · Tool tinkerer",
         location: "Based in China",
         signature: "Full-time hobby: keep learning. Side hustle: tinkering.",
-        paragraphs: [
-          "Hey, I'm Galvin — a lifelong learner who treats `keep learning` as a full-time hobby (and `tinkering` as the side hustle).",
-          "This site is my digital nest: I play with AI, boss tools around, and occasionally turn the thoughts bouncing in my head into articles worth reading.",
-          "I believe tech shouldn't be cold code — it should be a trusty sidekick that saves you time (and lets you slack off a little, which is a bonus). From WPS to AI goodies, I try everything myself.",
-          "If any of this sparks your interest, drop me a line via email or WeChat. I reply to every message — eventually. 😄",
-        ],
       },
       journey: {
         kicker: "MY STORY · A JOURNEY",

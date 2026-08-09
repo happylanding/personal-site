@@ -104,13 +104,6 @@ const isToolsPage = Astro.url.pathname.includes("/tools");
         >
           {t("nav.about")}
         </a>
-
-        <a
-          href={lang === "en" ? "/en/contact/" : "/contact/"}
-          class={`px-3 py-2 text-sm rounded-lg transition-colors ${isCurrentSection("contact") ? "bg-black/10 dark:bg-white/10 font-semibold" : "hover:bg-black/5 dark:hover:bg-white/5"}`}
-        >
-          {t("nav.contact")}
-        </a>
       </div>
 
       <!-- Divider (desktop only — between nav links and control buttons) -->
@@ -227,18 +220,6 @@ const isToolsPage = Astro.url.pathname.includes("/tools");
           <span class="mobile-nav-arrow opacity-0 group-hover:opacity-30 transition-opacity"><Icon name="chevronRight" class="w-4 h-4" /></span>
         </a>
 
-        <!-- Contact -->
-        <a
-          href={lang === "en" ? "/en/contact/" : "/contact/"}
-          class="mobile-nav-item group"
-          style="transition-delay: 0.56s"
-        >
-          <span class="mobile-nav-icon">
-            <Icon name="mail" class="w-5 h-5" />
-          </span>
-          <span class="mobile-nav-label">{t("nav.contact")}</span>
-          <span class="mobile-nav-arrow opacity-0 group-hover:opacity-30 transition-opacity"><Icon name="chevronRight" class="w-4 h-4" /></span>
-        </a>
       </div>
     </nav>
   </div>
