@@ -397,205 +397,572 @@ html:not(.js) .lmask-inner {
   }
 }
 
-/* ===== About pin 叙事 (方案 C：CSS sticky，每页仅 1 个 pin) ===== */
-.about-pin {
-  margin: 0 0 3.5rem;
-  border-radius: 1rem;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: linear-gradient(160deg, rgba(22, 163, 74, 0.05), rgba(180, 83, 9, 0.04));
-  padding: 1.5rem;
-  /* 用 clip 而非 hidden：overflow:hidden 会把容器变成滚动容器，
-     导致内部 .about-pin-sticky 的 position:sticky 失效并整体下移 88px，
-     与下方章节列表重叠（iPad/手机端错行）。clip 只裁切不建滚动容器。 */
-  overflow: clip;
+/* ===== About 页 v2：星野极光 · 人文温暖 ===== */
+
+/* ---- 通用：小标签 + 短饰条 ---- */
+.about-kicker {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(180, 83, 9, 0.85);
 }
 
-/* About 页统一布局（配合方案 B 全站加宽，消化两侧留白） */
+.dark .about-kicker {
+  color: rgba(245, 158, 11, 0.8);
+}
+
+.about-kicker-bar {
+  width: 26px;
+  height: 3px;
+  border-radius: 9999px;
+  background: #b45309;
+}
+
+.dark .about-kicker-bar {
+  background: #f59e0b;
+}
+
+.about-hero-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.4rem;
+}
+
+/* ---- Hero ---- */
+.about-hero {
+  padding: 3rem 0 2.5rem;
+  text-align: left;
+}
+
 .about-hero-title {
   font-family: var(--font-serif);
-  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-size: clamp(2.4rem, 6vw, 4.6rem);
   font-weight: 800;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
-  margin-bottom: 2.5rem;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  max-width: 18ch;
+  margin: 0 0 1.2rem;
+}
+
+.about-hero-title .lmask-inner {
   background: linear-gradient(120deg, #1f2937 0%, #374151 55%, #b45309 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-.dark .about-hero-title {
+.dark .about-hero-title .lmask-inner {
   background: linear-gradient(120deg, #f9fafb 0%, #d1d5db 55%, #fbbf24 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* pin 区加宽后的左右分栏：左侧 sticky 引言，右侧章节时间线 */
-.about-pin-wide {
-  padding: 0;
-  overflow: visible;
-  background: transparent;
-  border: none;
+.about-hero-intro {
+  max-width: 42rem;
+  font-size: clamp(1rem, 1.6vw, 1.18rem);
+  line-height: 1.85;
+  color: rgba(0, 0, 0, 0.58);
+  font-family: var(--font-serif);
+  margin: 0 0 1.8rem;
+}
+
+.dark .about-hero-intro {
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.about-hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.92rem;
+  color: rgba(0, 0, 0, 0.42);
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+
+.dark .about-hero-cta {
+  color: rgba(255, 255, 255, 0.46);
+}
+
+.about-hero-cta:hover {
+  color: #b45309;
+}
+
+.dark .about-hero-cta:hover {
+  color: #f59e0b;
+}
+
+/* ---- 数据卡 ---- */
+.about-stats {
+  margin: 0 0 3.5rem;
+}
+
+.about-stats-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.32);
+  margin: 0 0 1rem;
+}
+
+.dark .about-stats-label {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.about-stat-card {
+  padding: 1.1rem 1.25rem;
+  border-radius: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  overflow: hidden;
+}
+
+.about-stat-icon {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.7rem;
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-  gap: 2.5rem;
-  align-items: start;
+  place-items: center;
+  background: rgba(180, 83, 9, 0.1);
+  color: rgba(180, 83, 9, 0.85);
+  flex-shrink: 0;
 }
 
-.about-pin-wide .about-pin-sticky {
-  position: sticky;
-  top: 96px;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: linear-gradient(160deg, rgba(22, 163, 74, 0.05), rgba(180, 83, 9, 0.04));
+.dark .about-stat-icon {
+  background: rgba(245, 158, 11, 0.14);
+  color: rgba(245, 158, 11, 0.9);
 }
 
-.dark .about-pin-wide .about-pin-sticky {
-  border-color: rgba(255, 255, 255, 0.1);
-  background: linear-gradient(160deg, rgba(22, 163, 74, 0.09), rgba(180, 83, 9, 0.06));
+.about-stat-value {
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: rgba(0, 0, 0, 0.82);
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
 }
 
-.about-pin-wide .about-pin-chapters {
+.dark .about-stat-value {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.about-stat-unit {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.dark .about-stat-unit {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ---- 自我介绍 ---- */
+.about-bio {
+  margin: 0 0 4rem;
+}
+
+.about-person-card {
+  padding: 1.8rem;
+  border-radius: 1.1rem;
+  overflow: hidden;
+}
+
+.about-person-avatar {
+  width: 4.2rem;
+  height: 4.2rem;
+  border-radius: 9999px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(150deg, rgba(22, 163, 74, 0.16), rgba(180, 83, 9, 0.14));
+  color: rgba(180, 83, 9, 0.85);
+  margin-bottom: 1.2rem;
+}
+
+.dark .about-person-avatar {
+  color: rgba(245, 158, 11, 0.9);
+}
+
+.about-person-kicker {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(180, 83, 9, 0.8);
+  margin: 0 0 0.45rem;
+}
+
+.dark .about-person-kicker {
+  color: rgba(245, 158, 11, 0.8);
+}
+
+.about-person-name {
+  font-family: var(--font-serif);
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin: 0 0 0.5rem;
+}
+
+.about-person-role {
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.5);
+  margin: 0 0 0.9rem;
+}
+
+.dark .about-person-role {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.about-person-location {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: rgba(22, 163, 74, 0.85);
+  padding: 0.3rem 0.7rem;
+  border-radius: 9999px;
+  background: rgba(22, 163, 74, 0.1);
+  margin: 0 0 1.1rem;
+}
+
+.dark .about-person-location {
+  color: rgba(74, 222, 128, 0.9);
+  background: rgba(22, 163, 74, 0.16);
+}
+
+.about-person-signature {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: rgba(0, 0, 0, 0.68);
   margin: 0;
-  padding: 0.25rem 0;
 }
 
-.about-pin-wide .about-pin-chapter {
+.dark .about-person-signature {
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.about-bio-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.about-bio-paragraph {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: rgba(0, 0, 0, 0.7);
+  margin: 0;
+  transition-delay: calc(var(--reveal-index, 0) * 90ms);
+}
+
+.dark .about-bio-paragraph {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+@media (min-width: 768px) {
+  .about-bio-paragraph {
+    font-size: 1.08rem;
+  }
+}
+
+/* ---- 旅程时间线 ---- */
+.about-journey {
+  margin: 0 0 4rem;
+}
+
+.about-journey-head {
+  margin-bottom: 2.2rem;
+}
+
+.about-journey-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+
+.about-journey-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin: 0 0 0.7rem;
+}
+
+.about-journey-quote {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: rgba(0, 0, 0, 0.55);
+  max-width: 40rem;
+  margin: 0;
+}
+
+.dark .about-journey-quote {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+/* 时间线本体：左列节点，右侧卡片 */
+.about-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.about-timeline-item {
+  display: grid;
+  grid-template-columns: minmax(3.2rem, auto) 1fr;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.about-timeline-node {
   position: relative;
-  padding: 1.1rem 1.25rem 1.1rem 2.75rem;
-  border-radius: 0.85rem;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  background: rgba(255, 255, 255, 0.5);
-  font-size: 1rem;
-  transition: border-color 0.25s ease, transform 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 1.05rem;
 }
 
-.dark .about-pin-wide .about-pin-chapter {
-  border-color: rgba(255, 255, 255, 0.07);
-  background: rgba(255, 255, 255, 0.02);
+.about-timeline-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 9999px;
+  background: rgba(180, 83, 9, 0.85);
+  box-shadow: 0 0 0 4px rgba(180, 83, 9, 0.12);
+  flex-shrink: 0;
 }
 
-.about-pin-wide .about-pin-chapter:hover {
-  border-color: rgba(22, 163, 74, 0.45);
+.dark .about-timeline-dot {
+  background: rgba(245, 158, 11, 0.9);
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.14);
+}
+
+.about-timeline-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: rgba(0, 0, 0, 0.3);
+  margin-top: 0.4rem;
+  writing-mode: vertical-rl;
+}
+
+.dark .about-timeline-num {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* 连接线：覆盖在节点下方 */
+.about-timeline-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg, rgba(180, 83, 9, 0.4), rgba(180, 83, 9, 0.06));
+}
+
+.dark .about-timeline-item::before {
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.4), rgba(245, 158, 11, 0.06));
+}
+
+.about-timeline-item:last-child::before {
+  background: linear-gradient(180deg, rgba(180, 83, 9, 0.4), transparent);
+}
+
+.dark .about-timeline-item:last-child::before {
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.4), transparent);
+}
+
+/* 节点列居中连接线（节点列宽 3.2rem，圆心在其中心） */
+.about-timeline-item::before {
+  left: calc(1.6rem - 0.5px);
+}
+
+.about-timeline-card {
+  padding: 1.05rem 1.3rem;
+  border-radius: 0.9rem;
+  font-size: 0.98rem;
+  line-height: 1.7;
+  color: rgba(0, 0, 0, 0.68);
+  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1), border-color 0.3s, box-shadow 0.3s;
+}
+
+.dark .about-timeline-card {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.about-timeline-card:hover {
+  border-color: rgba(180, 83, 9, 0.4);
   transform: translateX(3px);
 }
 
-.about-pin-wide .about-pin-dot {
-  position: absolute;
-  left: 1.25rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 10px;
-  height: 10px;
-  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.10);
-}
-
-/* About 页个人介绍：双栏网格（宽屏） */
-.about-bio-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
+.dark .about-timeline-card:hover {
+  border-color: rgba(245, 158, 11, 0.45);
 }
 
 @media (min-width: 768px) {
-  .about-bio-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 1.25rem 2.5rem;
+  .about-timeline-card {
+    font-size: 1.02rem;
   }
 }
 
-.about-bio-col {
-  font-size: 1.05rem;
-  line-height: 1.9;
+/* ---- 专栏区 ---- */
+.about-columns {
+  margin: 0 0 4rem;
 }
 
-@media (min-width: 768px) {
-  .about-bio-col {
-    font-size: 1.1rem;
-  }
+.about-columns-desc {
+  font-size: 0.95rem;
+  color: rgba(0, 0, 0, 0.5);
+  margin: 0;
 }
 
-/* 移动端：About pin 退回单栏堆叠 */
-@media (max-width: 767px) {
-  .about-pin-wide {
-    display: block;
-  }
-  .about-pin-wide .about-pin-sticky {
-    position: static;
-    margin-bottom: 1.25rem;
-  }
-  .about-pin-wide .about-pin-chapter {
-    padding: 1rem 1.1rem 1rem 2.5rem;
-  }
+.dark .about-columns-desc {
+  color: rgba(255, 255, 255, 0.56);
 }
 
-.dark .about-pin {
-  border-color: rgba(255, 255, 255, 0.1);
-  background: linear-gradient(160deg, rgba(22, 163, 74, 0.09), rgba(180, 83, 9, 0.06));
+/* ---- CTA ---- */
+.about-cta {
+  margin: 0 0 2rem;
 }
 
-.about-pin-sticky {
-  position: sticky;
-  top: 88px; /* 避开 sticky header */
-  z-index: 1;
+.about-cta-card {
+  padding: 2.4rem 2rem;
+  border-radius: 1.25rem;
+  text-align: center;
+  overflow: hidden;
 }
 
-.about-pin-step {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(22, 163, 74, 0.85);
+.about-cta-card .about-person-kicker {
   margin-bottom: 0.6rem;
 }
 
-.about-pin-quote {
+.about-cta-title {
   font-family: var(--font-serif);
-  font-size: 1.35rem;
-  line-height: 1.6;
-  color: rgba(0, 0, 0, 0.8);
-  max-width: 34ch;
+  font-size: clamp(1.6rem, 3.4vw, 2.2rem);
+  font-weight: 800;
+  line-height: 1.25;
+  margin: 0 0 0.7rem;
 }
 
-.dark .about-pin-quote {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.about-pin-chapters {
-  list-style: none;
-  margin: 2.5rem 0 0;
-  padding: 0;
-  display: grid;
-  gap: 1.1rem;
-}
-
-.about-pin-chapter {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 0.95rem;
-  line-height: 1.5;
+.about-cta-desc {
+  max-width: 34rem;
+  margin: 0 auto 1.6rem;
+  font-size: 0.98rem;
+  line-height: 1.75;
   color: rgba(0, 0, 0, 0.55);
 }
 
-.dark .about-pin-chapter {
+.dark .about-cta-desc {
   color: rgba(255, 255, 255, 0.6);
 }
 
-.about-pin-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 9999px;
-  flex-shrink: 0;
-  background: rgba(22, 163, 74, 0.55);
+.about-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.7rem;
+  margin-bottom: 1.4rem;
 }
 
+.about-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #b45309, #d97706);
+  box-shadow: 0 6px 18px rgba(180, 83, 9, 0.25);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.3s;
+}
+
+.dark .about-cta-btn {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.22);
+}
+
+.about-cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(180, 83, 9, 0.32);
+}
+
+.dark .about-cta-btn:hover {
+  box-shadow: 0 10px 26px rgba(245, 158, 11, 0.3);
+}
+
+.about-cta-btn-static {
+  background: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.65);
+  box-shadow: none;
+}
+
+.dark .about-cta-btn-static {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.75);
+  box-shadow: none;
+}
+
+.about-cta-btn-static:hover {
+  transform: translateY(-2px);
+  box-shadow: none;
+}
+
+.about-cta-footer {
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.4);
+  font-family: var(--font-serif);
+  font-style: italic;
+  margin: 0;
+}
+
+.dark .about-cta-footer {
+  color: rgba(255, 255, 255, 0.46);
+}
+
+/* 移动端：时间线节点列收紧 */
+@media (max-width: 479px) {
+  .about-timeline-item {
+    grid-template-columns: 2.6rem 1fr;
+    gap: 0.7rem;
+  }
+  .about-timeline-item::before {
+    left: calc(1.3rem - 0.5px);
+  }
+  .about-timeline-card {
+    font-size: 0.94rem;
+  }
+}
+
+/* 关闭动效：时间线卡片 hover 位移/CTA 上浮等还原 */
 @media (prefers-reduced-motion: reduce) {
-  .about-pin-sticky {
-    position: static;
+  .about-timeline-card:hover {
+    transform: none;
+  }
+  .about-cta-btn:hover {
+    transform: none;
+  }
+  .about-hero-cta:hover {
+    color: inherit;
   }
 }
 

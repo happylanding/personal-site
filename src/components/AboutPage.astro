@@ -1,0 +1,225 @@
+---
+/**
+ * AboutPage — 关于页主体（中英文共用）
+ *
+ * 设计语言：延续全站「星野极光 · 人文温暖」——
+ *   - Hero：超大衬线渐变标题 + 遮罩上拉（lmask），与首页 Hero 呼应
+ *   - 数据卡：磨砂玻璃（glass-card）+ 聚光 + 3D 倾斜 + 数字滚动（count-up）
+ *   - 旅程：竖向时间线，圆点 + 连接线，章节卡片 hover 主题色
+ *   - 自我介绍：左侧人物卡 + 右侧正文双栏
+ *   - 专栏：复用首页 roll-card（玻璃卡 + spotlight + tilt + ghost-num）
+ *   - CTA：联系动作卡，俏皮收尾
+ *
+ * 数据全部动态统计（文章/专栏/工具/公版书数量），随站内内容自动变化。
+ */
+import Breadcrumb from "./Breadcrumb.astro";
+import ColumnIcon from "./ColumnIcon.astro";
+import Icon from "./Icon.astro";
+import { useTranslations } from "../i18n/utils";
+import { getCollection } from "astro:content";
+import { SECTION_ORDER } from "../lib/sections";
+
+interface Props {
+  lang: "zh" | "en";
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const prefix = lang === "en" ? "/en" : "";
+
+// ---- 动态统计 ----
+const allArticles = await getCollection("articles", ({ data }) => !data.draft);
+const bookCount = allArticles.filter((a) => a.data.author).length;
+const articleCount = allArticles.length;
+const columnCount = SECTION_ORDER.length;
+const tools = await getCollection("tools", ({ data }) => !data.draft);
+const toolCount = tools.length;
+
+const stats: Array<{ value: number; unit: string; icon: "fileText" | "listTree" | "toolbox" | "bookOpen" }> = [
+  { value: articleCount, unit: t("about.stats.articles"), icon: "fileText" },
+  { value: columnCount, unit: t("about.stats.columns"), icon: "listTree" },
+  { value: toolCount, unit: t("about.stats.tools"), icon: "toolbox" },
+  { value: bookCount, unit: t("about.stats.books"), icon: "bookOpen" },
+];
+
+const bioParagraphs = t("about.bio.paragraphs") as string[];
+const journeyChapters = t("about.journey.chapters") as string[];
+const email = t("contact.emailValue");
+const xLink = t("contact.xLink");
+const xHandle = t("contact.xHandle");
+const wechatName = t("contact.officialAccountName");
+---
+
+<Breadcrumb crumbs={[{ label: t("about.title"), href: `${prefix}/about/` }]} />
+
+<section class="max-w-6xl 2xl:max-w-[1400px]">
+
+  <!-- ============ Hero：超大衬线标题 + 遮罩上拉 ============ -->
+  <header class="about-hero" data-reveal>
+    <div class="about-hero-head">
+      <span class="about-kicker" aria-hidden="true">{t("about.hero.kicker")}</span>
+      <span class="about-kicker-bar" aria-hidden="true"></span>
+    </div>
+
+    <h1 class="about-hero-title lmask">
+      <span class="lmask-inner" style="--lmask-delay:0.08s">{t("about.hero.subtitle")}</span>
+    </h1>
+
+    <p class="about-hero-intro lmask">
+      <span class="lmask-inner" style="--lmask-delay:0.22s">{t("about.hero.intro")}</span>
+    </p>
+
+    <a href="#about-journey" class="about-hero-cta group" aria-label={t("about.hero.cta")}>
+      <span>{t("about.hero.cta")}</span>
+      <Icon name="chevronDown" class="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
+    </a>
+  </header>
+
+  <!-- ============ 数据卡：磨砂玻璃 + 数字滚动 ============ -->
+  <section class="about-stats" aria-label={t("about.stats.label")} data-reveal>
+    <p class="about-stats-label">{t("about.stats.label")}</p>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3" data-reveal-stagger>
+      {stats.map((s, i) => (
+        <div
+          class="about-stat-card glass-card"
+          style={`--roll-index:${i}`}
+          data-spotlight
+          data-tilt
+        >
+          <span class="about-stat-icon" aria-hidden="true">
+            <Icon name={s.icon} class="w-5 h-5" />
+          </span>
+          <p class="about-stat-value">
+            <span data-count-up={s.value}>0</span>
+            <span class="about-stat-unit">{s.unit}</span>
+          </p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ============ 自我介绍：左侧人物卡 + 右侧正文 ============ -->
+  <section class="about-bio" id="about-me" aria-label={t("about.bio.title")}>
+    <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-6" data-reveal>
+      <!-- 人物卡 -->
+      <aside class="about-person-card glass-card relative overflow-hidden" data-spotlight>
+        <span class="ghost-num text-black/5 dark:text-white/5" aria-hidden="true">01</span>
+        <div class="about-person-avatar" aria-hidden="true">
+          <Icon name="user" class="w-9 h-9" />
+        </div>
+        <p class="about-person-kicker">{t("about.bio.kicker")}</p>
+        <h2 class="about-person-name">{t("about.bio.title")}</h2>
+        <p class="about-person-role">{t("about.bio.role")}</p>
+        <p class="about-person-location">
+          <Icon name="sparkles" class="w-3.5 h-3.5" />
+          {t("about.bio.location")}
+        </p>
+        <p class="about-person-signature">{t("about.bio.signature")}</p>
+      </aside>
+
+      <!-- 正文双栏 -->
+      <div class="about-bio-body">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+          {bioParagraphs.map((p: string, i: number) => (
+            <p class="about-bio-paragraph" data-reveal style={`--reveal-index:${i}`}>{p}</p>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 旅程时间线 ============ -->
+  <section class="about-journey" id="about-journey" aria-label={t("about.journey.title")}>
+    <div class="about-journey-head" data-reveal>
+      <div class="about-journey-kicker">
+        <span class="about-kicker">{t("about.journey.kicker")}</span>
+        <span class="about-kicker-bar" aria-hidden="true"></span>
+      </div>
+      <h2 class="about-journey-title">{t("about.journey.title")}</h2>
+      <p class="about-journey-quote">{t("about.journey.quote")}</p>
+    </div>
+
+    <ol class="about-timeline" data-reveal-stagger>
+      {journeyChapters.map((c: string, i: number) => (
+        <li class="about-timeline-item" data-tilt>
+          <span class="about-timeline-node" aria-hidden="true">
+            <span class="about-timeline-dot"></span>
+            <span class="about-timeline-num">{String(i + 1).padStart(2, "0")}</span>
+          </span>
+          <div class="about-timeline-card glass-card">
+            <p>{c}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <!-- ============ 专栏导航 ============ -->
+  <section class="about-columns" aria-label={t("home.exploreColumns")} data-reveal>
+    <div class="about-journey-head">
+      <div class="about-journey-kicker">
+        <span class="about-kicker">{t("home.exploreColumns")}</span>
+        <span class="about-kicker-bar" aria-hidden="true"></span>
+      </div>
+      <p class="about-columns-desc">{t("home.columnsDesc")}</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-reveal-stagger>
+      {SECTION_ORDER.map((s, i) => (
+        <a
+          href={`${prefix}/${s}/`}
+          class="roll-card group block p-5 rounded-xl border border-black/10 dark:border-white/10 hover-lift transition-all duration-300 hover:border-black/30 dark:hover:border-white/30 relative overflow-hidden"
+          style={`--roll-index:${i}`}
+          data-spotlight
+          data-tilt
+          data-c-accent={s}
+        >
+          <span class="ghost-num text-black/5 dark:text-white/5 select-none pointer-events-none" aria-hidden="true">
+            {String(i + 1).padStart(2, "0")}
+          </span>
+          <span class="mb-3 block opacity-60 relative"><ColumnIcon section={s} class="w-8 h-8" /></span>
+          <h3 class="font-bold text-base mb-1 group-hover:opacity-70 transition-opacity hover-glow relative">
+            {t(`columns.${s}.name`)}
+          </h3>
+          <p class="text-xs text-black/40 dark:text-white/40 mb-3 relative">
+            {t(`columns.${s}.enName`)}
+          </p>
+          <p class="text-sm text-black/50 dark:text-white/50 leading-relaxed mb-3 relative">
+            {t(`columns.${s}.desc`)}
+          </p>
+          <span class="text-xs text-black/25 dark:text-white/25 font-mono relative inline-flex items-center gap-1">
+            {lang === "en" ? "Explore" : "去逛逛"}
+            <Icon name="arrowRight" class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+          </span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- ============ CTA：联系 ============ -->
+  <section class="about-cta" aria-label={t("about.cta.title")} data-reveal>
+    <div class="about-cta-card glass-card relative overflow-hidden" data-spotlight>
+      <span class="ghost-num text-black/5 dark:text-white/5" aria-hidden="true">HI</span>
+      <p class="about-person-kicker">{t("about.cta.kicker")}</p>
+      <h2 class="about-cta-title">{t("about.cta.title")}</h2>
+      <p class="about-cta-desc">{t("about.cta.desc")}</p>
+
+      <div class="about-cta-actions">
+        <a href={`mailto:${email}`} class="about-cta-btn" data-tilt>
+          <Icon name="mail" class="w-4 h-4" />
+          {t("about.cta.email")}
+        </a>
+        <a href={`https://x.com/${xHandle.replace(/^@/, "")}`} target="_blank" rel="noopener" class="about-cta-btn" data-tilt>
+          <Icon name="radio" class="w-4 h-4" />
+          {t("about.cta.x")}
+        </a>
+        <span class="about-cta-btn about-cta-btn-static" title={wechatName} data-tilt>
+          <Icon name="link" class="w-4 h-4" />
+          {t("about.cta.wechat")}
+        </span>
+      </div>
+
+      <p class="about-cta-footer">{t("about.cta.footer")}</p>
+    </div>
+  </section>
+</section>

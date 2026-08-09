@@ -130,14 +130,35 @@ export const ui = {
     about: {
       title: "关于",
       description: "了解更多关于我和这个网站",
-      bio: [
-        "你好呀，我是 Galvin，一个把「终身学习」当主业、把折腾当副业的人。",
-        "这个网站是我的数字小窝：一边玩转 AI，一边研究怎么让工具更听话，偶尔把脑子里跑过的想法写成文章。",
-        "我坚信技术不该是冷冰冰的代码，而该是个靠谱的小帮手——帮你省时间，顺便帮你偷点懒（嘘，这是加分项）。从 WPS 到各种 AI 神器，我都喜欢亲自下场试一试。",
-        "如果你也对这些话题上头，欢迎来撩：邮件、微信都行，留言必回（除非消息太多，那就……排着队慢慢回 😄）。",
-      ],
-      pin: {
-        step: "My Story · 一段旅程",
+      hero: {
+        kicker: "ABOUT ME · 关于我",
+        subtitle: "终身学习，复利成长",
+        intro: "这里是我的数字小窝——记录思考、折腾工具、分享成长，顺便把故事讲得有趣一点。",
+        cta: "往下翻，看看我的故事",
+      },
+      stats: {
+        label: "这个窝里 · 攒下的一点家当",
+        articles: "篇文章",
+        columns: "个专栏",
+        tools: "件效率工具",
+        books: "本公版书",
+      },
+      bio: {
+        kicker: "HELLO · 自我介绍",
+        title: "嗨，我是 Galvin",
+        role: "终身学习者 · 数字经济从业者 · 工具折腾党",
+        location: "坐标中国",
+        signature: "把「终身学习」当主业，把「折腾」当副业。",
+        paragraphs: [
+          "你好呀，我是 Galvin，一个把「终身学习」当主业、把折腾当副业的人。",
+          "这个网站是我的数字小窝：一边玩转 AI，一边研究怎么让工具更听话，偶尔把脑子里跑过的想法写成文章。",
+          "我坚信技术不该是冷冰冰的代码，而该是个靠谱的小帮手——帮你省时间，顺便帮你偷点懒（嘘，这是加分项）。从 WPS 到各种 AI 神器，我都喜欢亲自下场试一试。",
+          "如果你也对这些话题上头，欢迎来撩：邮件、微信都行，留言必回（除非消息太多，那就……排着队慢慢回 😄）。",
+        ],
+      },
+      journey: {
+        kicker: "MY STORY · 一段旅程",
+        title: "我是怎么走到今天的",
         quote: "从记录到成长，再到分享——每一步都在这里留下痕迹，顺便把故事讲得有趣一点。",
         chapters: [
           "第一次摸到代码，发现互联网是个大游乐场，于是动手搭了自己的数字小窝",
@@ -145,6 +166,15 @@ export const ui = {
           "坚持阅读与写作，把脑中的想法沉淀成能复用的知识宝藏",
           "和你相遇——欢迎光临我的世界，别客气，随便逛",
         ],
+      },
+      cta: {
+        kicker: "SAY HELLO · 打个招呼",
+        title: "想认识一下？",
+        desc: "不管是对文章有想法、想交流 AI，还是单纯想打个招呼，都欢迎来找我。",
+        email: "发封邮件",
+        wechat: "加个微信",
+        x: "关注 X",
+        footer: "留言必回——除非消息太多，那就排着队慢慢回 😄",
       },
     },
     contact: {
@@ -331,14 +361,35 @@ export const ui = {
     about: {
       title: "About",
       description: "Learn more about me and this site",
-      bio: [
-        "Hey, I'm Galvin — a lifelong learner who treats `keep learning` as a full-time hobby (and `tinkering` as the side hustle).",
-        "This site is my digital nest: I play with AI, boss tools around, and occasionally turn the thoughts bouncing in my head into articles worth reading.",
-        "I believe tech shouldn't be cold code — it should be a trusty sidekick that saves you time (and lets you slack off a little, which is a bonus). From WPS to AI goodies, I try everything myself.",
-        "If any of this sparks your interest, drop me a line via email or WeChat. I reply to every message — eventually. 😄",
-      ],
-      pin: {
-        step: "My Story · A Journey",
+      hero: {
+        kicker: "ABOUT ME",
+        subtitle: "Keep learning, grow with interest.",
+        intro: "This is my digital nest — recording thoughts, tinkering with tools, sharing growth, and telling the story with a punchline or two.",
+        cta: "Scroll down for my story",
+      },
+      stats: {
+        label: "A few things I've piled up in this nest",
+        articles: "articles",
+        columns: "columns",
+        tools: "productivity tools",
+        books: "public-domain books",
+      },
+      bio: {
+        kicker: "HELLO",
+        title: "Hey, I'm Galvin",
+        role: "Lifelong learner · Digital economy · Tool tinkerer",
+        location: "Based in China",
+        signature: "Full-time hobby: keep learning. Side hustle: tinkering.",
+        paragraphs: [
+          "Hey, I'm Galvin — a lifelong learner who treats `keep learning` as a full-time hobby (and `tinkering` as the side hustle).",
+          "This site is my digital nest: I play with AI, boss tools around, and occasionally turn the thoughts bouncing in my head into articles worth reading.",
+          "I believe tech shouldn't be cold code — it should be a trusty sidekick that saves you time (and lets you slack off a little, which is a bonus). From WPS to AI goodies, I try everything myself.",
+          "If any of this sparks your interest, drop me a line via email or WeChat. I reply to every message — eventually. 😄",
+        ],
+      },
+      journey: {
+        kicker: "MY STORY · A JOURNEY",
+        title: "How I got here",
         quote: "From documenting to growing, then sharing — every step leaves a mark here, preferably with a punchline.",
         chapters: [
           "First touch of code — discovered the web is one big playground and built my own digital nest",
@@ -346,6 +397,15 @@ export const ui = {
           "Committed to reading & writing — turning brain sparks into reusable knowledge gems",
           "Meeting you — welcome to my world. Make yourself at home.",
         ],
+      },
+      cta: {
+        kicker: "SAY HELLO",
+        title: "Want to say hi?",
+        desc: "Got a thought on an article, want to chat about AI, or just feel like saying hello? I'm all ears.",
+        email: "Send an email",
+        wechat: "Add on WeChat",
+        x: "Follow on X",
+        footer: "I reply to every message — eventually. 😄",
       },
     },
     contact: {
