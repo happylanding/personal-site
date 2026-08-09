@@ -648,34 +648,45 @@ html:not(.js) .lmask-inner {
   color: rgba(255, 255, 255, 0.42);
 }
 
-/* A：精选封面画廊 */
-.about-gallery {
+/* A：精选文章单图轮播（左右自动切换） */
+.about-carousel {
   min-width: 0;
 }
 
-.about-gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.7rem;
-}
-
-.about-gallery-item {
+.about-carousel-viewport {
   position: relative;
-  display: block;
   border-radius: 0.8rem;
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  transform-style: preserve-3d;
 }
 
-.dark .about-gallery-item {
+.dark .about-carousel-viewport {
   border-color: rgba(255, 255, 255, 0.14);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
-.about-gallery-item img {
+.about-carousel-track {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.about-carousel-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+.about-carousel-item {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  transform-style: preserve-3d;
+}
+
+.about-carousel-item img {
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
@@ -683,17 +694,77 @@ html:not(.js) .lmask-inner {
   transition: transform 0.45s ease;
 }
 
-.about-gallery-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.16);
+.about-carousel-item:hover img {
+  transform: scale(1.04);
 }
 
-.dark .about-gallery-item:hover {
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+.about-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+  opacity: 0;
 }
 
-.about-gallery-item:hover img {
-  transform: scale(1.05);
+.about-carousel:hover .about-carousel-arrow,
+.about-carousel-arrow:focus-visible {
+  opacity: 1;
+}
+
+.about-carousel-prev {
+  left: 0.6rem;
+}
+
+.about-carousel-next {
+  right: 0.6rem;
+}
+
+.about-carousel-arrow:hover {
+  background: rgba(0, 0, 0, 0.6);
+  transform: translateY(-50%) scale(1.06);
+}
+
+.about-carousel-dots {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0.55rem;
+  z-index: 5;
+  display: flex;
+  gap: 0.4rem;
+}
+
+.about-carousel-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.5);
+  transition: background 0.25s ease, transform 0.25s ease, width 0.25s ease;
+}
+
+.about-carousel-dot.is-active {
+  width: 1.1rem;
+  border-radius: 9999px;
+  background: #fff;
+}
+
+.about-carousel-dot:hover {
+  background: #fff;
+  transform: scale(1.15);
 }
 
 .about-gallery-overlay {
@@ -709,8 +780,8 @@ html:not(.js) .lmask-inner {
   transition: background 0.3s ease;
 }
 
-.about-gallery-item:hover .about-gallery-overlay,
-.about-gallery-item:focus-visible .about-gallery-overlay {
+.about-carousel-item:hover .about-gallery-overlay,
+.about-carousel-item:focus-visible .about-gallery-overlay {
   background: linear-gradient(to top, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.28) 55%, transparent 100%);
 }
 
@@ -820,11 +891,8 @@ html:not(.js) .lmask-inner {
   }
 }
 
-/* 小屏：画廊 & 书架单列，避免过窄 */
+/* 小屏：书架单列，避免过窄 */
 @media (max-width: 479px) {
-  .about-gallery-grid {
-    grid-template-columns: 1fr;
-  }
   .about-book {
     aspect-ratio: 1 / 1.15;
   }
