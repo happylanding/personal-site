@@ -51,7 +51,7 @@ const gachaTools = tools.map((x) => ({
       </h1>
       <p class="text-sm text-black/40 dark:text-white/40">{t("tools.subtitle")}</p>
       <p class="text-base text-black/50 dark:text-white/50 mt-3 leading-relaxed max-w-2xl">{t("tools.desc")}</p>
-      <p class="text-xs font-mono text-black/30 dark:text-white/30 mt-3"
+      <p class="text-[13px] font-mono text-black/45 dark:text-white/55 mt-3"
         set:html={t("tools.stats")
           .replace("{total}", `<span data-count-up="${total}">0</span>`)
           .replace("{apps}", `<span data-count-up="${appCount}">0</span>`)
@@ -133,7 +133,7 @@ const gachaTools = tools.map((x) => ({
               </div>
 
               <h3 class="font-bold font-serif text-base mb-1.5 leading-snug">{title}</h3>
-              <p class="text-xs font-mono text-black/30 dark:text-white/30 mb-2">
+              <p class="text-[13px] font-mono text-black/45 dark:text-white/55 mb-2">
                 {t(`tools.type.${type}`)}
                 {version && <span class="ml-2">v{version}</span>}
               </p>
@@ -192,7 +192,7 @@ const gachaTools = tools.map((x) => ({
                             </li>
                           ))}
                         </ol>
-                        <p class="text-[11px] text-black/25 dark:text-white/25 mt-2">{t("tools.usageHint")}</p>
+                        <p class="text-xs text-black/40 dark:text-white/55 mt-2">{t("tools.usageHint")}</p>
                       </div>
                       <div class="flex gap-2 mt-3">
                         {tool.data.downloadUrl && (
@@ -237,7 +237,7 @@ const gachaTools = tools.map((x) => ({
                       {t("tools.try")}
                     </a>
                   )}
-                  <span class="text-xs text-black/25 dark:text-white/25">
+                  <span class="text-[13px] text-black/50 dark:text-white/65">
                     {tool.data.url ? t("tools.external") : t("tools.internal")}
                   </span>
                 </div>
@@ -246,10 +246,10 @@ const gachaTools = tools.map((x) => ({
               <div class="flex items-center justify-between mt-4">
                 <div class="flex gap-2">
                   {tags.slice(0, 3).map((tag: string) => (
-                    <span class="text-xs text-black/25 dark:text-white/25">#{tag}</span>
+                    <span class="text-[13px] text-black/50 dark:text-white/65">#{tag}</span>
                   ))}
                 </div>
-                <time class="text-xs text-black/25 dark:text-white/25 font-mono flex-shrink-0 ml-4">
+                <time class="text-[13px] text-black/45 dark:text-white/60 font-mono flex-shrink-0 ml-4">
                   {updated.toLocaleDateString(isEn ? "en-US" : "zh-CN", { year: "numeric", month: "short" })}
                 </time>
               </div>

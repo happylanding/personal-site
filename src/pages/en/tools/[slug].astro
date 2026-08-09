@@ -62,7 +62,7 @@ const downloadUrl = tool.data.downloadUrl;
           <span class="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusColor }}></span>
           {statusLabel}
         </span>
-        <span class="text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/50 dark:text-white/50">
+        <span class="text-[13px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/75">
           {t(`tools.type.${type}`)}
           {tool.data.version && <span class="ml-1">v{tool.data.version}</span>}
         </span>
@@ -93,7 +93,7 @@ const downloadUrl = tool.data.downloadUrl;
             {t("tools.open")}
           </a>
         )}
-        <time class="text-sm text-black/30 dark:text-white/30 font-mono" datetime={updated.toISOString()}>
+        <time class="text-sm text-black/45 dark:text-white/60 font-mono" datetime={updated.toISOString()}>
           {dateStr}
         </time>
       </div>
@@ -101,7 +101,7 @@ const downloadUrl = tool.data.downloadUrl;
       {tags.length > 0 && (
         <div class="flex flex-wrap gap-2 mt-4">
           {tags.slice(0, 5).map((tag: string) => (
-            <span class="text-xs px-2 py-1 rounded-md bg-black/5 dark:bg-white/5 text-black/40 dark:text-white/40">
+            <span class="text-[13px] px-2 py-1 rounded-md bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/75">
               #{tag}
             </span>
           ))}
