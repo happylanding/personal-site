@@ -135,7 +135,9 @@ const articleTitle = (a: (typeof allArticles)[number]) =>
             </ul>
 
             <p class="about-person-location">
-              <Icon name="sparkles" class="w-3.5 h-3.5" />
+              <span class="about-location-pin" aria-hidden="true">
+                <Icon name="mapPin" class="w-3.5 h-3.5" />
+              </span>
               {t("about.bio.location")}
             </p>
 
