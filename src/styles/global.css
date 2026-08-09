@@ -1526,11 +1526,11 @@ html.theme-switching * {
   transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease !important;
 }
 
-/* ===== Glassmorphism：磨砂玻璃卡片 + 全站可模糊的极光底 ===== */
+/* ===== 卡片基础样式 ===== */
 
-/* 1) 页面底色：为磨砂玻璃提供"可磨的底"，保持极淡的低饱和冷色光晕，克制不抢阅读。 */
+/* 页面底色：淡雅极光氛围，保持站点基调 */
 body {
-  /* 建立独立层叠上下文，保持玻璃卡片与底色层级清晰 */
+  /* 建立独立层叠上下文，保持卡片层级清晰 */
   position: relative;
   isolation: isolate;
   background-color: #fbfaf7 !important;
@@ -1550,47 +1550,37 @@ body {
     radial-gradient(50rem 38rem at 4% 96%, rgba(30, 58, 138, 0.12), transparent 74%);
 }
 
-/* 2) 磨砂玻璃卡片本体：
-   覆盖首页栏目卡/精选卡、工具箱卡、栏目书籍卡、文章上下篇卡、Currently 卡。
-   统一用 backdrop-filter 磨砂 + 半透底 + 玻璃描边 + 顶部高光。 */
-.glass-card,
+/* 卡片本体：覆盖首页栏目卡/精选卡、工具箱卡、栏目书籍卡、文章上下篇卡、Currently 卡。
+   实底 + 描边 + 柔和阴影。 */
 .roll-card,
 .tool-card,
 [data-spotlight],
 [data-currently] {
   position: relative;
-  background: rgba(255, 255, 255, 0.45) !important;
-  -webkit-backdrop-filter: blur(14px) saturate(150%);
-  backdrop-filter: blur(14px) saturate(150%);
-  /* 描边降到 0.5，白底上更克制，不再“边界清晰生硬” */
-  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
   box-shadow:
-    0 8px 28px rgba(31, 41, 55, 0.07),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    0 8px 28px rgba(31, 41, 55, 0.07);
 }
 
-.dark .glass-card,
 .dark .roll-card,
 .dark .tool-card,
 .dark [data-spotlight],
 .dark [data-currently] {
-  /* 暗色用"深色玻璃"而非白玻璃：保证白字对比度，同时保留磨砂质感 */
-  background: rgba(255, 255, 255, 0.07) !important;
+  background: rgba(255, 255, 255, 0.09) !important;
   border: 1px solid rgba(255, 255, 255, 0.13) !important;
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.09);
+    0 8px 32px rgba(0, 0, 0, 0.45);
 }
 
-/* 3) hover：玻璃高光增强 + 柔光扩散，与聚光/3D 倾斜叠加 */
+/* hover：阴影加深（无玻璃模糊） */
 .roll-card:hover,
 .tool-card:hover,
 [data-spotlight]:hover,
 [data-currently]:hover {
-  border-color: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(0, 0, 0, 0.16) !important;
   box-shadow:
-    0 14px 44px rgba(31, 41, 55, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    0 14px 44px rgba(31, 41, 55, 0.12);
 }
 .dark .roll-card:hover,
 .dark .tool-card:hover,
@@ -1598,32 +1588,12 @@ body {
 .dark [data-currently]:hover {
   border-color: rgba(255, 255, 255, 0.28) !important;
   box-shadow:
-    0 14px 44px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    0 14px 44px rgba(0, 0, 0, 0.55);
 }
 
-/* 3.5) 非 roll-card 的 data-spotlight 卡片（文章上下篇等）补齐阴影/描边过渡，避免 hover 生硬 */
+/* 非 roll-card 的 data-spotlight 卡片（文章上下篇等）补齐阴影/描边过渡，避免 hover 生硬 */
 [data-spotlight]:not(.roll-card):not(.tool-card) {
   transition: box-shadow 0.3s ease, border-color 0.3s ease, color 0.2s ease, background-color 0.2s ease;
-}
-
-/* 4) 无障碍/低性能降级：reduced-motion 时关闭磨砂模糊，回退近实底 */
-@media (prefers-reduced-motion: reduce) {
-  .glass-card,
-  .roll-card,
-  .tool-card,
-  [data-spotlight],
-  [data-currently] {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-  .dark .glass-card,
-  .dark .roll-card,
-  .dark .tool-card,
-  .dark [data-spotlight],
-  .dark [data-currently] {
-    background: rgba(255, 255, 255, 0.12) !important;
-  }
 }
 
 /* ===== View transition (Effect C) ===== */
