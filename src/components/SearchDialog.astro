@@ -107,12 +107,12 @@ const sectionNames = {
   aria-hidden="true"
 >
   <!-- Backdrop -->
-  <div id="search-backdrop" class="absolute inset-0 bg-black/30 dark:bg-black/60 backdrop-blur-sm"></div>
+  <div id="search-backdrop" class="absolute inset-0 bg-black/30 dark:bg-black/60"></div>
 
   <!-- Panel：Spotlight 风格，居中更宽 -->
   <div
     id="search-panel"
-    class="relative w-full max-w-6xl mx-3 sm:mx-4 md:mx-6 lg:mx-8 glass-card rounded-2xl shadow-2xl transform scale-95 transition-transform duration-200 overflow-hidden 2xl:max-w-[1400px]"
+    class="relative w-full max-w-6xl mx-3 sm:mx-4 md:mx-6 lg:mx-8 rounded-2xl shadow-2xl transform scale-95 transition-transform duration-200 overflow-hidden 2xl:max-w-[1400px]"
   >
     <!-- Input bar -->
     <form autocomplete="off" class="flex items-center px-4 sm:px-5 py-3.5 border-b border-black/5 dark:border-white/5">
@@ -184,6 +184,14 @@ const sectionNames = {
   }
   #search-overlay.search-overlay-visible #search-panel {
     transform: scale(1);
+  }
+
+  /* 搜索面板：实底卡片 */
+  #search-panel {
+    background: #ffffff;
+  }
+  :global(.dark) #search-panel {
+    background: #161b2e;
   }
 
   /* ===== 结果项：精致卡片风格 ===== */
