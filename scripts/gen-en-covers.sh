@@ -8,6 +8,10 @@ BASE=public/images
 # 加载栏目配色（方案 A｜星野极光·分栏配色）
 source "$(dirname "$0")/covers-palette.sh"
 
+# 渲染环境检查（缺 rsvg-convert / 中文字体时直接退出，避免生成乱码图）
+source "$(dirname "$0")/cover-env-check.sh"
+check_cover_env || exit 1
+
 # 依据最长标题行自适应字号
 pick_fs() {
   local t1="$1" t2="$2" maxlen=${#1}

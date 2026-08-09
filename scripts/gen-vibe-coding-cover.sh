@@ -3,6 +3,10 @@
 set -e
 OUT=/workspace/public/images/vibe-coding/cover.svg
 mkdir -p "$(dirname "$OUT")"
+
+# 渲染环境检查（缺 rsvg-convert / 中文字体时直接退出，避免生成乱码图）
+source "$(dirname "$0")/cover-env-check.sh"
+check_cover_env || exit 1
 cat > "$OUT" <<'EOF'
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>

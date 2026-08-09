@@ -4,6 +4,10 @@ set -e
 DIR=/workspace/public/images/vibe-coding
 mkdir -p "$DIR"
 
+# 渲染环境检查（缺 rsvg-convert / 中文字体时直接退出，避免生成乱码图）
+source "$(dirname "$0")/cover-env-check.sh"
+check_cover_env || exit 1
+
 # ============ 图2：人机分工 ============
 cat > "$DIR/division-of-labor.svg" <<'EOF'
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">

@@ -124,8 +124,10 @@ function splitTitleZh(title) {
   if (best === null) return [title, ""]; // 无合适语义断点，保持单行交给字号缩放
   let t1 = cs.slice(0, best).join("");
   let t2 = cs.slice(best).join("");
-  t1 = t1.replace(/[\s·:：，,、；;]+$/, "");
-  t2 = t2.replace(/^[\s·:：，,、；;]+/, "");
+  // 仅去掉行尾/行首的空格与纯连接性符号；
+  // 保留语义标点（：/ : 等），避免标题丢字（如「当 AI 成为同事：人机协作…」断行后冒号被吞）
+  t1 = t1.replace(/[\s·,，、；;]+$/, "");
+  t2 = t2.replace(/^[\s·,，、；;]+/, "");
   if (!t2) return [title, ""];
   if (!t1) return [t2, ""];
   return [t1, t2];
@@ -324,11 +326,12 @@ function checkRenderEnv() {
     console.error("❌ 缺少 rsvg-convert：请先安装 apt-get install -y librsvg2-bin");
     process.exit(1);
   }
-  // 2. 中文字体是否存在（Noto CJK / 宋体等，缺了中文会渲染成空心方框）
+  // 2. 中文字体是否存在（Noto CJK / 宋体等，缺了中文会渲染成空心方框/豆腐块）
   try {
     const out = execFileSync("fc-list", [":lang=zh"], { encoding: "utf8" });
     if (!out.trim()) {
-      console.error("❌ 缺少中文字体：请先安装 apt-get install -y fonts-noto-cjk fonts-noto-cjk-extra");
+      console.error("❌ 缺少中文字体：当前环境没有支持中文（lang=zh）的字体，中文会渲染成空心方框/豆腐块（乱码）。");
+      console.error("   请先安装 apt-get update && apt-get install -y fonts-noto-cjk fonts-noto-cjk-extra，再 fc-cache -f 后重跑。");
       process.exit(1);
     }
   } catch {

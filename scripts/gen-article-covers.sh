@@ -7,6 +7,10 @@ BASE=/workspace/public/images
 # 加载栏目配色（方案 A｜星野极光·分栏配色）
 source "$(dirname "$0")/covers-palette.sh"
 
+# 渲染环境检查（缺 rsvg-convert / 中文字体时直接退出，避免生成乱码图）
+source "$(dirname "$0")/cover-env-check.sh"
+check_cover_env || exit 1
+
 # 生成单张封面 SVG + PNG
 # 参数：section slug title1 title2 subtitle tagline signature
 gen_cover() {

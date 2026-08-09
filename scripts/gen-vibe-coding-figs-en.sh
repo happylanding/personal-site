@@ -6,6 +6,10 @@ set -e
 DIR=/workspace/public/images/vibe-coding
 mkdir -p "$DIR"
 
+# 渲染环境检查（缺 rsvg-convert / 中文字体时直接退出，避免生成乱码图）
+source "$(dirname "$0")/cover-env-check.sh"
+check_cover_env || exit 1
+
 # 英文插图文件命名约定：<图名>-en.svg / <图名>-en.png
 # （对应中文版 <图名>.svg / <图名>.png，英文正文引用 -en 版本）
 

@@ -163,12 +163,31 @@ for f in src/content/articles/*.md; do node scripts/cover-render.mjs --article "
 
 ---
 
-## 五、生成后检查清单
+## 五、生成后检查清单（每次生成后必须执行）
 
-- [ ] `public/images/<slug>/cover.png` 与 `cover-en.png` 存在（1200×630）
-- [ ] 封面标题完整、无单词被切断、无溢出
-- [ ] frontmatter 已加 `ogImage`（/ `ogImageEn`）
-- [ ] 有英文正文的文章：正文章节插图存在 `-en` 版本且英文正文引用它（`grep images/ src/content/articles-en/*.md` 核对）
+> **硬性规则**：每张图片生成/修改后，必须用自检工具跑一遍下面的检查，全部通过才能提交。
+> 自检工具：`node scripts/verify-images.mjs`（全量）或 `node scripts/verify-images.mjs --slug <slug>`（单篇）。
+
+### 自动检查（一条命令）
+
+```bash
+node scripts/verify-images.mjs --slug <slug>   # 单篇
+node scripts/verify-images.mjs                  # 全量
+```
+
+自动覆盖：
+
+- [x] `public/images/<slug>/cover.png` 与 `cover-en.png` 存在且为 1200×630
+- [x] **无乱码**：重渲染 SVG 与 PNG 像素对比差异 ≤ 1%（差异大 = 在无中文字体环境渲染的豆腐块/乱码图）
+- [x] **标题准确**：中文标题完整出现在 cover.svg、英文标题完整出现在 cover-en.svg（防标题丢字/截断）
+- [x] frontmatter 的 `ogImage` / `ogImageEn` 指向的文件存在
+- [x] 有英文正文的文章必须存在 `cover-en.png`
+- [x] 文章正文引用的 `/images/...` 图片全部存在
+
+### 人工复核（自动检查之外）
+
+- [ ] 封面标题完整、无单词被切断、无溢出（打开 PNG 目视确认）
+- [ ] 有英文正文的文章：正文章节插图存在 `-en` 版本且英文正文引用它
 - [ ] `npm run build` 通过
 - [ ] 页面预览：文章页头部 banner + 社交分享图正常
 
@@ -181,15 +200,89 @@ for f in src/content/articles/*.md; do node scripts/cover-render.mjs --article "
 | `rsvg-convert` | SVG → PNG 渲染 | `apt-get install -y librsvg2-bin` |
 | Noto CJK 字体 | 中文封面文字 | `apt-get install -y fonts-noto-cjk fonts-noto-cjk-extra` |
 
-> ⚠️ **必须在装有中文字体的环境渲染 PNG**：缺中文字体时中文会渲染成「空心方框/豆腐块」（曾因此在 Issue #61 报告过「字体失效」）。
-> `scripts/cover-render.mjs` 已内置环境检查（缺 `rsvg-convert` 或缺中文字体时会报错并退出），防止再次产生坏图。
+> ⚠️ **必须在装有中文字体的环境渲染 PNG**：缺中文字体时中文会渲染成「空心方框/豆腐块」乱码（曾因此在 Issue #61 报告过「字体失效」、Issue #80 再次出现）。
+> **所有生成脚本（含 bash 版与 Node 版）已内置环境检查**，缺 `rsvg-convert` 或中文字体时会报错并退出，防止再次产生坏图：
+> - `scripts/cover-env-check.sh`：bash 生成脚本（gen-article-covers / gen-en-covers / gen-vibe-coding-figs / gen-vibe-coding-figs-en / gen-vibe-coding-cover）渲染前调用
+> - `scripts/cover-render.mjs` 内置 `checkRenderEnv()`：Node 生成器渲染前调用
+
+自检工具：
+
+```bash
+node scripts/verify-images.mjs --slug <slug>   # 单篇
+node scripts/verify-images.mjs                  # 全量
+```
+
+- 输出 `✅ 全部通过` = 图片完整准确，可提交
+- 输出 `❌ 疑似乱码` = 该 PNG 是在缺中文字体环境渲染的，重装字体后重新生成
+- 输出 `❌ 标题不完整` = SVG 文本缺字（如断行吞掉冒号等），调整标题/断行后重新生成
 
 常见问题：
 
-- **中文显示成方块/豆腐块**：未装 Noto CJK 字体 → 安装后重跑
+- **中文显示成方块/豆腐块（乱码）**：未装 Noto CJK 字体（或环境无 lang=zh 字体）→ 安装后 `fc-cache -f` 重跑。生成脚本已内置拦截，不会静默产出坏图
 - **PNG 渲染失败**：缺 `rsvg-convert` → 安装 `librsvg2-bin`
 - **标题溢出**：多数字号已自适应；如仍溢出，用 `--title-cn/--title-en` 手动精简标题
-- **想微调配色**：改 `scripts/cover-render.mjs` 顶部 `PALETTES`，全站封面统一生效
+- **标题丢字/被切断**：断行逻辑会保留语义标点（如冒号），若仍丢失说明标题过长，手动精简或 `--title-cn/--title-en` 指定
+- **想微调配色**：改 `scripts/cover-render.mjs` 顶部 `PALETTES` 与 `scripts/covers-palette.sh`，全站封面统一生效
+
+---
+
+## 六·补、图片生成标准规范（写入本仓库，长期生效）
+
+> 以下规范为「星野极光·分栏配色」的完整标准。**每次生成图片都必须遵守，生成后必须用 §五 自检**。
+
+### 1. 尺寸与格式
+
+- 封面一律 `1200×630`（同时用于文章页头部 banner 与社交分享图 og:image）
+- 源文件 `.svg` + 渲染产物 `.png` 成对保存于 `public/images/<slug>/`
+- 中文封面 `cover.svg` / `cover.png`；英文封面 `cover-en.svg` / `cover-en.png`
+- 正文章节插图 `1200×630`，命名 `<图名>.svg/.png`，英文版 `<图名>-en.svg/.png`
+
+### 2. 视觉语言（星野极光）
+
+- 深色底 `#0c0c0c` + 双径向光晕（左上主色光 + 右下辅色光）
+- 星点背景（17 颗固定白色星点，多档透明度）
+- 顶部细光带 + 左上角双竖线/圆点节奏装饰
+- 分隔线（左侧短横线 + 主色圆点 + 短横线）与底部署名
+
+### 3. 字体规范（防乱码核心）
+
+- 中文：宋体（`SimSun` / `Songti SC` / `Noto Serif CJK SC`）
+- 英文：新罗马（`Times New Roman` / `Liberation Serif` / `DejaVu Serif`）
+- 中英混排统一「新罗马优先 + 宋体回退」字体栈
+- **渲染环境必须安装中文字体**（`fonts-noto-cjk`），否则中文变豆腐块
+
+### 4. 栏目配色（PALETTES / covers-palette.sh 中统一定义）
+
+| 栏目 | section | 主色 c1 | 辅色 c2 | 标签文字（亮版） |
+|------|---------|---------|---------|---------|
+| 行业洞察 | `insights` | `#8E1F2F` | `#6C2A33` | `#E8A2AC` |
+| AI 学习 | `ai` | `#1E3A8A` | `#27477F` | `#8FB4F5` |
+| 实用技巧 | `tips` | `#B45309` | `#4ADE80` | `#FBBF24` |
+| 书籍专区 | `books` | `#7C3AED` | `#F33BD6` | `#A78BFA` |
+| 投资复盘 | `invest` | `#8E1F2F` | `#6C2A33` | `#E8A2AC` |
+
+> 深色区文字一律用主色亮版（上表末列），避免深色背景上难以分辨。
+
+### 5. 文案与布局规则
+
+- 标题自动拆行（中文语义边界/标点后断行；英文按单词边界平衡两行），不拆散单词、不吞掉语义标点
+- 字号自适应：中文 36~64px、英文 32~58px，保证不溢出
+- 两行标题行距 = 字号 + 20px
+- 副标题按一行像素宽度截断加 `…`
+- 标签默认 `{栏目名} · {年份}`；署名默认 `Galvin × CodeBuddy · {栏目 slogan}`（books 类用作者）
+- frontmatter 必须写入 `ogImage`（有英文版再加 `ogImageEn`）
+
+### 6. 双语配套规则
+
+- 有英文正文（`articles-en/<slug>.md`）的文章，必须配套 `cover-en.png`
+- 正文章节插图必须配套 `<图名>-en` 英文版；中文正文引中文图、英文正文引英文图
+- 英文封面/插图命名统一 `-en` 后缀
+
+### 7. 防乱码硬性要求
+
+- 渲染 PNG 前必须先通过环境检查（脚本已内置：`cover-env-check.sh` / `checkRenderEnv()`）
+- 生成后必须运行 `node scripts/verify-images.mjs --slug <slug>` 自检，`✅ 全部通过` 才能提交
+- 任何人（含 NPC/协作者）在任意环境生成图片，都必须遵循上述规范并跑自检，否则不得提交
 
 ---
 
