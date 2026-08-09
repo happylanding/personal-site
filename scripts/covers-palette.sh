@@ -13,11 +13,12 @@
 # ai       AI 学习·深蓝：#1E3A8A + 深蓝灰 #27477F
 # tips     实用技巧·琥珀棕：#B45309 + 青绿 #4ADE80
 # books    书籍专区·紫罗兰：#7C3AED + 品红 #F33BD6
+# invest   投资复盘·酒红：#8E1F2F + 深红棕 #6C2A33（与 insights 一致）
 
 get_palette() {
   local section="$1"
   case "$section" in
-    insights) echo "#8E1F2F|#6C2A33" ;;
+    insights|invest) echo "#8E1F2F|#6C2A33" ;;
     ai)       echo "#1E3A8A|#27477F" ;;
     tips)     echo "#B45309|#4ADE80" ;;
     books)    echo "#7C3AED|#F33BD6" ;;
@@ -40,7 +41,7 @@ palette_secondary() {
 palette_tag() {
   local section="$1"
   case "$section" in
-    insights) echo "#E8A2AC" ;;
+    insights|invest) echo "#E8A2AC" ;;
     ai)       echo "#8FB4F5" ;;
     tips)     echo "#FBBF24" ;;
     books)    echo "#A78BFA" ;;
