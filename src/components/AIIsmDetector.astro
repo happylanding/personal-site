@@ -1,0 +1,586 @@
+---
+/**
+ * AIIsmDetector — AI 味检测器（自研小工具 / app）
+ *
+ * 纯前端规则引擎，零依赖：
+ *  - 实时扫描 AI 高频腔（套话 / 空洞修辞 / 冗余句式）
+ *  - 计算 0-100 的 AI 味指数 + 等级
+ *  - SVG 雷达图：高频套话 / 空洞修辞 / 冗余句式 / 结构重复 / 模板结尾
+ *  - 逐句高亮命中位置，命中清单逐条给出"人话"替换建议，一键替换
+ *
+ * 用法：<AIIsmDetector lang="zh" /> 或 <AIIsmDetector lang="en" />
+ */
+
+interface Props {
+  lang?: "zh" | "en";
+}
+
+const { lang = "zh" } = Astro.props;
+---
+
+<div id="ai-ism-app" class="ai-ism-app rounded-2xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] p-5 sm:p-7" data-lang={lang}>
+  <!-- 顶部：分数 + 等级 + 雷达图 -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center mb-6">
+    <div class="flex items-center gap-6">
+      <svg class="ai-ism-ring flex-shrink-0" viewBox="0 0 120 120" width="128" height="128" aria-hidden="true">
+        <circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" stroke-opacity="0.12" stroke-width="10" />
+        <circle
+          id="ai-ism-ring-fg"
+          cx="60" cy="60" r="52" fill="none" stroke="#16A34A" stroke-width="10" stroke-linecap="round"
+          stroke-dasharray="0 326.7" transform="rotate(-90 60 60)"
+        />
+        <text id="ai-ism-score-text" x="60" y="58" text-anchor="middle" class="fill-current text-3xl font-bold font-serif" style="font-size:30px">–</text>
+        <text x="60" y="80" text-anchor="middle" class="fill-current opacity-40 text-[10px] tracking-wider" style="font-size:10px">AI-ISM / 100</text>
+      </svg>
+      <div class="min-w-0">
+        <p id="ai-ism-level" class="text-lg font-serif font-bold leading-tight">–</p>
+        <p id="ai-ism-stats" class="mt-1.5 text-xs font-mono text-black/40 dark:text-white/40 leading-relaxed">–</p>
+        <p id="ai-ism-tip" class="mt-2 text-xs text-black/35 dark:text-white/35 leading-relaxed">–</p>
+      </div>
+    </div>
+    <div class="flex justify-center">
+      <svg id="ai-ism-radar" viewBox="0 0 280 240" class="w-full max-w-[300px]" role="img" aria-label="AI 味维度雷达图"></svg>
+    </div>
+  </div>
+
+  <!-- 输入区 -->
+  <label for="ai-ism-input" class="sr-only">检测文本</label>
+  <div class="relative">
+    <textarea
+      id="ai-ism-input"
+      rows="7"
+      class="w-full resize-y rounded-xl border border-black/15 dark:border-white/15 bg-white dark:bg-neutral-900 px-4 py-3 text-sm leading-relaxed outline-none focus:border-black/40 dark:focus:border-white/40 transition-colors placeholder:text-black/25 dark:placeholder:text-white/25"
+      placeholder="粘贴或输入一段文字，AI 味指数会实时变化……"
+    ></textarea>
+    <div class="flex items-center justify-between mt-3 flex-wrap gap-2">
+      <div class="flex gap-2">
+        <button id="ai-ism-sample" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 text-xs font-medium hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors">📄 填入示例</button>
+        <button id="ai-ism-clear" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 text-xs font-medium hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors">🧹 清空</button>
+      </div>
+      <p class="text-xs font-mono text-black/30 dark:text-white/30">命中 <span id="ai-ism-hit-count" class="font-bold text-black/50 dark:text-white/50">0</span> 处 AI 高频腔</p>
+    </div>
+  </div>
+
+  <!-- 命中清单与替换建议 -->
+  <section id="ai-ism-hits-section" class="mt-6 hidden">
+    <h3 class="text-sm font-serif font-bold mb-3 flex items-center gap-2">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 20h16a2 2 0 0 0 1.73-2Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+      命中清单 · 一键替换成人话
+    </h3>
+    <div id="ai-ism-hits" class="space-y-2"></div>
+    <p id="ai-ism-hits-empty" class="text-sm text-black/40 dark:text-white/40 py-3 text-center hidden">没命中 AI 高频腔，这段文字很自然 🎉</p>
+  </section>
+
+  <!-- 逐句高亮 -->
+  <section id="ai-ism-sentences-section" class="mt-6 hidden">
+    <h3 class="text-sm font-serif font-bold mb-3 flex items-center gap-2">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.75 6.75h16.5"/><path d="M3.75 12h16.5"/><path d="M3.75 17.25h16.5"/></svg>
+      逐句体检
+    </h3>
+    <div id="ai-ism-sentences" class="space-y-2.5"></div>
+  </section>
+
+  <!-- 图例 -->
+  <div class="mt-6 flex flex-wrap gap-4 text-[11px] text-black/40 dark:text-white/40">
+    <span class="inline-flex items-center gap-1.5"><mark class="ai-hit ai-hit-phrase w-3.5 h-3.5 rounded"></mark>套话</span>
+    <span class="inline-flex items-center gap-1.5"><mark class="ai-hit ai-hit-hollow w-3.5 h-3.5 rounded"></mark>空洞修辞</span>
+    <span class="inline-flex items-center gap-1.5"><mark class="ai-hit ai-hit-pattern w-3.5 h-3.5 rounded"></mark>冗余句式</span>
+  </div>
+</div>
+
+<style>
+  .ai-hit {
+    display: inline-block;
+    border-radius: 0.25rem;
+    padding: 0 0.15em;
+    font-weight: 600;
+  }
+  .ai-hit-phrase {
+    background: rgba(217, 119, 6, 0.22);
+    color: #B45309;
+  }
+  .ai-hit-hollow {
+    background: rgba(220, 38, 38, 0.16);
+    color: #DC2626;
+  }
+  .ai-hit-pattern {
+    background: rgba(124, 58, 237, 0.16);
+    color: #7C3AED;
+  }
+  :global(.dark) .ai-hit-phrase {
+    background: rgba(217, 119, 6, 0.28);
+    color: #FBBF24;
+  }
+  :global(.dark) .ai-hit-hollow {
+    background: rgba(220, 38, 38, 0.28);
+    color: #FCA5A5;
+  }
+  :global(.dark) .ai-hit-pattern {
+    background: rgba(124, 58, 237, 0.28);
+    color: #C4B5FD;
+  }
+  .ai-hit-mark {
+    border-radius: 0.2rem;
+    padding: 0 0.1em;
+  }
+</style>
+
+<script>
+  (function () {
+    const app = document.getElementById("ai-ism-app");
+    if (!app) return;
+    const lang = app.dataset.lang === "en" ? "en" : "zh";
+
+    const input = document.getElementById("ai-ism-input");
+    const ringFg = document.getElementById("ai-ism-ring-fg");
+    const scoreText = document.getElementById("ai-ism-score-text");
+    const levelEl = document.getElementById("ai-ism-level");
+    const statsEl = document.getElementById("ai-ism-stats");
+    const tipEl = document.getElementById("ai-ism-tip");
+    const hitCountEl = document.getElementById("ai-ism-hit-count");
+    const hitsSection = document.getElementById("ai-ism-hits-section");
+    const hitsEl = document.getElementById("ai-ism-hits");
+    const hitsEmpty = document.getElementById("ai-ism-hits-empty");
+    const sentSection = document.getElementById("ai-ism-sentences-section");
+    const sentEl = document.getElementById("ai-ism-sentences");
+    const sampleBtn = document.getElementById("ai-ism-sample");
+    const clearBtn = document.getElementById("ai-ism-clear");
+
+    /* ---------------- 规则库 ---------------- */
+    // cat: phrase 套话 / hollow 空洞修辞 / pattern 冗余句式
+    const RULES = {
+      zh: [
+        // 套话（连接词 / 模板腔）
+        { word: "综上所述", cat: "phrase", w: 3, repl: "总之" },
+        { word: "总而言之", cat: "phrase", w: 3, repl: "总之" },
+        { word: "总的来说", cat: "phrase", w: 3, repl: "整体看" },
+        { word: "与此同时", cat: "phrase", w: 2, repl: "同时" },
+        { word: "此外", cat: "phrase", w: 2, repl: "还有" },
+        { word: "首先", cat: "phrase", w: 2, repl: "先说" },
+        { word: "其次", cat: "phrase", w: 2, repl: "另外" },
+        { word: "再次", cat: "phrase", w: 2, repl: "还有" },
+        { word: "最后", cat: "phrase", w: 2, repl: "" },
+        { word: "值得一提的是", cat: "phrase", w: 3, repl: "顺带说下" },
+        { word: "值得注意的是", cat: "phrase", w: 3, repl: "特别说下" },
+        { word: "毋庸置疑", cat: "phrase", w: 3, repl: "不用怀疑" },
+        { word: "显而易见", cat: "phrase", w: 3, repl: "明摆着" },
+        { word: "不难发现", cat: "phrase", w: 3, repl: "你会发现" },
+        { word: "由此可见", cat: "phrase", w: 3, repl: "这么看" },
+        { word: "众所周知", cat: "phrase", w: 3, repl: "大家都知道" },
+        { word: "换言之", cat: "phrase", w: 2, repl: "换句话说" },
+        { word: "换句话说", cat: "phrase", w: 1, repl: "" },
+        { word: "不可否认", cat: "phrase", w: 3, repl: "" },
+        { word: "不得不承认", cat: "phrase", w: 3, repl: "" },
+        // 空洞修辞
+        { word: "赋能", cat: "hollow", w: 4, repl: "帮助" },
+        { word: "助力", cat: "hollow", w: 3, repl: "帮忙" },
+        { word: "加持", cat: "hollow", w: 3, repl: "加成" },
+        { word: "护航", cat: "hollow", w: 3, repl: "保障" },
+        { word: "深耕", cat: "hollow", w: 3, repl: "长期做" },
+        { word: "彰显", cat: "hollow", w: 3, repl: "体现" },
+        { word: "凸显", cat: "hollow", w: 3, repl: "突出" },
+        { word: "诠释", cat: "hollow", w: 3, repl: "解释" },
+        { word: "谱写", cat: "hollow", w: 3, repl: "写出" },
+        { word: "点亮", cat: "hollow", w: 3, repl: "照亮" },
+        { word: "绽放", cat: "hollow", w: 3, repl: "展现" },
+        { word: "焕发", cat: "hollow", w: 3, repl: "有了" },
+        { word: "注入", cat: "hollow", w: 2, repl: "带来" },
+        { word: "引擎", cat: "hollow", w: 3, repl: "动力" },
+        { word: "基石", cat: "hollow", w: 3, repl: "基础" },
+        { word: "蓝图", cat: "hollow", w: 3, repl: "规划" },
+        { word: "愿景", cat: "hollow", w: 3, repl: "目标" },
+        { word: "抓手", cat: "hollow", w: 4, repl: "切入点" },
+        { word: "闭环", cat: "hollow", w: 4, repl: "完整流程" },
+        { word: "颗粒度", cat: "hollow", w: 4, repl: "精细度" },
+        { word: "底层逻辑", cat: "hollow", w: 4, repl: "根本原因" },
+        { word: "方法论", cat: "hollow", w: 3, repl: "做法" },
+        { word: "维度", cat: "hollow", w: 2, repl: "角度" },
+        { word: "范式", cat: "hollow", w: 3, repl: "模式" },
+        { word: "矩阵", cat: "hollow", w: 3, repl: "组合" },
+        { word: "生态", cat: "hollow", w: 2, repl: "环境" },
+        { word: "链路", cat: "hollow", w: 3, repl: "流程" },
+        { word: "破局", cat: "hollow", w: 3, repl: "打开局面" },
+        { word: "升维", cat: "hollow", w: 3, repl: "拔高" },
+        { word: "降维", cat: "hollow", w: 3, repl: "拉低" },
+        { word: "对齐", cat: "hollow", w: 2, repl: "同步" },
+        { word: "复盘", cat: "hollow", w: 2, repl: "回顾" },
+        { word: "打磨", cat: "hollow", w: 2, repl: "改进" },
+        { word: "落地", cat: "hollow", w: 2, repl: "落实" },
+        { word: "共建", cat: "hollow", w: 2, repl: "一起做" },
+        { word: "共创", cat: "hollow", w: 2, repl: "一起创造" },
+        { word: "共鸣", cat: "hollow", w: 2, repl: "触动" },
+        { word: "温度", cat: "hollow", w: 2, repl: "人情味" },
+        { word: "有温度", cat: "hollow", w: 3, repl: "有人情味" },
+        { word: "深度融合", cat: "hollow", w: 4, repl: "紧密结合" },
+        { word: "赋能增效", cat: "hollow", w: 4, repl: "提升效率" },
+        { word: "提质增效", cat: "hollow", w: 4, repl: "提升质量和效率" },
+        { word: "高质量发展", cat: "hollow", w: 4, repl: "更好发展" },
+        { word: "转型升级", cat: "hollow", w: 3, repl: "转型" },
+        { word: "未来已来", cat: "hollow", w: 4, repl: "时代变了" },
+        { word: "新常态", cat: "hollow", w: 3, repl: "" },
+        { word: "新业态", cat: "hollow", w: 3, repl: "新行业" },
+        // 冗余句式
+        { word: "随着...的发展", cat: "pattern", w: 5, repl: "" },
+        { word: "随着...的深入", cat: "pattern", w: 5, repl: "" },
+        { word: "在当今...的背景下", cat: "pattern", w: 5, repl: "" },
+        { word: "在...日益...的今天", cat: "pattern", w: 5, repl: "" },
+        { word: "让我们一起", cat: "pattern", w: 4, repl: "咱们一起" },
+        { word: "让我们携手", cat: "pattern", w: 4, repl: "咱们一起" },
+        { word: "值得我们深思", cat: "pattern", w: 4, repl: "" },
+        { word: "引发我们思考", cat: "pattern", w: 4, repl: "" },
+      ],
+      en: [
+        { word: "Moreover", cat: "phrase", w: 2, repl: "Also" },
+        { word: "Furthermore", cat: "phrase", w: 2, repl: "Also" },
+        { word: "Additionally", cat: "phrase", w: 2, repl: "Also" },
+        { word: "In addition", cat: "phrase", w: 2, repl: "Plus" },
+        { word: "In conclusion", cat: "phrase", w: 3, repl: "So" },
+        { word: "To sum up", cat: "phrase", w: 3, repl: "So" },
+        { word: "It is worth noting", cat: "phrase", w: 3, repl: "Worth noting" },
+        { word: "It's worth noting", cat: "phrase", w: 3, repl: "Worth noting" },
+        { word: "Undoubtedly", cat: "phrase", w: 3, repl: "Clearly" },
+        { word: "Needless to say", cat: "phrase", w: 3, repl: "Obviously" },
+        { word: "In today's world", cat: "pattern", w: 4, repl: "These days" },
+        { word: "In today's fast-paced", cat: "pattern", w: 4, repl: "These days" },
+        { word: "Leverage", cat: "hollow", w: 3, repl: "Use" },
+        { word: "Leveraging", cat: "hollow", w: 3, repl: "Using" },
+        { word: "Delve", cat: "hollow", w: 3, repl: "Dig into" },
+        { word: "Dive into", cat: "hollow", w: 3, repl: "Dig into" },
+        { word: "Seamless", cat: "hollow", w: 3, repl: "Smooth" },
+        { word: "Seamlessly", cat: "hollow", w: 3, repl: "Smoothly" },
+        { word: "Cutting-edge", cat: "hollow", w: 3, repl: "Latest" },
+        { word: "State-of-the-art", cat: "hollow", w: 3, repl: "Latest" },
+        { word: "Robust", cat: "hollow", w: 2, repl: "Solid" },
+        { word: "Holistic", cat: "hollow", w: 3, repl: "Big-picture" },
+        { word: "Synergy", cat: "hollow", w: 3, repl: "Teamwork" },
+        { word: "Paradigm", cat: "hollow", w: 3, repl: "Model" },
+        { word: "Foster", cat: "hollow", w: 3, repl: "Encourage" },
+        { word: "Facilitate", cat: "hollow", w: 3, repl: "Help" },
+        { word: "Empower", cat: "hollow", w: 3, repl: "Enable" },
+        { word: "Embark", cat: "hollow", w: 3, repl: "Start" },
+        { word: "Crucial", cat: "hollow", w: 2, repl: "Important" },
+        { word: "Pivotal", cat: "hollow", w: 2, repl: "Key" },
+        { word: "Game-changer", cat: "hollow", w: 3, repl: "Big deal" },
+        { word: "Revolutionize", cat: "hollow", w: 3, repl: "Transform" },
+        { word: "Streamline", cat: "hollow", w: 2, repl: "Simplify" },
+        { word: "Tapestry", cat: "hollow", w: 3, repl: "Mix" },
+        { word: "Landscape", cat: "hollow", w: 2, repl: "Scene" },
+      ],
+    };
+
+    const RULES_ACTIVE = RULES[lang];
+    const CAT_LABEL = lang === "en"
+      ? { phrase: "cliché", hollow: "buzzword", pattern: "wordy pattern" }
+      : { phrase: "套话", hollow: "空洞修辞", pattern: "冗余句式" };
+    const CAT_CLASS = { phrase: "ai-hit-phrase", hollow: "ai-hit-hollow", pattern: "ai-hit-pattern" };
+
+    const LEVELS = lang === "en"
+      ? [
+          { max: 20, label: "Very natural — reads human", color: "#16A34A" },
+          { max: 40, label: "Slight AI flavor", color: "#D97706" },
+          { max: 60, label: "Noticeably AI", color: "#EA580C" },
+          { max: 80, label: "Heavy AI flavor", color: "#DC2626" },
+          { max: 100, label: "Pure AI", color: "#991B1B" },
+        ]
+      : [
+          { max: 20, label: "很自然 · 像人写的", color: "#16A34A" },
+          { max: 40, label: "有点 AI 味", color: "#D97706" },
+          { max: 60, label: "AI 味明显", color: "#EA580C" },
+          { max: 80, label: "AI 味很重", color: "#DC2626" },
+          { max: 100, label: "AI 本 AI", color: "#991B1B" },
+        ];
+
+    const DIMS = lang === "en"
+      ? ["Clichés", "Buzzwords", "Wordy patterns", "Repetition", "Template ending"]
+      : ["高频套话", "空洞修辞", "冗余句式", "结构重复", "模板结尾"];
+
+    const SAMPLES = lang === "en"
+      ? "In today's fast-paced world, leveraging cutting-edge AI technology is crucial. Moreover, it facilitates seamless collaboration and empowers teams to foster innovation. Furthermore, we need to delve into a holistic paradigm. In conclusion, this game-changing landscape underscores the importance of robust synergy."
+      : "在当今数字化转型的浪潮下，AI 赋能已经成为企业高质量发展的核心引擎。首先，通过深度融合与底层逻辑重构，我们能够打通业务链路，实现精准赋能。其次，值得注意的是，闭环思维与颗粒度管理是降本增效的关键抓手。综上所述，未来已来，让我们携手共建一个有温度的智能生态。";
+
+    const TIPS = lang === "en"
+      ? {
+          empty: "Paste some text above to start scanning.",
+          ok: "No AI clichés found — keep it that way.",
+          mid: "Swap out the highlighted clichés below to sound more human.",
+          high: "This reads very AI — hit Replace on the list below to de-AI it.",
+        }
+      : {
+          empty: "在上方粘贴或输入文字，AI 味指数会实时变化。",
+          ok: "没有命中 AI 高频腔，继续保持这种说话方式。",
+          mid: "把下面高亮的词换成建议的人话，AI 味立刻下降。",
+          high: "这段 AI 味很冲，点「替换」把下面的套话换成大白话吧。",
+        };
+
+    /* ---------------- 工具函数 ---------------- */
+    function esc(s) {
+      return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function splitSentences(text) {
+      return text
+        .split(/(?<=[。！？!?；;]|\n)/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+
+    function findHits(text) {
+      const hits = [];
+      RULES_ACTIVE.forEach((rule) => {
+        let idx = 0;
+        // 支持 "随著...的发展" 这类通配短语：展开成正则
+        const pattern = rule.word;
+        const hasWild = pattern.includes("...");
+        const re = new RegExp(hasWild ? pattern.split("...").map(esc).join("[\\s\\S]{0,12}") : esc(pattern), "gi");
+        let m;
+        while ((m = re.exec(text)) !== null) {
+          hits.push({ rule, match: m[0], index: m.index });
+          if (m.index === re.lastIndex) re.lastIndex++;
+        }
+      });
+      // 按位置去重重叠命中（保留较长/权重高的）
+      hits.sort((a, b) => a.index - b.index || b.rule.word.length - a.rule.word.length);
+      const dedup = [];
+      hits.forEach((h) => {
+        const prev = dedup[dedup.length - 1];
+        if (prev && h.index < prev.index + prev.rule.word.length) {
+          // 重叠：保留权重更高的
+          if (h.rule.w * h.rule.word.length > prev.rule.w * prev.rule.word.length) {
+            dedup[dedup.length - 1] = h;
+          }
+          return;
+        }
+        dedup.push(h);
+      });
+      return dedup;
+    }
+
+    function analyze(text) {
+      const hits = findHits(text);
+      const sentences = splitSentences(text);
+      const charCount = text.replace(/\s/g, "").length;
+      const density = charCount ? (hits.length / charCount) * 1000 : 0; // 每千字命中
+      const avgLen = sentences.length ? sentences.reduce((s, x) => s + x.length, 0) / sentences.length : 0;
+
+      let score = 0;
+      hits.forEach((h) => (score += h.rule.w));
+      score += density * 1.4;
+      if (avgLen > 45) score += (avgLen - 45) * 0.35;
+
+      // 开头模板
+      const head = text.trim().slice(0, 30);
+      const headRe = /(随着[\s\S]{0,12}的发展|在当今[\s\S]{0,12}的背景下|在[\s\S]{0,12}的今天|首先|In today's|Moreover|Furthermore)/;
+      if (headRe.test(head)) score += 6;
+
+      // 结尾模板
+      const tail = text.trim().slice(-30);
+      const tailRe = /(综上所述|总而言之|总的来说|In conclusion|To sum up|Let's embark)/;
+      if (tailRe.test(tail)) score += 8;
+
+      score = Math.max(0, Math.min(100, Math.round(score)));
+
+      // 雷达维度
+      const dims = [0, 0, 0, 0, 0];
+      hits.forEach((h) => {
+        if (h.rule.cat === "phrase") dims[0] += 1;
+        else if (h.rule.cat === "hollow") dims[1] += 1;
+        else dims[2] += 1;
+      });
+      dims[0] = Math.min(100, dims[0] * 14);
+      dims[1] = Math.min(100, dims[1] * 16);
+      dims[2] = Math.min(100, dims[2] * 22);
+
+      // 结构重复：相邻句句首重复
+      const heads = sentences.map((s) => s.slice(0, 8));
+      let dup = 0;
+      for (let i = 1; i < heads.length; i++) if (heads[i] && heads[i] === heads[i - 1]) dup++;
+      dims[3] = Math.min(100, dup * 40 + (new Set(heads).size < heads.length && heads.length > 2 ? 20 : 0));
+
+      // 模板结尾
+      dims[4] = tailRe.test(tail) ? 100 : Math.min(100, (hits.filter((h) => h.rule.cat === "phrase").length) * 12);
+
+      return { hits, sentences, charCount, avgLen, score, dims };
+    }
+
+    /* ---------------- 渲染 ---------------- */
+    const RING_C = 2 * Math.PI * 52;
+
+    function renderScore(score, color) {
+      scoreText.textContent = String(score);
+      scoreText.setAttribute("fill", color);
+      ringFg.setAttribute("stroke", color);
+      ringFg.setAttribute("stroke-dasharray", ((score / 100) * RING_C).toFixed(1) + " " + RING_C.toFixed(1));
+    }
+
+    function renderRadar(dims) {
+      const svg = document.getElementById("ai-ism-radar");
+      const cx = 140, cy = 116, r = 82;
+      const N = DIMS.length;
+      const ang = (i) => ((-90 + i * (360 / N)) * Math.PI) / 180;
+      const pt = (i, rr) => [cx + rr * Math.cos(ang(i)), cy + rr * Math.sin(ang(i))];
+
+      const dark = document.documentElement.classList.contains("dark");
+      const gridColor = dark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.12)";
+      const axisColor = dark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.18)";
+      const labelColor = dark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.45)";
+      const fillColor = "#16A34A";
+
+      let html = "";
+      // 网格
+      [0.25, 0.5, 0.75, 1].forEach((f) => {
+        const pts = [];
+        for (let i = 0; i < N; i++) pts.push(pt(i, r * f).join(","));
+        html += `<polygon points="${pts.join(" ")}" fill="none" stroke="${gridColor}" stroke-width="1"/>`;
+      });
+      // 轴线
+      for (let i = 0; i < N; i++) {
+        const [x, y] = pt(i, r);
+        html += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${axisColor}" stroke-width="1"/>`;
+      }
+      // 数据多边形
+      const dataPts = [];
+      for (let i = 0; i < N; i++) dataPts.push(pt(i, r * (dims[i] / 100)).join(","));
+      html += `<polygon points="${dataPts.join(" ")}" fill="${fillColor}" fill-opacity="0.18" stroke="${fillColor}" stroke-width="2" stroke-linejoin="round"/>`;
+      // 数据点
+      for (let i = 0; i < N; i++) {
+        const [x, y] = pt(i, r * (dims[i] / 100));
+        html += `<circle cx="${x}" cy="${y}" r="3.5" fill="${fillColor}" stroke="#fff" stroke-width="1.5"/>`;
+      }
+      // 标签
+      for (let i = 0; i < N; i++) {
+        const [x, y] = pt(i, r + 18);
+        html += `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="${labelColor}">${DIMS[i]}</text>`;
+      }
+      html += `<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" font-size="10" fill="${labelColor}" opacity="0.6">AI-ISM</text>`;
+      svg.innerHTML = html;
+    }
+
+    function renderHits(hits) {
+      const grouped = new Map();
+      hits.forEach((h) => {
+        if (!grouped.has(h.rule.word)) grouped.set(h.rule.word, { rule: h.rule, count: 0 });
+        grouped.get(h.rule.word).count++;
+      });
+      const list = Array.from(grouped.values());
+      hitsSection.classList.remove("hidden");
+      hitsEmpty.classList.add("hidden");
+
+      if (!list.length) {
+        hitsEl.innerHTML = "";
+        hitsEmpty.classList.remove("hidden");
+        hitsSection.classList.add("hidden");
+        return;
+      }
+
+      hitsEl.innerHTML = list
+        .map(({ rule, count }) => {
+          const canReplace = !!rule.repl;
+          const replText = lang === "en" ? (canReplace ? `Replace → ${rule.repl}` : "") : (canReplace ? `替换为「${rule.repl}」` : "");
+          return `<div class="flex items-center justify-between gap-3 rounded-lg border border-black/10 dark:border-white/10 bg-white dark:bg-neutral-900 px-3.5 py-2.5 text-sm">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span class="ai-hit ${CAT_CLASS[rule.cat]} text-xs px-1.5 py-0.5">${rule.word}</span>
+              <span class="text-[11px] font-mono text-black/30 dark:text-white/30">${CAT_LABEL[rule.cat]} · ×${count}</span>
+            </div>
+            ${
+              canReplace
+                ? `<button class="ai-replace-btn flex-shrink-0 inline-flex items-center gap-1 px-3 py-1 rounded-full bg-black dark:bg-white text-white dark:text-black text-xs font-medium hover:opacity-80 transition-opacity" data-word="${rule.word.replace(/"/g, "&quot;")}" data-repl="${(rule.repl || "").replace(/"/g, "&quot;")}">${replText}</button>`
+                : ""
+            }
+          </div>`;
+        })
+        .join("");
+    }
+
+    function renderSentences(text, hits) {
+      if (!hits.length) {
+        sentSection.classList.add("hidden");
+        sentEl.innerHTML = "";
+        return;
+      }
+      sentSection.classList.remove("hidden");
+      const sentences = splitSentences(text);
+      // 构建高亮正则
+      const words = RULES_ACTIVE.map((r) => r.word).sort((a, b) => b.length - a.length);
+      const reParts = words.map((w) => (w.includes("...") ? w.split("...").map(esc).join("[\\s\\S]{0,12}") : esc(w)));
+      const re = new RegExp("(" + reParts.join("|") + ")", "gi");
+
+      const highlighted = sentences
+        .map((s) => {
+          const html = s.replace(re, (m, p) => {
+            const rule = RULES_ACTIVE.find((r) => {
+              const rx = r.word.includes("...") ? new RegExp(r.word.split("...").map(esc).join("[\\s\\S]{0,12}"), "i") : new RegExp("^" + esc(r.word) + "$", "i");
+              return rx.test(p);
+            });
+            const cls = rule ? CAT_CLASS[rule.cat] : "ai-hit-phrase";
+            return `<mark class="ai-hit ${cls} ai-hit-mark">${m}</mark>`;
+          });
+          return `<div class="rounded-lg border border-black/10 dark:border-white/10 px-3.5 py-2.5 text-sm leading-relaxed text-black/70 dark:text-white/70">${html || "&nbsp;"}</div>`;
+        })
+        .join("");
+      sentEl.innerHTML = highlighted;
+    }
+
+    function update() {
+      const text = input.value || "";
+      if (!text.trim()) {
+        hitsSection.classList.add("hidden");
+        sentSection.classList.add("hidden");
+        renderScore(0, "#737373");
+        levelEl.textContent = lang === "en" ? "Awaiting input…" : "等待输入…";
+        levelEl.style.color = "#737373";
+        statsEl.textContent = "–";
+        hitCountEl.textContent = "0";
+        tipEl.textContent = TIPS.empty;
+        return;
+      }
+
+      const { hits, sentences, charCount, avgLen, score, dims } = analyze(text);
+      const level = LEVELS.find((l) => score <= l.max) || LEVELS[LEVELS.length - 1];
+
+      renderScore(score, level.color);
+      levelEl.textContent = level.label;
+      levelEl.style.color = level.color;
+      hitCountEl.textContent = String(hits.length);
+      statsEl.textContent = (lang === "en" ? `${charCount} chars · ${sentences.length} sentences · avg ${Math.round(avgLen)} chars/sentence` : `${charCount} 字 · ${sentences.length} 句 · 均句 ${Math.round(avgLen)} 字`);
+      tipEl.textContent = score <= 20 ? TIPS.ok : score <= 60 ? TIPS.mid : TIPS.high;
+      renderRadar(dims);
+      renderHits(hits);
+      renderSentences(text, hits);
+    }
+
+    /* ---------------- 事件 ---------------- */
+    input.addEventListener("input", update);
+
+    sampleBtn.addEventListener("click", () => {
+      input.value = SAMPLES;
+      update();
+      input.focus();
+    });
+
+    clearBtn.addEventListener("click", () => {
+      input.value = "";
+      update();
+      input.focus();
+    });
+
+    hitsEl.addEventListener("click", (e) => {
+      const btn = e.target.closest(".ai-replace-btn");
+      if (!btn) return;
+      const word = btn.dataset.word;
+      const repl = btn.dataset.repl;
+      input.value = input.value.split(word).join(repl);
+      update();
+    });
+
+    // 主题切换时重绘雷达图（颜色适配暗色）
+    const mo = new MutationObserver(() => {
+      if (input.value.trim()) {
+        const { dims } = analyze(input.value);
+        renderRadar(dims);
+      }
+    });
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+
+    update();
+  })();
+</script>
