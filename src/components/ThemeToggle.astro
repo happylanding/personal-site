@@ -30,7 +30,14 @@ const t = useTranslations(lang);
   }
   setTheme();
   document.getElementById("theme-toggle")?.addEventListener("click", function () {
-    var isDark = document.documentElement.classList.toggle("dark");
+    var html = document.documentElement;
+    var isDark = html.classList.toggle("dark");
     localStorage.setItem("theme", isDark ? "dark" : "light");
+    // 平滑过渡：切换瞬间短暂开启全局过渡，随后移除避免拖慢日常交互
+    html.classList.add("theme-switching");
+    clearTimeout(window.__themeSwitchTimer);
+    window.__themeSwitchTimer = setTimeout(function () {
+      html.classList.remove("theme-switching");
+    }, 400);
   });
 </script>

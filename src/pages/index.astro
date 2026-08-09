@@ -73,7 +73,11 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
 
   <!-- ===== 4 Column cards ===== -->
   <section class="mb-20">
-    <h2 class="text-center text-lg font-bold font-serif mb-3">{t("home.exploreColumns")}</h2>
+    <div class="fx-section-head justify-center mb-3">
+      <span class="fx-sec-index" aria-hidden="true">NO.01</span>
+      <h2 class="text-center text-lg font-bold font-serif">{t("home.exploreColumns")}</h2>
+      <span class="fx-sec-bar" aria-hidden="true"></span>
+    </div>
     <p class="text-center text-sm text-black/40 dark:text-white/40 mb-8">{t("home.columnsDesc")}</p>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -84,6 +88,9 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
             href={colPath}
             class="roll-card group block p-6 rounded-xl border border-black/10 dark:border-white/10 hover-lift transition-all duration-300 hover:border-black/30 dark:hover:border-white/30 relative overflow-hidden"
             style={`--roll-index:${i}`}
+            data-spotlight
+            data-tilt
+            data-c-accent={s}
           >
             <span class="ghost-num text-black/5 dark:text-white/5 select-none pointer-events-none" aria-hidden="true">
               {String(i + 1).padStart(2, "0")}
@@ -99,7 +106,7 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
               {t(`columns.${s}.desc`)}
             </p>
             <span class="text-xs text-black/25 dark:text-white/25 font-mono relative">
-              {counts[s] || 0} {lang === "en" ? "articles" : "篇文章"}
+              <span data-count-up={counts[s] || 0}>0</span> {lang === "en" ? "articles" : "篇文章"}
             </span>
           </a>
         );
@@ -115,10 +122,14 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
   <!-- ===== Featured articles ===== -->
   {featured.length > 0 && (
     <section class="mb-16" data-reveal>
-      <h2 class="text-lg font-bold font-serif mb-8 inline-flex items-center gap-2">
-        <Icon name="sparkles" class="w-5 h-5 text-black/40 dark:text-white/40" />
-        {t("articles.featured")}
-      </h2>
+      <div class="fx-section-head mb-8">
+        <span class="fx-sec-index" aria-hidden="true">NO.02</span>
+        <h2 class="text-lg font-bold font-serif inline-flex items-center gap-2">
+          <Icon name="sparkles" class="w-5 h-5 text-black/40 dark:text-white/40" />
+          {t("articles.featured")}
+        </h2>
+        <span class="fx-sec-bar" aria-hidden="true"></span>
+      </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {featured.map((a) => {
           const title = lang === "en" ? (a.data.titleEn || a.data.title) : a.data.title;
@@ -126,7 +137,8 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
           return (
             <a
               href={lang === "en" ? `/en/${a.data.section}/${a.id}` : `/${a.data.section}/${a.id}`}
-              class="roll-card group block p-5 rounded-xl border border-black/10 dark:border-white/10 hover-lift transition-all duration-300 hover:border-black/30 dark:hover:border-white/30"
+              class="roll-card group block p-5 rounded-xl border border-black/10 dark:border-white/10 hover-lift transition-all duration-300 hover:border-black/30 dark:hover:border-white/30 relative overflow-hidden"
+              data-spotlight
             >
               <div class="flex items-center gap-2 mb-3">
                 <span class="text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/50 dark:text-white/50 inline-flex items-center gap-1">
@@ -149,7 +161,11 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
   <!-- ===== Latest articles ===== -->
   <section data-reveal>
     <div class="flex items-center justify-between mb-8">
-      <h2 class="text-lg font-bold font-serif">{t("home.latestArticles")}</h2>
+      <div class="fx-section-head">
+        <span class="fx-sec-index" aria-hidden="true">NO.03</span>
+        <h2 class="text-lg font-bold font-serif">{t("home.latestArticles")}</h2>
+        <span class="fx-sec-bar" aria-hidden="true"></span>
+      </div>
       <a
         href={lang === "en" ? "/en/archive/" : "/archive/"}
         class="text-sm text-black/40 dark:text-white/40 hover:opacity-70 transition-opacity inline-flex items-center gap-1"

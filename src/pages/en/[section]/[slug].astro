@@ -199,7 +199,7 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
           {prevArticle ? (
             <a
               href={`/en/${section}/${prevArticle.id}`}
-              class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors"
+              class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors relative overflow-hidden" data-spotlight
             >
               <p class="text-xs text-black/30 dark:text-white/30 mb-1 inline-flex items-center gap-1"><Icon name="arrowLeft" class="w-3 h-3" /> Older</p>
               <p class="text-sm font-medium group-hover:opacity-70 transition-opacity line-clamp-2">
@@ -212,7 +212,7 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
           {nextArticle ? (
             <a
               href={`/en/${section}/${nextArticle.id}`}
-              class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors sm:text-right"
+              class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors sm:text-right relative overflow-hidden" data-spotlight
             >
               <p class="text-xs text-black/30 dark:text-white/30 mb-1 inline-flex items-center gap-1">Newer <Icon name="arrowRight" class="w-3 h-3" /></p>
               <p class="text-sm font-medium group-hover:opacity-70 transition-opacity line-clamp-2">

@@ -607,6 +607,16 @@ body {
   text-shadow: 0 0 12px rgba(245, 158, 11, 0.4), 0 0 24px rgba(245, 158, 11, 0.2);
 }
 
+/* ===== 栏目色随卡片 hover 点亮（roll-card 专属，覆盖通用 hover-glow） ===== */
+.roll-card[data-c-accent="insights"] .fx-spotlight { background: radial-gradient(circle, rgba(142, 31, 47, 0.12) 0%, transparent 75%); }
+.roll-card[data-c-accent="ai"] .fx-spotlight { background: radial-gradient(circle, rgba(30, 58, 138, 0.12) 0%, transparent 75%); }
+.roll-card[data-c-accent="tips"] .fx-spotlight { background: radial-gradient(circle, rgba(180, 83, 9, 0.12) 0%, transparent 75%); }
+.roll-card[data-c-accent="books"] .fx-spotlight { background: radial-gradient(circle, rgba(124, 58, 237, 0.13) 0%, transparent 75%); }
+.dark .roll-card[data-c-accent="insights"] .fx-spotlight { background: radial-gradient(circle, rgba(190, 60, 80, 0.15) 0%, transparent 75%); }
+.dark .roll-card[data-c-accent="ai"] .fx-spotlight { background: radial-gradient(circle, rgba(70, 100, 200, 0.15) 0%, transparent 75%); }
+.dark .roll-card[data-c-accent="tips"] .fx-spotlight { background: radial-gradient(circle, rgba(245, 158, 11, 0.14) 0%, transparent 75%); }
+.dark .roll-card[data-c-accent="books"] .fx-spotlight { background: radial-gradient(circle, rgba(167, 139, 250, 0.15) 0%, transparent 75%); }
+
 .hover-underline {
   position: relative;
 }
@@ -944,6 +954,211 @@ body {
 
 .dark ::-webkit-scrollbar-thumb {
   background: #404040;
+}
+
+/* ===== UiEffects 微交互增强（spotlight 聚光 / tilt 3D 倾斜 / count-up 数字） ===== */
+
+/* 卡片聚光斑：由 UiEffects.astro 注入 .fx-spotlight，随 --fx-x/--fx-y 定位 */
+.fx-spotlight {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 420px;
+  height: 420px;
+  margin-left: -210px;
+  margin-top: -210px;
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transform: translate3d(var(--fx-x, 50%), var(--fx-y, 50%), 0);
+  /* 边界拉长到 75% 才淡出，光斑更柔、不生硬 */
+  background: radial-gradient(circle, rgba(180, 83, 9, 0.09) 0%, transparent 75%);
+  transition: opacity 0.4s ease;
+}
+.dark .fx-spotlight {
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.09) 0%, transparent 75%);
+}
+
+/* 卡片进入 hover 时聚光渐显（鼠标进入瞬间用 onmouseenter 由 JS 控制更稳，这里做兜底） */
+[data-spotlight]:hover .fx-spotlight {
+  opacity: 1;
+}
+
+/* 3D 倾斜：仅 hover 时生效，避免覆盖 .roll-card 的入场 transform（隐藏→翻入）。
+   与 hover-lift 上浮兼容：hover 时叠加 translateY(-3px)。
+   选择器带 .hover-lift 提升优先级，确保覆盖 hover-lift 的纯位移 transform */
+.hover-lift[data-tilt]:hover,
+.roll-card[data-tilt]:hover,
+[data-tilt]:hover {
+  transform: perspective(900px) rotateX(var(--fx-rx, 0deg)) rotateY(var(--fx-ry, 0deg)) translateY(-3px);
+  transition: transform 0.18s ease-out, box-shadow 0.3s, border-color 0.3s;
+  will-change: transform;
+}
+
+/* 数字滚动动画：初始可见（不闪跳），动画过程由 JS 改写文本 */
+[data-count-up] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 关闭动效时聚光/倾斜全部还原 */
+@media (prefers-reduced-motion: reduce) {
+  .fx-spotlight {
+    display: none;
+  }
+  .hover-lift[data-tilt]:hover,
+  .roll-card[data-tilt]:hover,
+  [data-tilt]:hover {
+    transform: none !important;
+    transition: none;
+  }
+}
+
+/* ===== 分区标题饰条（Editorial 细节：序号 + 主题色短杠） ===== */
+.fx-section-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.fx-section-head .fx-sec-bar {
+  width: 26px;
+  height: 3px;
+  border-radius: 9999px;
+  background: #b45309;
+}
+.fx-section-head .fx-sec-index {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: rgba(0, 0, 0, 0.35);
+}
+.dark .fx-section-head .fx-sec-index {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* ===== 全局焦点可见性（键盘导航清晰反馈） ===== */
+:where(a, button, input, textarea, [tabindex]):focus-visible {
+  outline: 2px solid #b45309;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.dark :where(a, button, input, textarea, [tabindex]):focus-visible {
+  outline-color: #f59e0b;
+}
+
+/* ===== 文本选中色 ===== */
+::selection {
+  background: rgba(180, 83, 9, 0.22);
+  color: inherit;
+}
+.dark ::selection {
+  background: rgba(245, 158, 11, 0.28);
+}
+
+/* ===== 主题切换过渡：icon/徽章/卡片内容平滑渐入 ===== */
+html.theme-switching,
+html.theme-switching * {
+  transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease !important;
+}
+
+/* ===== Glassmorphism：磨砂玻璃卡片 + 全站可模糊的极光底 ===== */
+
+/* 1) 页面底色：为磨砂玻璃提供"可磨的底"，保持极淡的低饱和冷色光晕，克制不抢阅读。 */
+body {
+  /* 建立独立层叠上下文，保持玻璃卡片与底色层级清晰 */
+  position: relative;
+  isolation: isolate;
+  background-color: #fbfaf7 !important;
+  background-image:
+    radial-gradient(56rem 40rem at 18% 0%, rgba(59, 91, 219, 0.045), transparent 74%),
+    radial-gradient(52rem 38rem at 96% 12%, rgba(124, 58, 237, 0.04), transparent 74%),
+    radial-gradient(60rem 44rem at 82% 100%, rgba(180, 83, 9, 0.035), transparent 74%);
+  background-attachment: fixed;
+}
+
+.dark body {
+  background-color: #0a0f1e !important;
+  background-image:
+    radial-gradient(56rem 40rem at 18% 0%, rgba(59, 91, 219, 0.14), transparent 74%),
+    radial-gradient(52rem 38rem at 96% 12%, rgba(124, 58, 237, 0.14), transparent 74%),
+    radial-gradient(60rem 44rem at 82% 100%, rgba(180, 83, 9, 0.10), transparent 74%),
+    radial-gradient(50rem 38rem at 4% 96%, rgba(30, 58, 138, 0.12), transparent 74%);
+}
+
+/* 2) 磨砂玻璃卡片本体：
+   覆盖首页栏目卡/精选卡、工具箱卡、栏目书籍卡、文章上下篇卡、Currently 卡。
+   统一用 backdrop-filter 磨砂 + 半透底 + 玻璃描边 + 顶部高光。 */
+.glass-card,
+.roll-card,
+.tool-card,
+[data-spotlight],
+[data-currently] {
+  position: relative;
+  background: rgba(255, 255, 255, 0.45) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  backdrop-filter: blur(14px) saturate(150%);
+  /* 描边降到 0.5，白底上更克制，不再“边界清晰生硬” */
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  box-shadow:
+    0 8px 28px rgba(31, 41, 55, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.dark .glass-card,
+.dark .roll-card,
+.dark .tool-card,
+.dark [data-spotlight],
+.dark [data-currently] {
+  /* 暗色用"深色玻璃"而非白玻璃：保证白字对比度，同时保留磨砂质感 */
+  background: rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
+}
+
+/* 3) hover：玻璃高光增强 + 柔光扩散，与聚光/3D 倾斜叠加 */
+.roll-card:hover,
+.tool-card:hover,
+[data-spotlight]:hover,
+[data-currently]:hover {
+  border-color: rgba(255, 255, 255, 0.95) !important;
+  box-shadow:
+    0 14px 44px rgba(31, 41, 55, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+.dark .roll-card:hover,
+.dark .tool-card:hover,
+.dark [data-spotlight]:hover,
+.dark [data-currently]:hover {
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  box-shadow:
+    0 14px 44px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+/* 3.5) 非 roll-card 的 data-spotlight 卡片（文章上下篇等）补齐阴影/描边过渡，避免 hover 生硬 */
+[data-spotlight]:not(.roll-card):not(.tool-card) {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+/* 4) 无障碍/低性能降级：reduced-motion 时关闭磨砂模糊，回退近实底 */
+@media (prefers-reduced-motion: reduce) {
+  .glass-card,
+  .roll-card,
+  .tool-card,
+  [data-spotlight],
+  [data-currently] {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .dark .glass-card,
+  .dark .roll-card,
+  .dark .tool-card,
+  .dark [data-spotlight],
+  .dark [data-currently] {
+    background: rgba(255, 255, 255, 0.12) !important;
+  }
 }
 
 /* ===== View transition (Effect C) ===== */

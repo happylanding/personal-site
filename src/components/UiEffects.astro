@@ -1,0 +1,121 @@
+---
+/**
+ * UiEffects — 全站通用微交互增强（纯原生 JS，零依赖）
+ *
+ * 能力：
+ *  1. 卡片聚光跟随（spotlight）：鼠标在卡片上移动时，卡片内部一个 400px 径向光斑
+ *     跟随光标位置（仅桌面端 hover 设备，reduced-motion 自动关闭）。
+ *  2. 卡片 3D 倾斜（tilt）：面向鼠标做 ±4° 的小幅度 3D 倾斜，配合现有 hover-lift。
+ *  3. 数字滚动动画（count-up）：带 [data-count-up] 的元素进入视口时，
+ *     数值从 0 平滑滚动到目标值（默认 900ms，ease-out）。
+ *
+ * 用法：
+ *  - 卡片：在任意 <a>/<div> 上添加 data-spotlight（聚光）与/或 data-tilt（3D 倾斜）。
+ *  - 数字：<span data-count-up="14">0</span>，目标值写在属性里。
+ *
+ * 无障碍：prefers-reduced-motion 下全部跳过，元素保持原样。
+ * 性能：所有事件统一 rAF 合并；每张卡片只监听一次；IntersectionObserver 观察后自动断开。
+ */
+---
+
+<!-- 不渲染任何 DOM，仅注入脚本 -->
+<script>
+  (function () {
+    "use strict";
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // 是否 hover 类设备（触摸设备不做聚光/倾斜，避免 hover 残留）
+    var finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    var enable = finePointer && !reduce;
+
+    /* ============ 1. 卡片聚光 + 3D 倾斜 ============ */
+    var spotlightCards = Array.from(document.querySelectorAll("[data-spotlight], [data-tilt]"));
+    if (enable && spotlightCards.length) {
+      var hasSpotlight = spotlightCards.some(function (el) {
+        return el.hasAttribute("data-spotlight");
+      });
+      var hasTilt = spotlightCards.some(function (el) {
+        return el.hasAttribute("data-tilt");
+      });
+
+      spotlightCards.forEach(function (card) {
+        // 聚光层：插入一个 .fx-spotlight 圆斑，随光标移动
+        if (card.hasAttribute("data-spotlight")) {
+          var spot = document.createElement("span");
+          spot.className = "fx-spotlight";
+          spot.setAttribute("aria-hidden", "true");
+          card.appendChild(spot);
+        }
+
+        var raf = false;
+        function move(e) {
+          if (raf) return;
+          raf = true;
+          requestAnimationFrame(function () {
+            raf = false;
+            var r = card.getBoundingClientRect();
+            var x = e.clientX - r.left;
+            var y = e.clientY - r.top;
+            // 聚光斑定位（百分比 + 固定像素偏移）
+            if (hasSpotlight) {
+              card.style.setProperty("--fx-x", x.toFixed(1) + "px");
+              card.style.setProperty("--fx-y", y.toFixed(1) + "px");
+            }
+            // 3D 倾斜：中心偏移 → rotateX/rotateY（±4°）
+            if (hasTilt) {
+              var px = (x / r.width - 0.5) * 2; // -1 ~ 1
+              var py = (y / r.height - 0.5) * 2;
+              card.style.setProperty("--fx-rx", (-py * 4).toFixed(2) + "deg");
+              card.style.setProperty("--fx-ry", (px * 4).toFixed(2) + "deg");
+            }
+          });
+        }
+        card.addEventListener("mousemove", move, { passive: true });
+        card.addEventListener("mouseleave", function () {
+          if (hasTilt) {
+            card.style.setProperty("--fx-rx", "0deg");
+            card.style.setProperty("--fx-ry", "0deg");
+          }
+        });
+      });
+    }
+
+    /* ============ 2. 数字滚动动画（count-up） ============ */
+    var counters = Array.from(document.querySelectorAll("[data-count-up]"));
+    if (counters.length && !reduce) {
+      var animate = function (el) {
+        var target = parseInt(el.getAttribute("data-count-up") || "0", 10) || 0;
+        if (!target) {
+          el.textContent = "0";
+          return;
+        }
+        var duration = 900;
+        var start = null;
+        function frame(ts) {
+          if (!start) start = ts;
+          var p = Math.min(1, (ts - start) / duration);
+          var eased = 1 - Math.pow(1 - p, 3); // ease-out cubic
+          el.textContent = String(Math.round(target * eased));
+          if (p < 1) requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      };
+
+      var io = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              animate(entry.target);
+              io.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.4 }
+      );
+      counters.forEach(function (el) {
+        // 动画期间禁用文字选中，避免数字闪烁时误选
+        io.observe(el);
+      });
+    }
+  })();
+</script>

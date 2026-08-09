@@ -21,10 +21,6 @@ tools.sort((a, b) => {
 const total = tools.length;
 const appCount = tools.filter((x) => x.data.type === "app").length;
 const scriptCount = tools.filter((x) => x.data.type === "script").length;
-const statsText = t("tools.stats")
-  .replace("{total}", String(total))
-  .replace("{apps}", String(appCount))
-  .replace("{scripts}", String(scriptCount));
 
 // 扭蛋数据（供 define:vars 注入到客户端脚本）
 const gachaTools = tools.map((x) => ({
@@ -55,7 +51,12 @@ const gachaTools = tools.map((x) => ({
       </h1>
       <p class="text-sm text-black/40 dark:text-white/40">{t("tools.subtitle")}</p>
       <p class="text-base text-black/50 dark:text-white/50 mt-3 leading-relaxed max-w-2xl">{t("tools.desc")}</p>
-      <p class="text-xs font-mono text-black/30 dark:text-white/30 mt-3">{statsText}</p>
+      <p class="text-xs font-mono text-black/30 dark:text-white/30 mt-3"
+        set:html={t("tools.stats")
+          .replace("{total}", `<span data-count-up="${total}">0</span>`)
+          .replace("{apps}", `<span data-count-up="${appCount}">0</span>`)
+          .replace("{scripts}", `<span data-count-up="${scriptCount}">0</span>`)}>
+      </p>
     </header>
 
     <!-- 随机扭蛋：点击弹出扭蛋卡，可就地再看/直达工具 -->
@@ -113,6 +114,8 @@ const gachaTools = tools.map((x) => ({
               class="tool-card roll-card group block p-5 rounded-xl border border-black/10 dark:border-white/10 hover-lift transition-all duration-300 hover:border-black/30 dark:hover:border-white/30 relative overflow-hidden"
               data-type={type}
               style={`--roll-index:${i}`}
+              data-spotlight
+              data-tilt
             >
               <span class="ghost-num text-black/5 dark:text-white/5 select-none pointer-events-none" aria-hidden="true">
                 {String(i + 1).padStart(2, "0")}

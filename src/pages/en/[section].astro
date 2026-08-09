@@ -64,7 +64,7 @@ const isBooksSection = section === "books";
             const hasRead = !!article.data.readUrl;
             const hasReview = !!article.data.reviewUrl;
             return (
-              <div class="flex flex-col sm:flex-row gap-5 p-5 rounded-xl border border-black/10 dark:border-white/10 hover-lift group">
+              <div class="flex flex-col sm:flex-row gap-5 p-5 rounded-xl border border-black/10 dark:border-white/10 hover-lift group relative overflow-hidden" data-spotlight data-tilt>
                 <div class="flex-shrink-0 w-20 h-28 bg-black/[0.04] dark:bg-white/[0.04] rounded flex items-center justify-center text-black/15 dark:text-white/15">
                   <Icon name="bookOpen" class="w-8 h-8" strokeWidth={1.2} />
                 </div>
