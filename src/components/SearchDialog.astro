@@ -1,5 +1,4 @@
 ---
-import { getCollection } from "astro:content";
 import { getLangFromUrl, useTranslations } from "../i18n/utils";
 import Icon from "./Icon.astro";
 
@@ -7,33 +6,8 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const langPrefix = lang === "en" ? "/en/" : "/";
 
-const allArticles = await getCollection("articles", function (entry) {
-  return !entry.data.draft;
-});
-
-// 构建精简索引（标题、摘要、栏目、标签、日期、链接）
-const searchData = allArticles.map(function (post) {
-  var title = lang === "en" ? (post.data.titleEn || post.data.title) : post.data.title;
-  var excerpt = lang === "en" ? (post.data.descriptionEn || post.data.description) : post.data.description;
-  var tags = lang === "en" && post.data.tagsEn?.length ? post.data.tagsEn : post.data.tags;
-  var category = t("columns." + post.data.section + ".name");
-  var dateStr = post.data.date.toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-  var href = langPrefix + post.data.section + "/" + post.id + "/";
-  return {
-    title: title,
-    excerpt: excerpt || "",
-    tags: (tags || []).join(" "),
-    tagsArr: tags || [],
-    category: category,
-    section: post.data.section,
-    date: dateStr,
-    href: href,
-  };
-});
+// 搜索索引已抽取为独立 JSON（/search-index.json、/en/search-index.json），
+// 由前端在搜索框首次打开时才 fetch，页面不再内联全站文章数据（每页少 23~26KB 解析）。
 
 // 搜索 UI 文案（直接传给前端 JS，避免运行时再判断语言）
 const searchUI = {
@@ -404,12 +378,13 @@ const sectionNames = {
   }
 </style>
 
-<script define:vars={{ __idx: searchData, __ui: searchUI, __sectionNames: sectionNames, __langPrefix: langPrefix }}>
+<script define:vars={{ __ui: searchUI, __sectionNames: sectionNames, __langPrefix: langPrefix }}>
   (function () {
-    var index = __idx;
     var ui = __ui;
     var sectionNames = __sectionNames;
     var langPrefix = __langPrefix;
+    var index = null; // 搜索索引：首次打开时才从独立 JSON 加载
+    var indexPromise = null;
     var isOpen = false;
     var activeIdx = -1;
     var activeGroup = null; // null = 全部
@@ -436,6 +411,27 @@ const sectionNames = {
     var html = document.documentElement;
 
     if (!triggerDesktop || !triggerMobile || !overlay || !input || !closeBtn || !results) return;
+
+    // ── 按需加载搜索索引（独立 JSON，搜索框首次打开时才 fetch） ──
+    function loadIndex() {
+      if (index) return Promise.resolve(index);
+      if (indexPromise) return indexPromise;
+      var url = langPrefix + "search-index.json";
+      indexPromise = fetch(url)
+        .then(function (res) {
+          if (!res.ok) throw new Error("search index " + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          index = Array.isArray(data) ? data : [];
+          return index;
+        })
+        .catch(function (err) {
+          indexPromise = null; // 允许下次重试
+          throw err;
+        });
+      return indexPromise;
+    }
 
     // ── 栏目图标 SVG（内联，JS 渲染用） ──
     var SECTION_ICONS = {
@@ -556,7 +552,7 @@ const sectionNames = {
       idleEl.innerHTML = secHtml + tagHtml + tipHtml;
     }
 
-    // ── 搜索 ──
+    // ── 搜索（索引未加载完成时先取索引再搜索） ──
     function doSearch(query) {
       var q = query.trim();
       activeGroup = null;
@@ -566,7 +562,7 @@ const sectionNames = {
         idleEl && idleEl.classList.remove("hidden");
         emptyEl && emptyEl.classList.add("hidden");
         loadingEl && loadingEl.classList.add("hidden");
-        setCount(index.length, index.length, true);
+        setCount(index ? index.length : 0, index ? index.length : 0, true);
         activeIdx = -1;
         return;
       }
@@ -576,6 +572,26 @@ const sectionNames = {
       loadingEl && loadingEl.classList.remove("hidden");
       emptyEl && emptyEl.classList.add("hidden");
 
+      // 索引尚未就绪：先加载再执行搜索
+      if (!index) {
+        loadIndex()
+          .then(function () {
+            if (!isOpen) return; // 面板已关闭则丢弃
+            if (input.value.trim() !== q) return; // 输入已变化，由新事件处理
+            runSearch(q);
+          })
+          .catch(function () {
+            loadingEl && loadingEl.classList.add("hidden");
+            emptyEl && (emptyEl.textContent = ui.noResults, emptyEl.classList.remove("hidden"));
+          });
+        return;
+      }
+
+      runSearch(q);
+    }
+
+    function runSearch(query) {
+      var q = query.trim();
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(function () {
         var words = q.toLowerCase().split(/\s+/).filter(Boolean);
@@ -810,8 +826,26 @@ const sectionNames = {
       tabsEl && (tabsEl.innerHTML = "", tabsEl.classList.add("hidden"));
       idleEl && idleEl.classList.remove("hidden");
       emptyEl && emptyEl.classList.add("hidden");
-      renderIdle();
-      setCount(index.length, index.length, true);
+      // 索引按需加载：首次打开 fetch 独立 JSON，加载中显示 loading，就绪后渲染 idle 态与总数
+      if (index) {
+        renderIdle();
+        setCount(index.length, index.length, true);
+      } else {
+        loadingEl && loadingEl.classList.remove("hidden");
+        loadIndex()
+          .then(function () {
+            if (!isOpen) return;
+            loadingEl && loadingEl.classList.add("hidden");
+            renderIdle();
+            setCount(index.length, index.length, true);
+          })
+          .catch(function () {
+            if (!isOpen) return;
+            loadingEl && loadingEl.classList.add("hidden");
+            idleEl && (idleEl.innerHTML = "", idleEl.classList.add("hidden"));
+            emptyEl && (emptyEl.textContent = ui.noResults, emptyEl.classList.remove("hidden"));
+          });
+      }
       input.focus();
     }
 

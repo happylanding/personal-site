@@ -1050,6 +1050,18 @@ html:not(.js) .lmask-inner {
   color: #c2410c;
 }
 
+/* 正文插图：固定宽高比防 CLS 抖动，懒加载占位稳定 */
+.article-content img {
+  height: auto;
+  max-width: 100%;
+}
+.article-content img[loading="lazy"] {
+  background: rgba(0, 0, 0, 0.04);
+}
+.dark .article-content img[loading="lazy"] {
+  background: rgba(255, 255, 255, 0.05);
+}
+
 .dark .article-content :not(pre) > code {
   color: #fb923c;
 }

@@ -49,13 +49,27 @@ const alternateZh = lang === "en" ? path.replace(/^\/en/, "") || "/" : path;
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <!-- Fonts: V2 人文温暖 -->
+    <!-- Fonts: V2 人文温暖（瘦身版：正文 Source Sans/Noto Sans 各 2~3 字重，衬线/手写体非阻塞按需加载） -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- 正文（阻塞首屏）：Source Sans 3 + Noto Sans SC 各 3 个字重 -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Source+Sans+3:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=Caveat:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
+    <!-- 衬线/手写体（标题、hero、motto）：非阻塞按需加载，不拖首屏 -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=Noto+Serif+SC:wght@400;600;700;900&family=Caveat:wght@500;600&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=Noto+Serif+SC:wght@400;600;700;900&family=Caveat:wght@500;600&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
 
     <!-- FOUC prevention: set dark before render -->
     <script is:inline>
@@ -68,7 +82,7 @@ const alternateZh = lang === "en" ? path.replace(/^\/en/, "") || "/" : path;
     </script>
 
     <!-- P2-4 字体就绪门控：先标 .js，等 document.fonts 就绪后加 .fonts-ready，
-         启动 hero 遮罩上拉动画；2s 超时兜底避免字体加载过慢导致首屏空白 -->
+         启动 hero 遮罩上拉动画；1s 超时兜底避免字体加载过慢导致首屏空白 -->
     <script is:inline>
       (function () {
         var html = document.documentElement;
@@ -88,7 +102,7 @@ const alternateZh = lang === "en" ? path.replace(/^\/en/, "") || "/" : path;
           ready();
         }
         document.fonts.ready.then(finish, finish);
-        setTimeout(finish, 2000);
+        setTimeout(finish, 1000); // 首屏遮罩超时收紧到 1s，避免字体加载慢时首屏卡在遮罩下
       })();
     </script>
 
@@ -98,6 +112,9 @@ const alternateZh = lang === "en" ? path.replace(/^\/en/, "") || "/" : path;
     <ReadingProgress />
     <MouseGlow />
     <Header />
+
+    <!-- 合并后的滚动/进度/视差/MouseGlow 统一驱动（一次 scroll 回调 + 一次 rAF） -->
+    <script src="../scripts/scroll-effects.js"></script>
     <main class="mx-auto max-w-6xl px-6 py-12 min-h-[60vh] 2xl:max-w-[1400px]">
       <slot />
       <ScrollReveal />

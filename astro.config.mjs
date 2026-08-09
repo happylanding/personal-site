@@ -2,6 +2,7 @@
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
+import remarkImageOptimize from "./src/plugins/remark-image-optimize.mjs";
 
 // https://astro.build/config
 export default defineConfig({
@@ -32,6 +33,7 @@ export default defineConfig({
     shikiConfig: {
       theme: "github-dark-dimmed",
     },
+    remarkPlugins: [remarkImageOptimize],
   },
   devToolbar: {
     enabled: false,

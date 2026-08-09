@@ -58,10 +58,13 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
     <header class="mb-10">
       {(article.data.ogImageEn || article.data.ogImage) && (
         <img
-          src={article.data.ogImageEn || article.data.ogImage}
+          src={(article.data.ogImageEn || article.data.ogImage).replace(/\.png$/, ".webp")}
           alt={displayTitle}
           class="w-full rounded-xl border border-black/10 dark:border-white/10 shadow-sm mb-6"
+          width="1200"
+          height="630"
           loading="eager"
+          decoding="async"
         />
       )}
 
@@ -105,7 +108,7 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
 
       {isBook && article.data.coverImage && (
         <div class="mt-6">
-          <img src={article.data.coverImage} alt={displayTitle} class="w-32 rounded-lg shadow-md" />
+          <img src={article.data.coverImage} alt={displayTitle} class="w-32 rounded-lg shadow-md" loading="lazy" decoding="async" />
         </div>
       )}
     </header>

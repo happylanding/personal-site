@@ -1,4 +1,6 @@
-<!-- Scroll reveal: elements with data-reveal class fade/slide in on scroll -->
+<!-- Scroll reveal: elements with data-reveal class fade/slide in on scroll
+     此处仅保留「IntersectionObserver 驱动的入场动画」；
+     Hero 视差 / 阅读进度 / 返回顶部等滚动逻辑已合并到 src/scripts/scroll-effects.js。 -->
 <script>
   function initScrollReveal() {
     const observer = new IntersectionObserver(
@@ -55,46 +57,6 @@
     containers.forEach((el) => staggerObserver.observe(el));
   }
 
-  // Hero parallax（方案 B）：只动背景装饰层（极光/星野/光尘/巨型品牌字），绝不动正文
-  function initHeroParallax() {
-    const hero = document.querySelector(".hero-section");
-    const layer = document.querySelector(".hero-parallax");
-    if (!hero || !layer) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return;
-
-    const layer1 = layer.querySelector(".hp-layer-1");
-    const layer2 = layer.querySelector(".hp-layer-2");
-    const stars = layer.querySelector(".hp-stars");
-    const mega = layer.querySelector(".hp-mega-name");
-    if (!layer1 || !layer2 || !stars || !mega) return;
-
-    let rafParallax = false;
-    function updateParallax() {
-      rafParallax = false;
-      const rect = hero.getBoundingClientRect();
-      if (rect.bottom < 0 || rect.top > window.innerHeight) return; // 完全离开视口
-      // 以 hero 中心为基准，计算 -1 ~ 1 的滚动进度
-      const vh = window.innerHeight;
-      const progress = (rect.top + rect.height / 2 - vh / 2) / (vh + rect.height);
-      // 不同层级不同速率，制造景深（范围克制在 12% 内，避免晕动）
-      layer1.style.transform = `translate3d(${(progress * -56).toFixed(1)}px, ${(progress * -30).toFixed(1)}px, 0)`;
-      layer2.style.transform = `translate3d(${(progress * 64).toFixed(1)}px, ${(progress * 36).toFixed(1)}px, 0)`;
-      stars.style.transform = `translate3d(0, ${(progress * 26).toFixed(1)}px, 0)`;
-      mega.style.transform = `translate3d(0, ${(progress * -42).toFixed(1)}px, 0)`;
-    }
-
-    function requestParallax() {
-      if (rafParallax) return;
-      rafParallax = true;
-      requestAnimationFrame(updateParallax);
-    }
-
-    window.addEventListener("scroll", requestParallax, { passive: true });
-    window.addEventListener("resize", requestParallax, { passive: true });
-    requestParallax();
-  }
-
   // Card 3D roll-in (oil 同款 card-roll-hitbox)
   function initRollCards() {
     const cards = document.querySelectorAll(".roll-card");
@@ -128,14 +90,12 @@
   // Run on initial page load
   initScrollReveal();
   initStaggerReveal();
-  initHeroParallax();
   initRollCards();
 
   // Re-run on Astro View Transition navigations
   document.addEventListener("astro:page-load", () => {
     initScrollReveal();
     initStaggerReveal();
-    initHeroParallax();
     initRollCards();
   });
 </script>

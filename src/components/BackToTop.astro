@@ -2,7 +2,7 @@
 import Icon from "./Icon.astro";
 ---
 
-<!-- Back to top button (effect H) -->
+<!-- Back to top button (effect H)；滚动显隐逻辑已合并到 src/scripts/scroll-effects.js -->
 
 <button
   id="back-to-top"
@@ -11,28 +11,3 @@ import Icon from "./Icon.astro";
 >
   <Icon name="arrowUp" class="w-5 h-5" />
 </button>
-
-<script>
-  const btn = document.getElementById("back-to-top");
-  let ticking = false;
-
-  window.addEventListener("scroll", () => {
-    if (!ticking) {
-      requestAnimationFrame(() => {
-        if (window.scrollY > 400) {
-          btn?.classList.remove("opacity-0", "invisible");
-          btn?.classList.add("opacity-100", "visible");
-        } else {
-          btn?.classList.add("opacity-0", "invisible");
-          btn?.classList.remove("opacity-100", "visible");
-        }
-        ticking = false;
-      });
-      ticking = true;
-    }
-  });
-
-  btn?.addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
-</script>

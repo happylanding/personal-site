@@ -1,38 +1,8 @@
-<!-- Mouse follow glow effect (effect F) -->
+<!-- Mouse follow glow effect (effect F)
+     定位逻辑已合并到 src/scripts/scroll-effects.js：
+     改用固定半尺寸直算（不再读 offsetWidth/offsetHeight），彻底去掉每次 mousemove 的 forced reflow。 -->
 <div
   id="mouse-glow"
   class="pointer-events-none fixed z-10 w-72 h-72 rounded-full opacity-0 transition-opacity duration-500 hidden md:block will-change-transform"
   style="background: radial-gradient(circle, rgba(128,128,128,0.08) 0%, transparent 70%);"
 ></div>
-
-<script>
-  const glow = document.getElementById("mouse-glow");
-  let glowTicking = false;
-  let glowIdleTimer = null;
-
-  function positionGlow(e) {
-    if (!glow) return;
-    // 用 transform 合成器定位：避免 left/top 触发 layout，快速移动不掉帧不跳变
-    glow.style.transform = `translate3d(${e.clientX - glow.offsetWidth / 2}px, ${e.clientY - glow.offsetHeight / 2}px, 0)`;
-    glow.classList.add("opacity-100");
-    glowTicking = false;
-
-    // 鼠标停下 2s 后淡出光斑，避免页面内长时间停留时残留
-    clearTimeout(glowIdleTimer);
-    glowIdleTimer = setTimeout(() => {
-      glow?.classList.remove("opacity-100");
-    }, 2000);
-  }
-
-  document.addEventListener("mousemove", (e) => {
-    if (!glowTicking) {
-      requestAnimationFrame(() => positionGlow(e));
-      glowTicking = true;
-    }
-  });
-
-  document.addEventListener("mouseleave", () => {
-    glow?.classList.remove("opacity-100");
-    clearTimeout(glowIdleTimer);
-  });
-</script>
