@@ -6,9 +6,14 @@ import Currently from "../../components/Currently.astro";
 import { useTranslations } from "../../i18n/utils";
 import { getCollection } from "astro:content";
 import { SECTION_ORDER, type SectionKey } from "../../lib/sections";
+import { getCurrentTerm, SEASON_COLORS } from "../../lib/solarTerms";
 
 const lang = "en" as const;
 const t = useTranslations(lang);
+
+// Hero 眉标：时令题记——随二十四节气轮换的物候短句（构建时计算，静态输出）
+const term = getCurrentTerm();
+const termAccent = SEASON_COLORS[term.season];
 
 const allArticles = await getCollection("articles", ({ data }) => !data.draft);
 const sorted = allArticles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
@@ -37,12 +42,13 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
     </div>
 
     <div class="hero-content">
-      <!-- Beijing time badge: live ticking · frosted-glass capsule (location as timezone) -->
-      <p class="hero-eyebrow mb-8">
-        <Icon name="sparkles" class="hero-clock-icon" aria-hidden="true" />
-        <span class="hero-clock-text">{t("home.location")}</span>
-        <span class="hero-clock-sep" aria-hidden="true"></span>
-        <time class="hero-clock-time" data-local-clock aria-label={t("home.localClock")}></time>
+      <!-- 时令题记：随二十四节气轮换（如：China · Start of Autumn · summer fades, autumn sings） -->
+      <p class="hero-eyebrow mb-8" style={`--term-accent:${termAccent}`}>
+        <span class="hero-term-dot" aria-hidden="true"></span>
+        <span class="hero-term-loc">{t("home.location")}</span>
+        <span class="hero-term-sep" aria-hidden="true"></span>
+        <span class="hero-term-name">{lang === "en" ? term.en : term.zh}</span>
+        <span class="hero-term-line">{lang === "en" ? term.lineEn : term.lineZh}</span>
       </p>
 
       <!-- 英文座右铭：超大手写体 -->
@@ -186,28 +192,3 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
     )}
   </section>
 </BaseLayout>
-
-<script define:vars={{ lang }}>
-  // Beijing time badge: fixed to Asia/Shanghai (the “China” coordinate), date & time stay consistent
-  const fmtTime = new Intl.DateTimeFormat("en-US", {
-    timeZone: "Asia/Shanghai",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  });
-  const fmtDate = new Intl.DateTimeFormat("en-US", {
-    timeZone: "Asia/Shanghai",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
-  function tick() {
-    const now = new Date();
-    const el = document.querySelector("[data-local-clock]");
-    if (el) el.textContent = `${fmtTime.format(now)} · ${fmtDate.format(now)}`;
-  }
-  tick();
-  setInterval(tick, 1000);
-</script>
