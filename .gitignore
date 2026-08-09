@@ -20,6 +20,9 @@ Thumbs.db
 !.vscode/extensions.json
 .idea/
 
+# Agent skill config
+.codebuddy/
+
 # Astro
 .astro/
 
