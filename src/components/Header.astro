@@ -5,6 +5,7 @@ import LanguageSwitcher from "./LanguageSwitcher.astro";
 import ColumnIcon from "./ColumnIcon.astro";
 import Icon from "./Icon.astro";
 import SearchDialog from "./SearchDialog.astro";
+import BrandLogo from "./BrandLogo.astro";
 import { SECTION_COLORS, SECTION_COLORS_DARK } from "../lib/sections";
 
 const lang = getLangFromUrl(Astro.url);
@@ -21,9 +22,11 @@ const isToolsPage = Astro.url.pathname.includes("/tools");
     <!-- Logo / Site title -->
     <a
       href={lang === "en" ? "/en/" : "/"}
-      class="text-base sm:text-lg md:text-xl font-bold tracking-tight text-black dark:text-white hover:opacity-70 transition-opacity shrink-0"
+      class="flex items-center gap-2 text-base sm:text-lg md:text-xl font-bold tracking-tight text-black dark:text-white hover:opacity-70 transition-opacity shrink-0"
+      aria-label={t("site.title")}
     >
-      {t("site.title")}
+      <BrandLogo class="w-7 h-7 sm:w-8 sm:h-8 shrink-0" />
+      <span>{t("site.title")}</span>
     </a>
 
     <!-- Right section: desktop links + shared controls + mobile hamburger -->

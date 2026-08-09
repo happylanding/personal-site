@@ -15,6 +15,7 @@
 import Breadcrumb from "./Breadcrumb.astro";
 import ColumnIcon from "./ColumnIcon.astro";
 import Icon from "./Icon.astro";
+import BrandLogo from "./BrandLogo.astro";
 import { useTranslations } from "../i18n/utils";
 import { getCollection } from "astro:content";
 import { SECTION_ORDER } from "../lib/sections";
@@ -121,7 +122,7 @@ const articleTitle = (a: (typeof allArticles)[number]) =>
         <!-- 左：身份信息 -->
         <div class="about-person-main">
           <div class="about-person-avatar" aria-hidden="true">
-            <Icon name="user" class="w-10 h-10" />
+            <BrandLogo class="w-10 h-10" />
           </div>
 
           <div class="about-person-info">
