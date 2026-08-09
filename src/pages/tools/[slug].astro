@@ -4,6 +4,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import ToolIcon from "../../components/ToolIcon.astro";
 import Icon from "../../components/Icon.astro";
+import AIIsmDetector from "../../components/AIIsmDetector.astro";
 import { getLangFromUrl, useTranslations } from "../../i18n/utils";
 import { TOOL_COLORS } from "../../content/tools/config";
 
@@ -107,6 +108,12 @@ const downloadUrl = tool.data.downloadUrl;
         </div>
       )}
     </header>
+
+    {slug === "ai-ism-detector" && (
+      <div class="mb-10">
+        <AIIsmDetector lang="zh" />
+      </div>
+    )}
 
     {type === "script" && usage && usage.length > 0 && (
       <div class="mb-8 p-6 rounded-xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02]">
