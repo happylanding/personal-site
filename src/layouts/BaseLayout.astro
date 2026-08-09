@@ -67,6 +67,31 @@ const alternateZh = lang === "en" ? path.replace(/^\/en/, "") || "/" : path;
       })();
     </script>
 
+    <!-- P2-4 字体就绪门控：先标 .js，等 document.fonts 就绪后加 .fonts-ready，
+         启动 hero 遮罩上拉动画；2s 超时兜底避免字体加载过慢导致首屏空白 -->
+    <script is:inline>
+      (function () {
+        var html = document.documentElement;
+        html.classList.add("js");
+        var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        function ready() {
+          html.classList.add("fonts-ready");
+        }
+        if (reduced || !document.fonts || !document.fonts.ready) {
+          ready();
+          return;
+        }
+        var done = false;
+        function finish() {
+          if (done) return;
+          done = true;
+          ready();
+        }
+        document.fonts.ready.then(finish, finish);
+        setTimeout(finish, 2000);
+      })();
+    </script>
+
     <title>{pageTitle}</title>
   </head>
   <body class="bg-white dark:bg-black text-black dark:text-white font-sans transition-colors duration-300">

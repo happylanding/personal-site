@@ -13,10 +13,38 @@ const t = useTranslations(lang);
   aria-label={t("theme.dark")}
 >
   <!-- 太阳图标（浅色模式显示） -->
-  <Icon name="sun" class="block h-[18px] w-[18px] dark:hidden" />
+  <span class="theme-icon sun-icon block h-[18px] w-[18px] dark:hidden">
+    <Icon name="sun" class="block h-[18px] w-[18px]" />
+  </span>
   <!-- 月亮图标（深色模式显示） -->
-  <Icon name="moon" class="hidden h-[18px] w-[18px] dark:block" />
+  <span class="theme-icon moon-icon hidden h-[18px] w-[18px] dark:block">
+    <Icon name="moon" class="block h-[18px] w-[18px]" />
+  </span>
 </button>
+
+<style>
+  /* P2-9 主题切换趣味反馈：点击瞬间自转 + 弹跳 */
+  /* 注意：不设 display，避免覆盖 Tailwind 的 hidden/dark:block 显隐切换 */
+  .theme-icon {
+    transition: transform 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+    transform-origin: center;
+  }
+  #theme-toggle:hover .theme-icon {
+    transform: rotate(18deg) scale(1.08);
+  }
+  #theme-toggle:active .theme-icon,
+  .theme-icon.fx-pop {
+    animation: fx-pop-spin 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .theme-icon {
+      transition: none;
+    }
+    .theme-icon.fx-pop {
+      animation: none;
+    }
+  }
+</style>
 
 <script>
   function setTheme() {
@@ -39,5 +67,12 @@ const t = useTranslations(lang);
     window.__themeSwitchTimer = setTimeout(function () {
       html.classList.remove("theme-switching");
     }, 400);
+    // P2-9 图标趣味反馈：给刚切换后显示出来的太阳/月亮图标加自转动画
+    var icon = isDark ? this.querySelector(".moon-icon") : this.querySelector(".sun-icon");
+    if (icon && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      icon.classList.remove("fx-pop");
+      void icon.offsetWidth;
+      icon.classList.add("fx-pop");
+    }
   });
 </script>

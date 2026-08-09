@@ -274,10 +274,10 @@ const gachaTools = tools.map((x) => ({
     aria-modal="true"
     aria-label={t("tools.gachaTitle")}
   >
-    <div id="tool-gacha-backdrop" class="fixed inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-sm"></div>
+    <div id="tool-gacha-backdrop" class="gacha-backdrop fixed inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-sm"></div>
     <div class="min-h-full w-full flex items-center justify-center p-4 pointer-events-none">
       <div
-        class="relative w-full max-w-sm rounded-2xl border border-black/10 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-2xl p-6 text-center overflow-hidden my-auto pointer-events-auto"
+        class="gacha-modal-card relative w-full max-w-sm rounded-2xl border border-black/10 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-2xl p-6 text-center overflow-hidden my-auto pointer-events-auto"
       >
       <span class="ghost-num text-black/5 dark:text-white/5 select-none pointer-events-none" aria-hidden="true">🎲</span>
       <button
@@ -323,6 +323,30 @@ const gachaTools = tools.map((x) => ({
   }
   .tool-card[hidden] {
     display: none;
+  }
+
+  /* ── Gacha modal animation: backdrop fade + card scale/fade rise ── */
+  .gacha-backdrop {
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  #tool-gacha-modal.open .gacha-backdrop {
+    opacity: 1;
+  }
+  .gacha-modal-card {
+    opacity: 0;
+    transform: translateY(14px) scale(0.94);
+    transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.26s ease;
+  }
+  #tool-gacha-modal.open .gacha-modal-card {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gacha-backdrop,
+    .gacha-modal-card {
+      transition: none;
+    }
   }
 </style>
 
@@ -400,14 +424,30 @@ const gachaTools = tools.map((x) => ({
       return;
     }
 
+    let closeTimer = null;
     function openModal() {
+      clearTimeout(closeTimer);
       modal.classList.remove("hidden");
       modal.scrollTop = 0;
       document.documentElement.style.overflow = "hidden";
+      // let the element render first, then add .open next frame to trigger the transition
+      void modal.offsetWidth;
+      requestAnimationFrame(function () {
+        modal.classList.add("open");
+      });
     }
     function closeModal() {
-      modal.classList.add("hidden");
+      if (modal.classList.contains("hidden")) return;
+      modal.classList.remove("open");
       document.documentElement.style.overflow = "";
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        modal.classList.add("hidden");
+        return;
+      }
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(function () {
+        modal.classList.add("hidden");
+      }, 320);
     }
 
     function renderPick(pick) {

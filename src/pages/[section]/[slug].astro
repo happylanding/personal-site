@@ -74,8 +74,8 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
         )}
       </div>
 
-      <h1 class="text-3xl md:text-4xl font-serif font-bold leading-tight mb-4">
-        {displayTitle}
+      <h1 class="text-3xl md:text-4xl font-serif font-bold leading-tight mb-4 lmask">
+        <span class="lmask-inner" style="--lmask-delay:0.1s"><span>{displayTitle}</span></span>
       </h1>
 
       {displayDesc && (

@@ -33,9 +33,9 @@ const isBooksSection = section === "books";
   <section data-reveal>
     <div class="mb-10">
       <div class="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: SECTION_COLORS[section] }}></div>
-      <h1 class="text-3xl font-serif font-bold mb-2 flex items-center gap-3">
+      <h1 class="text-3xl font-serif font-bold mb-2 flex items-center gap-3 lmask">
         <span class="block opacity-70 flex-shrink-0"><ColumnIcon section={section as import("../lib/sections").SectionKey} class="w-9 h-9" /></span>
-        <span>{t(`columns.${section}.name`)}</span>
+        <span class="lmask-inner" style="--lmask-delay:0.1s"><span>{t(`columns.${section}.name`)}</span></span>
       </h1>
       <p class="text-sm text-black/40 dark:text-white/40">{t(`columns.${section}.enName`)}</p>
       <p class="text-base text-black/50 dark:text-white/50 mt-3 leading-relaxed max-w-2xl">
