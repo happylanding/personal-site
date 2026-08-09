@@ -494,6 +494,14 @@ html:not(.js) .lmask-inner {
   margin: 0 0 1.2rem;
 }
 
+/* 英文 About Hero 标语：与首页座右铭同一款手写体（Caveat） */
+.about-hero-title.font-hand {
+  font-family: var(--font-hand);
+  font-weight: 600;
+  letter-spacing: 0;
+  max-width: none;
+}
+
 .about-hero-title .lmask-inner {
   background: linear-gradient(120deg, #1f2937 0%, #374151 55%, #b45309 100%);
   -webkit-background-clip: text;

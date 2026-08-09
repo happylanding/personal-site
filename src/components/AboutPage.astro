@@ -75,7 +75,7 @@ const articleTitle = (a: (typeof allArticles)[number]) =>
       <span class="about-kicker-bar" aria-hidden="true"></span>
     </div>
 
-    <h1 class="about-hero-title lmask">
+    <h1 class={`about-hero-title lmask${lang === "en" ? " font-hand" : ""}`}>
       <span class="lmask-inner" style="--lmask-delay:0.08s">{t("about.hero.subtitle")}</span>
     </h1>
 
