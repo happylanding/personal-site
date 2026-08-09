@@ -14,33 +14,37 @@
   </g>
   <rect x="60" y="52" width="2" height="60" fill="#B45309" opacity="0.7"/>
   <rect x="66" y="52" width="2" height="60" fill="#B45309" opacity="0.35"/>
-  <text x="60" y="150" font-family="monospace" font-size="18" letter-spacing="5" fill="#B45309">FOUR WAYS WE COLLABORATE</text>
-  <text x="60" y="216" font-family="Noto Serif CJK SC" font-size="48" font-weight="bold" fill="#ffffff">四种深度配合方式</text>
-  <text x="60" y="262" font-family="Noto Sans CJK SC" font-size="22" fill="#a3a3a3">比"问一句、答一句"复杂得多</text>
+  <line x1="76" y1="52" x2="76" y2="112" stroke="#B45309" stroke-opacity="0.18" stroke-width="1"/>
+  <circle cx="94" cy="68" r="3" fill="#B45309" opacity="0.85"/>
+  <circle cx="94" cy="82" r="3" fill="#B45309" opacity="0.5"/>
+  <circle cx="94" cy="96" r="3" fill="#B45309" opacity="0.25"/>
+  <text x="60" y="150" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" letter-spacing="5" fill="#FBBF24">FOUR WAYS WE COLLABORATE</text>
+  <text x="60" y="216" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="48" font-weight="bold" fill="#ffffff">四种深度配合方式</text>
+  <text x="60" y="262" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="22" fill="#a3a3a3">比"问一句、答一句"复杂得多</text>
 
   <!-- 2x2 卡片 -->
   <g>
     <rect x="60" y="310" width="520" height="130" rx="14" fill="#151515" stroke="#ffffff" stroke-opacity="0.10"/>
-    <text x="92" y="356" font-family="Noto Serif CJK SC" font-size="26" font-weight="bold" fill="#FBBF24">01 截图驱动</text>
-    <text x="92" y="396" font-family="Noto Sans CJK SC" font-size="18" fill="#a3a3a3">截图丢给 AI，说一句"你看，这不对"</text>
-    <text x="92" y="422" font-family="Noto Sans CJK SC" font-size="18" fill="#737373">AI 定位源码 → 分析 → 修改 → 验证</text>
+    <text x="92" y="356" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="26" font-weight="bold" fill="#FBBF24">01 截图驱动</text>
+    <text x="92" y="396" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#a3a3a3">截图丢给 AI，说一句"你看，这不对"</text>
+    <text x="92" y="422" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#737373">AI 定位源码 → 分析 → 修改 → 验证</text>
   </g>
   <g>
     <rect x="620" y="310" width="520" height="130" rx="14" fill="#151515" stroke="#ffffff" stroke-opacity="0.10"/>
-    <text x="652" y="356" font-family="Noto Serif CJK SC" font-size="26" font-weight="bold" fill="#FBBF24">02 感受驱动</text>
-    <text x="652" y="396" font-family="Noto Sans CJK SC" font-size="18" fill="#a3a3a3">"间距太大""动画不流畅""颜色柔和些"</text>
-    <text x="652" y="422" font-family="Noto Sans CJK SC" font-size="18" fill="#737373">主观表达 → 翻译成 padding/transition 修改</text>
+    <text x="652" y="356" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="26" font-weight="bold" fill="#FBBF24">02 感受驱动</text>
+    <text x="652" y="396" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#a3a3a3">"间距太大""动画不流畅""颜色柔和些"</text>
+    <text x="652" y="422" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#737373">主观表达 → 翻译成 padding/transition 修改</text>
   </g>
   <g>
     <rect x="60" y="458" width="520" height="130" rx="14" fill="#151515" stroke="#ffffff" stroke-opacity="0.10"/>
-    <text x="92" y="504" font-family="Noto Serif CJK SC" font-size="26" font-weight="bold" fill="#FBBF24">03 试探式探索</text>
-    <text x="92" y="544" font-family="Noto Sans CJK SC" font-size="18" fill="#a3a3a3">"手机端菜单一般怎么做？"</text>
-    <text x="92" y="570" font-family="Noto Sans CJK SC" font-size="18" fill="#737373">AI 给方案，我选一个，它实施</text>
+    <text x="92" y="504" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="26" font-weight="bold" fill="#FBBF24">03 试探式探索</text>
+    <text x="92" y="544" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#a3a3a3">"手机端菜单一般怎么做？"</text>
+    <text x="92" y="570" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#737373">AI 给方案，我选一个，它实施</text>
   </g>
   <g>
     <rect x="620" y="458" width="520" height="130" rx="14" fill="#151515" stroke="#ffffff" stroke-opacity="0.10"/>
-    <text x="652" y="504" font-family="Noto Serif CJK SC" font-size="26" font-weight="bold" fill="#FBBF24">04 翻译 + 审校</text>
-    <text x="652" y="544" font-family="Noto Sans CJK SC" font-size="18" fill="#a3a3a3">界面文案我写中文，AI 翻成英文</text>
-    <text x="652" y="570" font-family="Noto Sans CJK SC" font-size="18" fill="#737373">导航、按钮、404、SEO 全覆盖</text>
+    <text x="652" y="504" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="26" font-weight="bold" fill="#FBBF24">04 翻译 + 审校</text>
+    <text x="652" y="544" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#a3a3a3">界面文案我写中文，AI 翻成英文</text>
+    <text x="652" y="570" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#737373">导航、按钮、404、SEO 全覆盖</text>
   </g>
 </svg>

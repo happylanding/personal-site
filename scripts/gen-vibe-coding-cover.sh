@@ -51,19 +51,24 @@ cat > "$OUT" <<'EOF'
   <!-- 顶部光带 -->
   <rect width="1200" height="4" fill="url(#fade)"/>
 
-  <!-- 装饰：左上角双竖线 -->
+  <!-- 装饰：左上角双竖线 + 圆点节奏（填充空白区域） -->
   <rect x="60" y="52" width="2" height="64" fill="#B45309" opacity="0.7"/>
   <rect x="66" y="52" width="2" height="64" fill="#B45309" opacity="0.35"/>
+  <line x1="76" y1="52" x2="76" y2="116" stroke="#B45309" stroke-opacity="0.18" stroke-width="1"/>
+  <circle cx="94" cy="70" r="3" fill="#B45309" opacity="0.85"/>
+  <circle cx="94" cy="84" r="3" fill="#B45309" opacity="0.5"/>
+  <circle cx="94" cy="98" r="3" fill="#B45309" opacity="0.25"/>
+  <line x1="104" y1="70" x2="118" y2="70" stroke="#B45309" stroke-opacity="0.5" stroke-width="1.5"/>
 
   <!-- 标签 -->
-  <text x="60" y="170" font-family="monospace" font-size="20" letter-spacing="6" fill="#B45309" opacity="0.9">VIBE CODING · 2026.08</text>
+  <text x="60" y="170" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="20" letter-spacing="6" fill="#FBBF24" opacity="0.9">VIBE CODING · 2026.08</text>
 
   <!-- 主标题 -->
-  <text x="60" y="290" font-family="Noto Serif CJK SC" font-size="64" font-weight="bold" fill="#ffffff">我的第一件 Vibe Coding 作品</text>
-  <text x="60" y="372" font-family="Noto Serif CJK SC" font-size="64" font-weight="bold" fill="#ffffff">与 AI 共创一个个人网站</text>
+  <text x="60" y="290" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="64" font-weight="bold" fill="#ffffff">我的第一件 Vibe Coding 作品</text>
+  <text x="60" y="372" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="64" font-weight="bold" fill="#ffffff">与 AI 共创一个个人网站</text>
 
   <!-- 副标题 -->
-  <text x="60" y="440" font-family="Noto Sans CJK SC" font-size="26" fill="#a3a3a3">一个不懂代码的人，靠和 AI 对话，5 天做出 55+ 双语页面</text>
+  <text x="60" y="440" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="26" fill="#a3a3a3">一个不懂代码的人，靠和 AI 对话，5 天做出 55+ 双语页面</text>
 
   <!-- 分隔线 -->
   <line x1="60" y1="485" x2="360" y2="485" stroke="#ffffff" stroke-opacity="0.25" stroke-width="1"/>
@@ -71,7 +76,7 @@ cat > "$OUT" <<'EOF'
   <line x1="368" y1="485" x2="460" y2="485" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1"/>
 
   <!-- 底部署名 -->
-  <text x="60" y="540" font-family="Noto Sans CJK SC" font-size="18" fill="#737373">Galvin × CodeBuddy · 从「我不会」到「我想要」</text>
+  <text x="60" y="540" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#737373">Galvin × CodeBuddy · 从「我不会」到「我想要」</text>
 </svg>
 EOF
 rsvg-convert -o /workspace/public/images/vibe-coding/cover.png "$OUT"

@@ -14,15 +14,15 @@ export const ALL_SECTIONS: SectionKey[] = ["insights", "ai", "tips", "books", "i
 
 /**
  * 栏目主题色（方案 A｜星野极光·分栏配色，与 scripts/covers-palette.sh 保持一致）
- * - insights 冰蓝紫：冰蓝 #0E96E9
- * - ai       墨绿棕：墨绿 #16A34A
- * - tips     琥珀棕：琥珀 #B45309
- * - books    紫罗兰：紫罗兰 #7C3AED
+ * - insights 行业洞察：酒红 #8E1F2F（专属配色，含图标/导航栏/配图底色）
+ * - ai       AI 学习：深蓝 #1E3A8A（专属配色，含图标/导航栏/配图底色）
+ * - tips     实用技巧：琥珀棕 #B45309
+ * - books    书籍专区：紫罗兰 #7C3AED
  * - invest   默认灰（隐藏栏目）
  */
 export const SECTION_COLORS: Record<SectionKey, string> = {
-  insights: "#0E96E9",
-  ai: "#16A34A",
+  insights: "#8E1F2F",
+  ai: "#1E3A8A",
   tips: "#B45309",
   books: "#7C3AED",
   invest: "#737373",

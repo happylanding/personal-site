@@ -30,19 +30,23 @@ cat > "$DIR/division-of-labor.svg" <<'EOF'
   </g>
   <rect x="60" y="52" width="2" height="60" fill="#B45309" opacity="0.7"/>
   <rect x="66" y="52" width="2" height="60" fill="#B45309" opacity="0.35"/>
-  <text x="60" y="150" font-family="monospace" font-size="18" letter-spacing="5" fill="#B45309">WE DIVIDE THE WORK</text>
-  <text x="60" y="216" font-family="Noto Serif CJK SC" font-size="48" font-weight="bold" fill="#ffffff">我们怎么分工</text>
-  <text x="60" y="262" font-family="Noto Sans CJK SC" font-size="22" fill="#a3a3a3">我负责描述想法与决策，AI 负责写代码与验证</text>
+  <line x1="76" y1="52" x2="76" y2="112" stroke="#B45309" stroke-opacity="0.18" stroke-width="1"/>
+  <circle cx="94" cy="68" r="3" fill="#B45309" opacity="0.85"/>
+  <circle cx="94" cy="82" r="3" fill="#B45309" opacity="0.5"/>
+  <circle cx="94" cy="96" r="3" fill="#B45309" opacity="0.25"/>
+  <text x="60" y="150" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" letter-spacing="5" fill="#FBBF24">WE DIVIDE THE WORK</text>
+  <text x="60" y="216" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="48" font-weight="bold" fill="#ffffff">我们怎么分工</text>
+  <text x="60" y="262" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="22" fill="#a3a3a3">我负责描述想法与决策，AI 负责写代码与验证</text>
 
   <!-- 左侧卡片：传统开发 -->
   <g>
     <rect x="60" y="310" width="500" height="260" rx="16" fill="#161616" stroke="#ffffff" stroke-opacity="0.10"/>
-    <text x="92" y="358" font-family="Noto Sans CJK SC" font-size="24" font-weight="bold" fill="#d4d4d4">传统开发</text>
+    <text x="92" y="358" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="24" font-weight="bold" fill="#d4d4d4">传统开发</text>
     <line x1="92" y1="374" x2="528" y2="374" stroke="#ffffff" stroke-opacity="0.08"/>
-    <text x="92" y="414" font-family="Noto Sans CJK SC" font-size="20" fill="#a3a3a3">✗ 我写代码，谷歌查文档</text>
-    <text x="92" y="452" font-family="Noto Sans CJK SC" font-size="20" fill="#a3a3a3">✗ Ctrl+C / Ctrl+V 复制粘贴</text>
-    <text x="92" y="490" font-family="Noto Sans CJK SC" font-size="20" fill="#a3a3a3">✗ 运行 → 报错 → 看日志 → 改</text>
-    <text x="92" y="528" font-family="Noto Sans CJK SC" font-size="20" fill="#a3a3a3">✗ "这个 Bug 修了 3 个小时"</text>
+    <text x="92" y="414" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="20" fill="#a3a3a3">✗ 我写代码，谷歌查文档</text>
+    <text x="92" y="452" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="20" fill="#a3a3a3">✗ Ctrl+C / Ctrl+V 复制粘贴</text>
+    <text x="92" y="490" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="20" fill="#a3a3a3">✗ 运行 → 报错 → 看日志 → 改</text>
+    <text x="92" y="528" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="20" fill="#a3a3a3">✗ "这个 Bug 修了 3 个小时"</text>
   </g>
 
   <!-- 中间箭头 -->
@@ -54,12 +58,12 @@ cat > "$DIR/division-of-labor.svg" <<'EOF'
   <!-- 右侧卡片：我们的方式 -->
   <g>
     <rect x="640" y="310" width="500" height="260" rx="16" fill="#1C1917" stroke="#B45309" stroke-opacity="0.4"/>
-    <text x="672" y="358" font-family="Noto Sans CJK SC" font-size="24" font-weight="bold" fill="#FBBF24">我们的方式</text>
+    <text x="672" y="358" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="24" font-weight="bold" fill="#FBBF24">我们的方式</text>
     <line x1="672" y1="374" x2="1108" y2="374" stroke="#B45309" stroke-opacity="0.15"/>
-    <text x="672" y="414" font-family="Noto Sans CJK SC" font-size="20" fill="#FEF3C7">✓ 我描述想法，AI 写代码</text>
-    <text x="672" y="452" font-family="Noto Sans CJK SC" font-size="20" fill="#FEF3C7">✓ AI 直接修改项目文件</text>
-    <text x="672" y="490" font-family="Noto Sans CJK SC" font-size="20" fill="#FEF3C7">✓ AI 构建 → 截图验证 → 定位</text>
-    <text x="672" y="528" font-family="Noto Sans CJK SC" font-size="20" fill="#FEF3C7">✓ "描述症状，3 轮对话解决"</text>
+    <text x="672" y="414" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="20" fill="#FEF3C7">✓ 我描述想法，AI 写代码</text>
+    <text x="672" y="452" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="20" fill="#FEF3C7">✓ AI 直接修改项目文件</text>
+    <text x="672" y="490" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="20" fill="#FEF3C7">✓ AI 构建 → 截图验证 → 定位</text>
+    <text x="672" y="528" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="20" fill="#FEF3C7">✓ "描述症状，3 轮对话解决"</text>
   </g>
 </svg>
 EOF
@@ -88,47 +92,51 @@ cat > "$DIR/five-stages.svg" <<'EOF'
   </g>
   <rect x="60" y="52" width="2" height="60" fill="#B45309" opacity="0.7"/>
   <rect x="66" y="52" width="2" height="60" fill="#B45309" opacity="0.35"/>
-  <text x="60" y="150" font-family="monospace" font-size="18" letter-spacing="5" fill="#B45309">FIVE STAGES</text>
-  <text x="60" y="216" font-family="Noto Serif CJK SC" font-size="48" font-weight="bold" fill="#ffffff">五个阶段：从零到上线</text>
-  <text x="60" y="262" font-family="Noto Sans CJK SC" font-size="22" fill="#a3a3a3">约 14 小时，完成 55+ 双语页面</text>
+  <line x1="76" y1="52" x2="76" y2="112" stroke="#B45309" stroke-opacity="0.18" stroke-width="1"/>
+  <circle cx="94" cy="68" r="3" fill="#B45309" opacity="0.85"/>
+  <circle cx="94" cy="82" r="3" fill="#B45309" opacity="0.5"/>
+  <circle cx="94" cy="96" r="3" fill="#B45309" opacity="0.25"/>
+  <text x="60" y="150" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" letter-spacing="5" fill="#FBBF24">FIVE STAGES</text>
+  <text x="60" y="216" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="48" font-weight="bold" fill="#ffffff">五个阶段：从零到上线</text>
+  <text x="60" y="262" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="22" fill="#a3a3a3">约 14 小时，完成 55+ 双语页面</text>
 
   <!-- 时间线 -->
   <line x1="120" y1="430" x2="1080" y2="430" stroke="#ffffff" stroke-opacity="0.15" stroke-width="2"/>
 
   <!-- 节点1 -->
   <circle cx="140" cy="430" r="14" fill="#0c0c0c" stroke="#B45309" stroke-width="3"/>
-  <text x="140" y="400" font-family="Noto Sans CJK SC" font-size="22" font-weight="bold" fill="#FBBF24" text-anchor="middle">搭骨架</text>
-  <text x="140" y="478" font-family="Noto Sans CJK SC" font-size="18" fill="#d4d4d4" text-anchor="middle">约 2 小时</text>
-  <text x="140" y="508" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">选型 Astro · 目录结构</text>
-  <text x="140" y="530" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">数据模型 · 4 专栏页</text>
+  <text x="140" y="400" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="22" font-weight="bold" fill="#FBBF24" text-anchor="middle">搭骨架</text>
+  <text x="140" y="478" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#d4d4d4" text-anchor="middle">约 2 小时</text>
+  <text x="140" y="508" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="15" fill="#737373" text-anchor="middle">选型 Astro · 目录结构</text>
+  <text x="140" y="530" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="15" fill="#737373" text-anchor="middle">数据模型 · 4 专栏页</text>
 
   <!-- 节点2 -->
   <circle cx="375" cy="430" r="14" fill="#0c0c0c" stroke="#B45309" stroke-width="3"/>
-  <text x="375" y="400" font-family="Noto Sans CJK SC" font-size="22" font-weight="bold" fill="#FBBF24" text-anchor="middle">核心功能</text>
-  <text x="375" y="478" font-family="Noto Sans CJK SC" font-size="18" fill="#d4d4d4" text-anchor="middle">约 1 小时</text>
-  <text x="375" y="508" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">中英双语 · 明暗主题</text>
-  <text x="375" y="530" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">全文搜索 · 表格视图</text>
+  <text x="375" y="400" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="22" font-weight="bold" fill="#FBBF24" text-anchor="middle">核心功能</text>
+  <text x="375" y="478" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#d4d4d4" text-anchor="middle">约 1 小时</text>
+  <text x="375" y="508" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="15" fill="#737373" text-anchor="middle">中英双语 · 明暗主题</text>
+  <text x="375" y="530" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="15" fill="#737373" text-anchor="middle">全文搜索 · 表格视图</text>
 
   <!-- 节点3 -->
   <circle cx="610" cy="430" r="14" fill="#0c0c0c" stroke="#B45309" stroke-width="3"/>
-  <text x="610" y="400" font-family="Noto Sans CJK SC" font-size="22" font-weight="bold" fill="#FBBF24" text-anchor="middle">磨页面</text>
-  <text x="610" y="478" font-family="Noto Sans CJK SC" font-size="18" fill="#d4d4d4" text-anchor="middle">约 4 小时</text>
-  <text x="610" y="508" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">对话最密集的阶段</text>
-  <text x="610" y="530" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">像一场即兴演奏</text>
+  <text x="610" y="400" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="22" font-weight="bold" fill="#FBBF24" text-anchor="middle">磨页面</text>
+  <text x="610" y="478" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#d4d4d4" text-anchor="middle">约 4 小时</text>
+  <text x="610" y="508" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="15" fill="#737373" text-anchor="middle">对话最密集的阶段</text>
+  <text x="610" y="530" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="15" fill="#737373" text-anchor="middle">像一场即兴演奏</text>
 
   <!-- 节点4 -->
   <circle cx="845" cy="430" r="14" fill="#0c0c0c" stroke="#4ADE80" stroke-width="3"/>
-  <text x="845" y="400" font-family="Noto Sans CJK SC" font-size="22" font-weight="bold" fill="#fbbf24" text-anchor="middle">手机适配</text>
-  <text x="845" y="478" font-family="Noto Sans CJK SC" font-size="18" fill="#d4d4d4" text-anchor="middle">约 6 小时 · 最艰难</text>
-  <text x="845" y="508" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">汉堡菜单迭代 4 版</text>
-  <text x="845" y="530" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">每步都有根因分析</text>
+  <text x="845" y="400" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="22" font-weight="bold" fill="#fbbf24" text-anchor="middle">手机适配</text>
+  <text x="845" y="478" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#d4d4d4" text-anchor="middle">约 6 小时 · 最艰难</text>
+  <text x="845" y="508" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="15" fill="#737373" text-anchor="middle">汉堡菜单迭代 4 版</text>
+  <text x="845" y="530" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="15" fill="#737373" text-anchor="middle">每步都有根因分析</text>
 
   <!-- 节点5 -->
   <circle cx="1080" cy="430" r="14" fill="#0c0c0c" stroke="#B45309" stroke-width="3"/>
-  <text x="1080" y="400" font-family="Noto Sans CJK SC" font-size="22" font-weight="bold" fill="#FBBF24" text-anchor="middle">部署上线</text>
-  <text x="1080" y="478" font-family="Noto Sans CJK SC" font-size="18" fill="#d4d4d4" text-anchor="middle">约 1 小时</text>
-  <text x="1080" y="508" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">GitHub + Cloudflare</text>
-  <text x="1080" y="530" font-family="Noto Sans CJK SC" font-size="15" fill="#737373" text-anchor="middle">1-2 分钟自动上线</text>
+  <text x="1080" y="400" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="22" font-weight="bold" fill="#FBBF24" text-anchor="middle">部署上线</text>
+  <text x="1080" y="478" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#d4d4d4" text-anchor="middle">约 1 小时</text>
+  <text x="1080" y="508" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="15" fill="#737373" text-anchor="middle">GitHub + Cloudflare</text>
+  <text x="1080" y="530" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="15" fill="#737373" text-anchor="middle">1-2 分钟自动上线</text>
 </svg>
 EOF
 
@@ -150,34 +158,38 @@ cat > "$DIR/four-modes.svg" <<'EOF'
   </g>
   <rect x="60" y="52" width="2" height="60" fill="#B45309" opacity="0.7"/>
   <rect x="66" y="52" width="2" height="60" fill="#B45309" opacity="0.35"/>
-  <text x="60" y="150" font-family="monospace" font-size="18" letter-spacing="5" fill="#B45309">FOUR WAYS WE COLLABORATE</text>
-  <text x="60" y="216" font-family="Noto Serif CJK SC" font-size="48" font-weight="bold" fill="#ffffff">四种深度配合方式</text>
-  <text x="60" y="262" font-family="Noto Sans CJK SC" font-size="22" fill="#a3a3a3">比"问一句、答一句"复杂得多</text>
+  <line x1="76" y1="52" x2="76" y2="112" stroke="#B45309" stroke-opacity="0.18" stroke-width="1"/>
+  <circle cx="94" cy="68" r="3" fill="#B45309" opacity="0.85"/>
+  <circle cx="94" cy="82" r="3" fill="#B45309" opacity="0.5"/>
+  <circle cx="94" cy="96" r="3" fill="#B45309" opacity="0.25"/>
+  <text x="60" y="150" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" letter-spacing="5" fill="#FBBF24">FOUR WAYS WE COLLABORATE</text>
+  <text x="60" y="216" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="48" font-weight="bold" fill="#ffffff">四种深度配合方式</text>
+  <text x="60" y="262" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="22" fill="#a3a3a3">比"问一句、答一句"复杂得多</text>
 
   <!-- 2x2 卡片 -->
   <g>
     <rect x="60" y="310" width="520" height="130" rx="14" fill="#151515" stroke="#ffffff" stroke-opacity="0.10"/>
-    <text x="92" y="356" font-family="Noto Serif CJK SC" font-size="26" font-weight="bold" fill="#FBBF24">01 截图驱动</text>
-    <text x="92" y="396" font-family="Noto Sans CJK SC" font-size="18" fill="#a3a3a3">截图丢给 AI，说一句"你看，这不对"</text>
-    <text x="92" y="422" font-family="Noto Sans CJK SC" font-size="18" fill="#737373">AI 定位源码 → 分析 → 修改 → 验证</text>
+    <text x="92" y="356" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="26" font-weight="bold" fill="#FBBF24">01 截图驱动</text>
+    <text x="92" y="396" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#a3a3a3">截图丢给 AI，说一句"你看，这不对"</text>
+    <text x="92" y="422" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#737373">AI 定位源码 → 分析 → 修改 → 验证</text>
   </g>
   <g>
     <rect x="620" y="310" width="520" height="130" rx="14" fill="#151515" stroke="#ffffff" stroke-opacity="0.10"/>
-    <text x="652" y="356" font-family="Noto Serif CJK SC" font-size="26" font-weight="bold" fill="#FBBF24">02 感受驱动</text>
-    <text x="652" y="396" font-family="Noto Sans CJK SC" font-size="18" fill="#a3a3a3">"间距太大""动画不流畅""颜色柔和些"</text>
-    <text x="652" y="422" font-family="Noto Sans CJK SC" font-size="18" fill="#737373">主观表达 → 翻译成 padding/transition 修改</text>
+    <text x="652" y="356" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="26" font-weight="bold" fill="#FBBF24">02 感受驱动</text>
+    <text x="652" y="396" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#a3a3a3">"间距太大""动画不流畅""颜色柔和些"</text>
+    <text x="652" y="422" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#737373">主观表达 → 翻译成 padding/transition 修改</text>
   </g>
   <g>
     <rect x="60" y="458" width="520" height="130" rx="14" fill="#151515" stroke="#ffffff" stroke-opacity="0.10"/>
-    <text x="92" y="504" font-family="Noto Serif CJK SC" font-size="26" font-weight="bold" fill="#FBBF24">03 试探式探索</text>
-    <text x="92" y="544" font-family="Noto Sans CJK SC" font-size="18" fill="#a3a3a3">"手机端菜单一般怎么做？"</text>
-    <text x="92" y="570" font-family="Noto Sans CJK SC" font-size="18" fill="#737373">AI 给方案，我选一个，它实施</text>
+    <text x="92" y="504" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="26" font-weight="bold" fill="#FBBF24">03 试探式探索</text>
+    <text x="92" y="544" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#a3a3a3">"手机端菜单一般怎么做？"</text>
+    <text x="92" y="570" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#737373">AI 给方案，我选一个，它实施</text>
   </g>
   <g>
     <rect x="620" y="458" width="520" height="130" rx="14" fill="#151515" stroke="#ffffff" stroke-opacity="0.10"/>
-    <text x="652" y="504" font-family="Noto Serif CJK SC" font-size="26" font-weight="bold" fill="#FBBF24">04 翻译 + 审校</text>
-    <text x="652" y="544" font-family="Noto Sans CJK SC" font-size="18" fill="#a3a3a3">界面文案我写中文，AI 翻成英文</text>
-    <text x="652" y="570" font-family="Noto Sans CJK SC" font-size="18" fill="#737373">导航、按钮、404、SEO 全覆盖</text>
+    <text x="652" y="504" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="26" font-weight="bold" fill="#FBBF24">04 翻译 + 审校</text>
+    <text x="652" y="544" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#a3a3a3">界面文案我写中文，AI 翻成英文</text>
+    <text x="652" y="570" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#737373">导航、按钮、404、SEO 全覆盖</text>
   </g>
 </svg>
 EOF
@@ -200,11 +212,15 @@ cat > "$DIR/four-problems.svg" <<'EOF'
   </g>
   <rect x="60" y="52" width="2" height="60" fill="#B45309" opacity="0.8"/>
   <rect x="66" y="52" width="2" height="60" fill="#B45309" opacity="0.4"/>
-  <text x="60" y="150" font-family="monospace" font-size="18" letter-spacing="5" fill="#B45309">FOUR HARDEST PROBLEMS</text>
-  <text x="60" y="216" font-family="Noto Serif CJK SC" font-size="48" font-weight="bold" fill="#ffffff">四个最难的问题</text>
-  <text x="60" y="262" font-family="Noto Sans CJK SC" font-size="22" fill="#a3a3a3">每一个都是从"现象 → 分析 → 方案"走出来的</text>
+  <line x1="76" y1="52" x2="76" y2="112" stroke="#B45309" stroke-opacity="0.2" stroke-width="1"/>
+  <circle cx="94" cy="68" r="3" fill="#B45309" opacity="0.9"/>
+  <circle cx="94" cy="82" r="3" fill="#B45309" opacity="0.55"/>
+  <circle cx="94" cy="96" r="3" fill="#B45309" opacity="0.3"/>
+  <text x="60" y="150" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" letter-spacing="5" fill="#FBBF24">FOUR HARDEST PROBLEMS</text>
+  <text x="60" y="216" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="48" font-weight="bold" fill="#ffffff">四个最难的问题</text>
+  <text x="60" y="262" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="22" fill="#a3a3a3">每一个都是从"现象 → 分析 → 方案"走出来的</text>
 
-  <g font-family="Noto Sans CJK SC">
+  <g font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif">
     <rect x="60" y="312" width="1080" height="62" rx="12" fill="#171310" stroke="#B45309" stroke-opacity="0.35"/>
     <circle cx="98" cy="343" r="16" fill="#B45309" opacity="0.9"/>
     <text x="98" y="350" font-size="20" font-weight="bold" fill="#0c0c0c" text-anchor="middle">1</text>

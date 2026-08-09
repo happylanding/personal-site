@@ -14,6 +14,8 @@ gen_cover() {
   local c1 c2
   c1=$(palette_primary "$section")
   c2=$(palette_secondary "$section")
+  local tag_c
+  tag_c=$(palette_tag "$section")
   local dir="$BASE/$slug"
   mkdir -p "$dir"
   local svg="$dir/cover.svg"
@@ -23,12 +25,13 @@ gen_cover() {
   if [ -z "$t2" ]; then fs=64; fi
 
   local title_block=""
+  local title_gap=20   # 主标题两行行间距：比字号多 20px
   if [ -n "$t2" ]; then
-    title_block="  <text x=\"60\" y=\"290\" font-family=\"Noto Serif SC\" font-size=\"${fs}\" font-weight=\"bold\" fill=\"#ffffff\">${t1}</text>
-  <text x=\"60\" y=\"$((${fs} + 290))\" font-family=\"Noto Serif SC\" font-size=\"${fs}\" font-weight=\"bold\" fill=\"#ffffff\">${t2}</text>"
-    local sub_y=$(( $fs * 2 + 300 ))
+    title_block="  <text x=\"60\" y=\"290\" font-family=\"'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif\" font-size=\"${fs}\" font-weight=\"bold\" fill=\"#ffffff\">${t1}</text>
+  <text x=\"60\" y=\"$((${fs} + 290 + ${title_gap}))\" font-family=\"'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif\" font-size=\"${fs}\" font-weight=\"bold\" fill=\"#ffffff\">${t2}</text>"
+    local sub_y=$(( $fs * 2 + 300 + ${title_gap} ))
   else
-    title_block="  <text x=\"60\" y=\"290\" font-family=\"Noto Serif SC\" font-size=\"${fs}\" font-weight=\"bold\" fill=\"#ffffff\">${t1}</text>"
+    title_block="  <text x=\"60\" y=\"290\" font-family=\"'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif\" font-size=\"${fs}\" font-weight=\"bold\" fill=\"#ffffff\">${t1}</text>"
     local sub_y=372
   fi
 
@@ -80,18 +83,23 @@ gen_cover() {
   <!-- 顶部光带 -->
   <rect width="1200" height="4" fill="url(#fade)"/>
 
-  <!-- 装饰：左上角双竖线 -->
+  <!-- 装饰：左上角双竖线 + 圆点节奏（填充空白区域） -->
   <rect x="60" y="52" width="2" height="64" fill="${c1}" opacity="0.7"/>
   <rect x="66" y="52" width="2" height="64" fill="${c1}" opacity="0.35"/>
+  <line x1="76" y1="52" x2="76" y2="116" stroke="${c1}" stroke-opacity="0.18" stroke-width="1"/>
+  <circle cx="94" cy="70" r="3" fill="${c1}" opacity="0.85"/>
+  <circle cx="94" cy="84" r="3" fill="${c1}" opacity="0.5"/>
+  <circle cx="94" cy="98" r="3" fill="${c1}" opacity="0.25"/>
+  <line x1="104" y1="70" x2="118" y2="70" stroke="${c1}" stroke-opacity="0.5" stroke-width="1.5"/>
 
   <!-- 标签 -->
-  <text x="60" y="170" font-family="monospace" font-size="20" letter-spacing="6" fill="${c1}" opacity="0.9">${tag}</text>
+  <text x="60" y="170" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="20" letter-spacing="6" fill="${tag_c}" opacity="0.9">${tag}</text>
 
   <!-- 主标题 -->
 ${title_block}
 
   <!-- 副标题 -->
-  <text x="60" y="${sub_y}" font-family="Noto Sans SC" font-size="26" fill="#a3a3a3">${sub}</text>
+  <text x="60" y="${sub_y}" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="26" fill="#a3a3a3">${sub}</text>
 
   <!-- 分隔线 -->
   <line x1="60" y1="485" x2="360" y2="485" stroke="#ffffff" stroke-opacity="0.25" stroke-width="1"/>
@@ -99,7 +107,7 @@ ${title_block}
   <line x1="368" y1="485" x2="460" y2="485" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1"/>
 
   <!-- 底部署名 -->
-  <text x="60" y="540" font-family="Noto Sans SC" font-size="18" fill="#737373">${sig}</text>
+  <text x="60" y="540" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#737373">${sig}</text>
 </svg>
 EOF
 

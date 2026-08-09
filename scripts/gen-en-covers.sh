@@ -25,6 +25,8 @@ gen_cover_en() {
   local c1 c2
   c1=$(palette_primary "$section")
   c2=$(palette_secondary "$section")
+  local tag_c
+  tag_c=$(palette_tag "$section")
   local dir="$BASE/$slug"
   mkdir -p "$dir"
 
@@ -33,12 +35,13 @@ gen_cover_en() {
   fs=$(pick_fs "$t1" "$t2")
 
   local title_block sub_y
+  local title_gap=20   # 主标题两行行间距：比字号多 20px
   if [ -n "$t2" ]; then
-    title_block="  <text x=\"60\" y=\"290\" font-family=\"Playfair Display, 'DejaVu Serif', Georgia, serif\" font-size=\"${fs}\" font-weight=\"bold\" fill=\"#ffffff\">${t1}</text>
-  <text x=\"60\" y=\"$((290 + fs))\" font-family=\"Playfair Display, 'DejaVu Serif', Georgia, serif\" font-size=\"${fs}\" font-weight=\"bold\" fill=\"#ffffff\">${t2}</text>"
-    sub_y=$((290 + fs * lines + 26))
+    title_block="  <text x=\"60\" y=\"290\" font-family=\"'Times New Roman', 'Liberation Serif', 'DejaVu Serif', serif\" font-size=\"${fs}\" font-weight=\"bold\" fill=\"#ffffff\">${t1}</text>
+  <text x=\"60\" y=\"$((290 + fs + title_gap))\" font-family=\"'Times New Roman', 'Liberation Serif', 'DejaVu Serif', serif\" font-size=\"${fs}\" font-weight=\"bold\" fill=\"#ffffff\">${t2}</text>"
+    sub_y=$((290 + fs * lines + title_gap + 26))
   else
-    title_block="  <text x=\"60\" y=\"290\" font-family=\"Playfair Display, 'DejaVu Serif', Georgia, serif\" font-size=\"${fs}\" font-weight=\"bold\" fill=\"#ffffff\">${t1}</text>"
+    title_block="  <text x=\"60\" y=\"290\" font-family=\"'Times New Roman', 'Liberation Serif', 'DejaVu Serif', serif\" font-size=\"${fs}\" font-weight=\"bold\" fill=\"#ffffff\">${t1}</text>"
     sub_y=$((290 + fs + 26))
   fi
 
@@ -89,18 +92,23 @@ gen_cover_en() {
 
   <rect x="60" y="52" width="2" height="64" fill="${c1}" opacity="0.7"/>
   <rect x="66" y="52" width="2" height="64" fill="${c1}" opacity="0.35"/>
+  <line x1="76" y1="52" x2="76" y2="116" stroke="${c1}" stroke-opacity="0.18" stroke-width="1"/>
+  <circle cx="94" cy="70" r="3" fill="${c1}" opacity="0.85"/>
+  <circle cx="94" cy="84" r="3" fill="${c1}" opacity="0.5"/>
+  <circle cx="94" cy="98" r="3" fill="${c1}" opacity="0.25"/>
+  <line x1="104" y1="70" x2="118" y2="70" stroke="${c1}" stroke-opacity="0.5" stroke-width="1.5"/>
 
-  <text x="60" y="170" font-family="'DejaVu Sans Mono', monospace" font-size="20" letter-spacing="6" fill="${c1}" opacity="0.9">${tag}</text>
+  <text x="60" y="170" font-family="'Times New Roman', 'Liberation Serif', 'DejaVu Serif', serif" font-size="20" letter-spacing="6" fill="${tag_c}" opacity="0.9">${tag}</text>
 
 ${title_block}
 
-  <text x="60" y="${sub_y}" font-family="'Source Sans 3', 'DejaVu Sans', Arial, sans-serif" font-size="24" fill="#a3a3a3">${sub}</text>
+  <text x="60" y="${sub_y}" font-family="'Times New Roman', 'Liberation Serif', 'DejaVu Serif', serif" font-size="24" fill="#a3a3a3">${sub}</text>
 
   <line x1="60" y1="485" x2="360" y2="485" stroke="#ffffff" stroke-opacity="0.25" stroke-width="1"/>
   <circle cx="360" cy="485" r="4" fill="${c1}"/>
   <line x1="368" y1="485" x2="460" y2="485" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1"/>
 
-  <text x="60" y="540" font-family="'Source Sans 3', 'DejaVu Sans', Arial, sans-serif" font-size="18" fill="#737373">${sig}</text>
+  <text x="60" y="540" font-family="'Times New Roman', 'Liberation Serif', 'DejaVu Serif', serif" font-size="18" fill="#737373">${sig}</text>
 </svg>
 EOF
 

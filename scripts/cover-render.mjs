@@ -32,11 +32,11 @@ import path from "node:path";
 
 /* ============ 栏目配色（方案 A｜星野极光·分栏配色）============ */
 const PALETTES = {
-  insights: { c1: "#0E96E9", c2: "#6C7AFF", tag: "#38BDF8" }, // 冰蓝紫
-  ai:       { c1: "#16A34A", c2: "#B45309", tag: "#4ADE80" }, // 墨绿棕
-  tips:     { c1: "#B45309", c2: "#4ADE80", tag: "#FBBF24" }, // 琥珀棕
-  books:    { c1: "#7C3AED", c2: "#F33BD6", tag: "#A78BFA" }, // 紫罗兰
-  invest:   { c1: "#0E96E9", c2: "#6C7AFF", tag: "#38BDF8" }, // 复用冰蓝紫
+  insights: { c1: "#8E1F2F", c2: "#6C2A33", tag: "#E8A2AC" }, // 行业洞察·酒红
+  ai:       { c1: "#1E3A8A", c2: "#27477F", tag: "#8FB4F5" }, // AI 学习·深蓝
+  tips:     { c1: "#B45309", c2: "#4ADE80", tag: "#FBBF24" }, // 实用技巧·琥珀棕
+  books:    { c1: "#7C3AED", c2: "#F33BD6", tag: "#A78BFA" }, // 书籍专区·紫罗兰
+  invest:   { c1: "#8E1F2F", c2: "#6C2A33", tag: "#E8A2AC" }, // 复用酒红
 };
 const DEFAULT_PALETTE = PALETTES.ai;
 
@@ -209,18 +209,25 @@ function buildSvg({ lang, section, t1, t2, sub, tag, sig }) {
   const pal = PALETTES[section] || DEFAULT_PALETTE;
   const c1 = pal.c1;
   const c2 = pal.c2;
+  const tagColor = pal.tag || c1;
   const lines = t2 ? 2 : 1;
   const fs = pickFontSize([t1, t2].filter(Boolean), lang);
-  const serif = lang === "zh" ? "Noto Serif SC" : "Playfair Display, 'DejaVu Serif', Georgia, serif";
-  const sans = lang === "zh" ? "Noto Sans SC" : "'Source Sans 3', 'DejaVu Sans', Arial, sans-serif";
-  const mono = lang === "zh" ? "monospace" : "'DejaVu Sans Mono', monospace";
+  const fontStack = lang === "zh"
+    ? "'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif"
+    : "'Times New Roman', 'Liberation Serif', 'DejaVu Serif', serif";
+  // 字体规范：中文宋体 + 英文新罗马（Times New Roman）
+  const serif = fontStack;
+  const sans = fontStack;
+  const mono = fontStack;
   const subSize = lang === "zh" ? 26 : 24;
-  const subY = 290 + fs * lines + 26;
+  // 主标题两行行间距：比字号多出 20px（放大行距，避免两行标题挤在一起）
+  const titleGap = 20;
+  const subY = 290 + fs * lines + titleGap + 26;
 
   let titleBlock;
   if (lines === 2) {
     titleBlock = `  <text x="60" y="290" font-family="${serif}" font-size="${fs}" font-weight="bold" fill="#ffffff">${esc(t1)}</text>
-  <text x="60" y="${290 + fs}" font-family="${serif}" font-size="${fs}" font-weight="bold" fill="#ffffff">${esc(t2)}</text>`;
+  <text x="60" y="${290 + fs + titleGap}" font-family="${serif}" font-size="${fs}" font-weight="bold" fill="#ffffff">${esc(t2)}</text>`;
   } else {
     titleBlock = `  <text x="60" y="290" font-family="${serif}" font-size="${fs}" font-weight="bold" fill="#ffffff">${esc(t1)}</text>`;
   }
@@ -256,12 +263,17 @@ ${starsSvg()}
   <!-- 顶部光带 -->
   <rect width="1200" height="4" fill="url(#fade)"/>
 
-  <!-- 装饰：左上角双竖线 -->
+  <!-- 装饰：左上角双竖线 + 圆点节奏（填充空白区域） -->
   <rect x="60" y="52" width="2" height="64" fill="${c1}" opacity="0.7"/>
   <rect x="66" y="52" width="2" height="64" fill="${c1}" opacity="0.35"/>
+  <line x1="76" y1="52" x2="76" y2="116" stroke="${c1}" stroke-opacity="0.18" stroke-width="1"/>
+  <circle cx="94" cy="70" r="3" fill="${c1}" opacity="0.85"/>
+  <circle cx="94" cy="84" r="3" fill="${c1}" opacity="0.5"/>
+  <circle cx="94" cy="98" r="3" fill="${c1}" opacity="0.25"/>
+  <line x1="104" y1="70" x2="118" y2="70" stroke="${c1}" stroke-opacity="0.5" stroke-width="1.5"/>
 
   <!-- 标签 -->
-  <text x="60" y="170" font-family="${mono}" font-size="20" letter-spacing="6" fill="${c1}" opacity="0.9">${esc(tag)}</text>
+  <text x="60" y="170" font-family="${mono}" font-size="20" letter-spacing="6" fill="${tagColor}" opacity="0.9">${esc(tag)}</text>
 
   <!-- 主标题 -->
 ${titleBlock}
@@ -300,6 +312,29 @@ function parseFrontmatter(mdPath) {
     fm[kv[1]] = v;
   }
   return fm;
+}
+
+/* ============ 环境检查（避免中文渲染成豆腐块/方块） ============ */
+
+function checkRenderEnv() {
+  // 1. rsvg-convert 是否存在
+  try {
+    execFileSync("which", ["rsvg-convert"], { stdio: "pipe" });
+  } catch {
+    console.error("❌ 缺少 rsvg-convert：请先安装 apt-get install -y librsvg2-bin");
+    process.exit(1);
+  }
+  // 2. 中文字体是否存在（Noto CJK / 宋体等，缺了中文会渲染成空心方框）
+  try {
+    const out = execFileSync("fc-list", [":lang=zh"], { encoding: "utf8" });
+    if (!out.trim()) {
+      console.error("❌ 缺少中文字体：请先安装 apt-get install -y fonts-noto-cjk fonts-noto-cjk-extra");
+      process.exit(1);
+    }
+  } catch {
+    console.error("❌ 无法检查中文字体（fc-list 不可用）：请先安装 fontconfig + fonts-noto-cjk");
+    process.exit(1);
+  }
 }
 
 /* ============ 主流程 ============ */
@@ -361,6 +396,8 @@ function main() {
     { file: "cover", lang: "zh", t1: t1z, t2: t2z, sub: truncate(descZh, 30, "zh"), tag: tagZh, sig: sigZh },
     { file: "cover-en", lang: "en", t1: t1e, t2: t2e, sub: truncate(descEn, 80, "en"), tag: tagEn, sig: sigEn },
   ];
+
+  checkRenderEnv();
 
   for (const s of specs) {
     const svg = buildSvg({ lang: s.lang, section, t1: s.t1, t2: s.t2, sub: s.sub, tag: s.tag, sig: s.sig });

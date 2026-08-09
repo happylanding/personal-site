@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
     <radialGradient id="glow1" cx="0.15" cy="0.2" r="0.9">
-      <stop offset="0%" stop-color="#0E96E9" stop-opacity="0.32"/>
-      <stop offset="60%" stop-color="#0E96E9" stop-opacity="0.06"/>
-      <stop offset="100%" stop-color="#0E96E9" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#8E1F2F" stop-opacity="0.32"/>
+      <stop offset="60%" stop-color="#8E1F2F" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#8E1F2F" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="glow2" cx="0.85" cy="0.85" r="0.9">
-      <stop offset="0%" stop-color="#6C7AFF" stop-opacity="0.22"/>
-      <stop offset="60%" stop-color="#6C7AFF" stop-opacity="0.05"/>
-      <stop offset="100%" stop-color="#6C7AFF" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#6C2A33" stop-opacity="0.22"/>
+      <stop offset="60%" stop-color="#6C2A33" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#6C2A33" stop-opacity="0"/>
     </radialGradient>
     <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#ffffff" stop-opacity="0.06"/>
@@ -45,25 +45,30 @@
   <!-- 顶部光带 -->
   <rect width="1200" height="4" fill="url(#fade)"/>
 
-  <!-- 装饰：左上角双竖线 -->
-  <rect x="60" y="52" width="2" height="64" fill="#0E96E9" opacity="0.7"/>
-  <rect x="66" y="52" width="2" height="64" fill="#0E96E9" opacity="0.35"/>
+  <!-- 装饰：左上角双竖线 + 圆点节奏（填充空白区域） -->
+  <rect x="60" y="52" width="2" height="64" fill="#8E1F2F" opacity="0.7"/>
+  <rect x="66" y="52" width="2" height="64" fill="#8E1F2F" opacity="0.35"/>
+  <line x1="76" y1="52" x2="76" y2="116" stroke="#8E1F2F" stroke-opacity="0.18" stroke-width="1"/>
+  <circle cx="94" cy="70" r="3" fill="#8E1F2F" opacity="0.85"/>
+  <circle cx="94" cy="84" r="3" fill="#8E1F2F" opacity="0.5"/>
+  <circle cx="94" cy="98" r="3" fill="#8E1F2F" opacity="0.25"/>
+  <line x1="104" y1="70" x2="118" y2="70" stroke="#8E1F2F" stroke-opacity="0.5" stroke-width="1.5"/>
 
   <!-- 标签 -->
-  <text x="60" y="170" font-family="monospace" font-size="20" letter-spacing="6" fill="#0E96E9" opacity="0.9">INSIGHTS · 行业洞察 · 2026</text>
+  <text x="60" y="170" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="20" letter-spacing="6" fill="#E8A2AC" opacity="0.9">INSIGHTS · 行业洞察 · 2026</text>
 
   <!-- 主标题 -->
-  <text x="60" y="290" font-family="Noto Serif SC" font-size="64" font-weight="bold" fill="#ffffff">数字经济脉搏</text>
-  <text x="60" y="354" font-family="Noto Serif SC" font-size="64" font-weight="bold" fill="#ffffff">从产业数字化看中国经济的底层逻辑</text>
+  <text x="60" y="290" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="64" font-weight="bold" fill="#ffffff">数字经济脉搏</text>
+  <text x="60" y="374" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="64" font-weight="bold" fill="#ffffff">从产业数字化看中国经济的底层逻辑</text>
 
   <!-- 副标题 -->
-  <text x="60" y="444" font-family="Noto Sans SC" font-size="26" fill="#a3a3a3">从产业数字化、数字产业化两条主线出发，拆解数字经济增长背后的底层逻辑，并探讨它对…</text>
+  <text x="60" y="464" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="26" fill="#a3a3a3">从产业数字化、数字产业化两条主线出发，拆解数字经济增长背后的底层逻辑，并探讨它对…</text>
 
   <!-- 分隔线 -->
   <line x1="60" y1="485" x2="360" y2="485" stroke="#ffffff" stroke-opacity="0.25" stroke-width="1"/>
-  <circle cx="360" cy="485" r="4" fill="#0E96E9"/>
+  <circle cx="360" cy="485" r="4" fill="#8E1F2F"/>
   <line x1="368" y1="485" x2="460" y2="485" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1"/>
 
   <!-- 底部署名 -->
-  <text x="60" y="540" font-family="Noto Sans SC" font-size="18" fill="#737373">Galvin × CodeBuddy · 洞察趋势，沉淀判断</text>
+  <text x="60" y="540" font-family="'Times New Roman', 'Liberation Serif', 'SimSun', 'Songti SC', 'Noto Serif CJK SC', serif" font-size="18" fill="#737373">Galvin × CodeBuddy · 洞察趋势，沉淀判断</text>
 </svg>
