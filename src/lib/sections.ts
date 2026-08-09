@@ -22,3 +22,15 @@ export const SECTION_COLORS: Record<SectionKey, string> = {
   tips: "#B45309",
   books: "#7C3AED",
 };
+
+/**
+ * 栏目主题色·暗色模式亮版（与 docs/illustration-workflow.md 深色区文字规范保持一致）
+ * 暗色背景上使用主色的亮版，避免深色文字与背景重叠难以分辨。
+ * - insights → #E8A2AC / ai → #8FB4F5 / tips → #FBBF24 / books → #A78BFA
+ */
+export const SECTION_COLORS_DARK: Record<SectionKey, string> = {
+  insights: "#E8A2AC",
+  ai: "#8FB4F5",
+  tips: "#FBBF24",
+  books: "#A78BFA",
+};

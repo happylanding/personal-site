@@ -1290,6 +1290,14 @@ html:not(.js) .lmask-inner {
   text-shadow: 0 0 12px rgba(245, 158, 11, 0.4), 0 0 24px rgba(245, 158, 11, 0.2);
 }
 
+/* ===== 栏目图标/导航暗色模式亮版（ColumnIcon / Header 注入 --section-color-dark 变量） =====
+   暗色背景上使用主色的亮版（docs/illustration-workflow.md 深色区文字规范），
+   避免深蓝/酒红等深色栏目色与暗色背景融合难以分辨。 */
+.dark .column-icon,
+.dark [style*="--section-color-dark"] {
+  color: var(--section-color-dark) !important;
+}
+
 /* ===== 栏目色随卡片 hover 点亮（roll-card 专属，覆盖通用 hover-glow） ===== */
 .roll-card[data-c-accent="insights"] .fx-spotlight { background: radial-gradient(circle, rgba(142, 31, 47, 0.12) 0%, transparent 75%); }
 .roll-card[data-c-accent="ai"] .fx-spotlight { background: radial-gradient(circle, rgba(30, 58, 138, 0.12) 0%, transparent 75%); }

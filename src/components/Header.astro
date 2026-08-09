@@ -5,7 +5,7 @@ import LanguageSwitcher from "./LanguageSwitcher.astro";
 import ColumnIcon from "./ColumnIcon.astro";
 import Icon from "./Icon.astro";
 import SearchDialog from "./SearchDialog.astro";
-import { SECTION_COLORS } from "../lib/sections";
+import { SECTION_COLORS, SECTION_COLORS_DARK } from "../lib/sections";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -51,7 +51,7 @@ const isToolsPage = Astro.url.pathname.includes("/tools");
             }`}
             style={(() => {
               const cur = columns.find((c) => isCurrentSection(c));
-              return cur ? { color: SECTION_COLORS[cur] } : undefined;
+              return cur ? { color: SECTION_COLORS[cur], "--section-color-dark": SECTION_COLORS_DARK[cur] } : undefined;
             })()}
           >
             {t("home.exploreColumns")}
@@ -70,7 +70,7 @@ const isToolsPage = Astro.url.pathname.includes("/tools");
                         ? "bg-black/5 dark:bg-white/5 font-semibold"
                         : "hover:bg-black/5 dark:hover:bg-white/5"
                     }`}
-                    style={isCurrentSection(col) ? { color: SECTION_COLORS[col] } : undefined}
+                    style={isCurrentSection(col) ? { color: SECTION_COLORS[col], "--section-color-dark": SECTION_COLORS_DARK[col] } : undefined}
                   >
                     <ColumnIcon section={col} class="w-3.5 h-3.5 inline-block mr-1.5 align-middle" />
                     {t(`columns.${col}.name`)}
@@ -179,7 +179,7 @@ const isToolsPage = Astro.url.pathname.includes("/tools");
               <span class="mobile-nav-icon">
                 <ColumnIcon section={col} class="w-5 h-5" />
               </span>
-              <span class="mobile-nav-label" style={isCurrentSection(col) ? { color: SECTION_COLORS[col] } : undefined}>{t(`columns.${col}.name`)}</span>
+              <span class="mobile-nav-label" style={isCurrentSection(col) ? { color: SECTION_COLORS[col], "--section-color-dark": SECTION_COLORS_DARK[col] } : undefined}>{t(`columns.${col}.name`)}</span>
               <span class="mobile-nav-arrow opacity-0 group-hover:opacity-30 transition-opacity"><Icon name="chevronRight" class="w-4 h-4" /></span>
             </a>
           );

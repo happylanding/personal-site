@@ -3,7 +3,7 @@
 // 复用全站统一图标库 Icon.astro（与 4 栏目图标同风格：线性描边 / stroke-width 1.6 / round）
 // 栏目专属色由 SECTION_COLORS 提供
 import type { SectionKey } from "../lib/sections";
-import { SECTION_COLORS } from "../lib/sections";
+import { SECTION_COLORS, SECTION_COLORS_DARK } from "../lib/sections";
 import Icon from "./Icon.astro";
 
 export interface Props {
@@ -13,6 +13,11 @@ export interface Props {
 
 const { section, class: cls = "w-6 h-6" } = Astro.props;
 const sectionColor = SECTION_COLORS[section];
+const sectionColorDark = SECTION_COLORS_DARK[section];
 ---
 
-<Icon name={section} class={cls} style={`color:${sectionColor}`} />
+<Icon
+  name={section}
+  class={`column-icon ${cls}`}
+  style={`color:${sectionColor}; --section-color-dark:${sectionColorDark}`}
+/>
