@@ -151,7 +151,6 @@ export const ui = {
       },
       media: {
         galleryLabel: "精选文章",
-        booksLabel: "书架 · 公版书",
       },
       journey: {
         kicker: "MY STORY · 一段旅程",
@@ -379,7 +378,6 @@ export const ui = {
       },
       media: {
         galleryLabel: "Featured",
-        booksLabel: "Bookshelf · Public Domain",
       },
       journey: {
         kicker: "MY STORY · A JOURNEY",

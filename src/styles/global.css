@@ -590,7 +590,7 @@ html:not(.js) .lmask-inner {
   background: radial-gradient(circle, rgba(245, 158, 11, 0.16), transparent 65%);
 }
 
-/* 两栏：左身份信息 + 右图片区（A 精选封面画廊 + C 书架） */
+/* 两栏：左身份信息 + 右图片区（精选封面轮播） */
 .about-person-grid {
   position: relative;
   display: grid;
@@ -627,7 +627,7 @@ html:not(.js) .lmask-inner {
   min-width: 0;
 }
 
-/* ---- 右：图片区 ---- */
+/* ---- 右：图片区（精选文章单图轮播） ---- */
 .about-person-media {
   min-width: 0;
   display: flex;
@@ -805,96 +805,11 @@ html:not(.js) .lmask-inner {
   overflow: hidden;
 }
 
-/* C：书架摆书 */
-.about-bookshelf {
-  min-width: 0;
-}
-
-.about-bookshelf-row {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.7rem;
-  align-items: end;
-}
-
-.about-book {
-  position: relative;
-  display: block;
-  border-radius: 0.45rem 0.45rem 0.15rem 0.15rem;
-  overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.14);
-  border-bottom: none;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
-  aspect-ratio: 1 / 1.32;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  transform-style: preserve-3d;
-}
-
-.dark .about-book {
-  border-color: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.42);
-}
-
-/* 横版封面裁成"竖版书脊"：封面文字都在左侧，裁左即书名 */
-.about-book img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 12% center;
-  display: block;
-  transition: transform 0.4s ease;
-}
-
-.about-book:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
-}
-
-.dark .about-book:hover {
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.52);
-}
-
-.about-book:hover img {
-  transform: scale(1.06);
-}
-
-/* 书脊高光，营造"立书"感 */
-.about-book-spine {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 5px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.02));
-  pointer-events: none;
-}
-
-/* 书架搁板 */
-.about-bookshelf-row::after {
-  content: "";
-  grid-column: 1 / -1;
-  height: 6px;
-  border-radius: 3px;
-  background: linear-gradient(180deg, rgba(120, 80, 20, 0.28), rgba(120, 80, 20, 0.12));
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
-}
-
-.dark .about-bookshelf-row::after {
-  background: linear-gradient(180deg, rgba(245, 158, 11, 0.3), rgba(245, 158, 11, 0.12));
-}
-
 /* 移动端：两栏变一栏，图片区放身份信息下方 */
 @media (max-width: 1023px) {
   .about-person-grid {
     grid-template-columns: 1fr;
     gap: 1.6rem;
-  }
-}
-
-/* 小屏：书架单列，避免过窄 */
-@media (max-width: 479px) {
-  .about-book {
-    aspect-ratio: 1 / 1.15;
   }
 }
 
