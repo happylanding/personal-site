@@ -450,7 +450,7 @@ html:not(.js) .lmask-inner {
 /* ---- 通用：小标签 + 短饰条 ---- */
 .about-kicker {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: rgba(180, 83, 9, 0.85);
@@ -550,15 +550,15 @@ html:not(.js) .lmask-inner {
 
 .about-stats-label {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.32);
+  color: rgba(0, 0, 0, 0.45);
   margin: 0 0 1rem;
 }
 
 .dark .about-stats-label {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .about-stat-card {
@@ -603,13 +603,13 @@ html:not(.js) .lmask-inner {
 
 .about-stat-unit {
   font-family: var(--font-sans);
-  font-size: 0.78rem;
+  font-size: 0.86rem;
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.4);
+  color: rgba(0, 0, 0, 0.5);
 }
 
 .dark .about-stat-unit {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.62);
 }
 
 /* ---- 自我介绍 ---- */
@@ -685,15 +685,15 @@ html:not(.js) .lmask-inner {
 
 .about-media-label {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.38);
+  color: rgba(0, 0, 0, 0.48);
   margin: 0 0 0.55rem;
 }
 
 .dark .about-media-label {
-  color: rgba(255, 255, 255, 0.42);
+  color: rgba(255, 255, 255, 0.58);
 }
 
 /* A：精选文章单图轮播（左右自动切换） */
@@ -835,14 +835,14 @@ html:not(.js) .lmask-inner {
 
 .about-gallery-section {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .about-gallery-title {
-  font-size: 0.82rem;
+  font-size: 0.92rem;
   font-weight: 600;
   line-height: 1.35;
   color: #fff;
@@ -863,15 +863,15 @@ html:not(.js) .lmask-inner {
 
 .about-person-kicker {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(180, 83, 9, 0.85);
+  color: rgba(180, 83, 9, 0.9);
   margin: 0 0 0.5rem;
 }
 
 .dark .about-person-kicker {
-  color: rgba(245, 158, 11, 0.85);
+  color: rgba(245, 158, 11, 0.9);
 }
 
 .about-person-name {
@@ -924,9 +924,9 @@ html:not(.js) .lmask-inner {
   align-items: center;
   gap: 0.4rem;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13px;
   letter-spacing: 0.1em;
-  color: rgba(22, 163, 74, 0.9);
+  color: rgba(22, 163, 74, 0.92);
   padding: 0.4rem 0.85rem;
   border-radius: 9999px;
   background: rgba(22, 163, 74, 0.12);
@@ -1042,15 +1042,15 @@ html:not(.js) .lmask-inner {
 
 .about-timeline-num {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.18em;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.42);
   margin-top: 0.4rem;
   writing-mode: vertical-rl;
 }
 
 .dark .about-timeline-num {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.55);
 }
 
 /* 连接线：覆盖在节点下方 */
@@ -1174,7 +1174,7 @@ html:not(.js) .lmask-inner {
   gap: 0.45rem;
   padding: 0.55rem 1.15rem;
   border-radius: 9999px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #fff;
   background: linear-gradient(135deg, #b45309, #d97706);
@@ -1216,7 +1216,7 @@ html:not(.js) .lmask-inner {
 }
 
 .about-cta-footer {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: rgba(0, 0, 0, 0.4);
   font-family: var(--font-serif);
   font-style: italic;
@@ -1224,7 +1224,7 @@ html:not(.js) .lmask-inner {
 }
 
 .dark .about-cta-footer {
-  color: rgba(255, 255, 255, 0.46);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 /* 移动端：时间线节点列收紧 */
