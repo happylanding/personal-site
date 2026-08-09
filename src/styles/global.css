@@ -1075,53 +1075,19 @@ html:not(.js) .lmask-inner {
   padding-top: 1.05rem;
 }
 
-/* ===== 时间线圆点呼吸灯（依次呼吸 · 同频） =====
- * 圆点从中心向外扩散光晕，模拟霓虹呼吸灯：
- *  - 亮起时核心变大 + 多层光晕 + 光柱，暗下时回归小点
+/* ===== 时间线圆点呼吸灯（依次呼吸 · 同频 · 轻量） =====
+ * 参考首页节气/节日点呼吸灯，幅度略大一点，简单干净不浮夸：
+ *  - 呼吸：小→大→小 + 亮度/不透明度增强，无额外光晕、星芒
  *  - 每个节点用 --dot-i 错峰延迟，按 0→1→2→3 顺序依次点亮，节奏一致不乱频
  */
 @keyframes about-dot-breathe {
   0%, 100% {
-    transform: scale(0.62);
-    box-shadow:
-      0 0 0 3px rgba(180, 83, 9, 0.16),
-      0 0 6px 1px rgba(180, 83, 9, 0.18);
-    filter: brightness(0.85);
-  }
-  50% {
-    transform: scale(1.34);
-    box-shadow:
-      0 0 0 6px rgba(180, 83, 9, 0.34),
-      0 0 14px 3px rgba(180, 83, 9, 0.55),
-      0 0 30px 7px rgba(180, 83, 9, 0.28);
-    filter: brightness(1.6);
-  }
-}
-
-@keyframes about-dot-halo {
-  0%, 100% {
-    transform: translate(-50%, -50%) scale(0.55);
-    opacity: 0.4;
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(1.7);
-    opacity: 0; /* 扩散到最外圈时消散 */
-  }
-}
-
-@keyframes about-dot-spike {
-  0%, 100% {
-    transform: translate(-50%, -50%) scale(1, 1);
-    opacity: 0;
-  }
-  45% {
+    transform: scale(1);
     opacity: 0.6;
   }
-  55% {
-    opacity: 0;
-  }
   50% {
-    transform: translate(-50%, -50%) scale(1.65, 1.25);
+    transform: scale(1.4);
+    opacity: 1;
   }
 }
 
@@ -1138,77 +1104,9 @@ html:not(.js) .lmask-inner {
   animation-delay: calc(var(--dot-i, 0) * 0.65s);
 }
 
-/* 向外扩散的光晕层 */
-.about-timeline-dot::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 34px;
-  height: 34px;
-  border-radius: 9999px;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.5) 0%, rgba(245, 158, 11, 0.18) 45%, transparent 72%);
-  z-index: 0;
-  pointer-events: none;
-  animation: about-dot-halo 2.6s ease-out infinite;
-  animation-delay: calc(var(--dot-i, 0) * 0.65s);
-}
-
-/* 十字星芒光斑，增强夸张感 */
-.about-timeline-dot::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 36px;
-  height: 36px;
-  border-radius: 9999px;
-  background: radial-gradient(circle,
-    rgba(255, 255, 255, 0.85) 0%,
-    rgba(251, 191, 36, 0.35) 32%,
-    rgba(180, 83, 9, 0.25) 55%,
-    transparent 70%);
-  z-index: 0;
-  pointer-events: none;
-  animation: about-dot-spike 2.6s ease-in-out infinite;
-  animation-delay: calc(var(--dot-i, 0) * 0.65s);
-}
-
 .dark .about-timeline-dot {
   background: linear-gradient(135deg, #fbbf24, #f59e0b);
   box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.14);
-  animation-name: about-dot-breathe-dark;
-}
-
-.dark .about-timeline-dot::before {
-  background: radial-gradient(circle, rgba(251, 191, 36, 0.55) 0%, rgba(251, 191, 36, 0.2) 45%, transparent 72%);
-}
-
-.dark .about-timeline-dot::after {
-  background: radial-gradient(circle,
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(253, 230, 138, 0.4) 32%,
-    rgba(245, 158, 11, 0.28) 55%,
-    transparent 70%);
-}
-
-/* 暗色版呼吸：亮度与光晕更抢眼 */
-@keyframes about-dot-breathe-dark {
-  0%, 100% {
-    transform: scale(0.62);
-    box-shadow:
-      0 0 0 3px rgba(245, 158, 11, 0.2),
-      0 0 8px 2px rgba(245, 158, 11, 0.24);
-    filter: brightness(1);
-  }
-  50% {
-    transform: scale(1.42);
-    box-shadow:
-      0 0 0 7px rgba(245, 158, 11, 0.4),
-      0 0 18px 4px rgba(245, 158, 11, 0.65),
-      0 0 40px 9px rgba(245, 158, 11, 0.32);
-    filter: brightness(1.85);
-  }
 }
 
 /* 依次呼吸：第 2 个起依次延迟 0.65s，从顶部按顺序点亮，不乱频率 */
@@ -1221,9 +1119,7 @@ html:not(.js) .lmask-inner {
 
 /* 关闭动效：尊重系统减弱动效设置 */
 @media (prefers-reduced-motion: reduce) {
-  .about-timeline-dot,
-  .about-timeline-dot::before,
-  .about-timeline-dot::after {
+  .about-timeline-dot {
     animation: none !important;
   }
 }
