@@ -92,7 +92,7 @@ docs/                           # 归档文档
 | `updated` | `date` | | 更新日期 |
 | `tags` | `string[]` | | 中文标签（默认 `[]`） |
 | `tagsEn` | `string[]` | | 英文标签（默认 `[]`） |
-| `section` | `enum` | | 专栏：`insights` / `ai` / `tips` / `books` / `invest`（默认 `tips`） |
+| `section` | `enum` | | 专栏：`insights` / `ai` / `tips` / `books`（默认 `tips`） |
 | `draft` | `boolean` | | 草稿（默认 `false`） |
 | `featured` | `boolean` | | 精选（默认 `false`） |
 | `bodyEn` | `string` | | 英文正文（HTML），不填则英文页 fallback 到中文原文（**已由 `articles-en` 集合取代，见 §5**） |
@@ -104,8 +104,6 @@ docs/                           # 归档文档
 | `readUrl` | `string` | | 合法在线阅读链接（公版书） |
 | `reviewUrl` | `string` | | 书评文章链接 |
 | `buyUrl` | `string` | | 购买链接 |
-| `ticker` | `string` | | 股票代码（投资复盘专栏，保留但已隐藏） |
-| `pnl` | `string` | | 盈亏（投资复盘专栏，保留但已隐藏） |
 
 > ⚠️ **版权红线**：只有公版书（Public Domain）可提供文件下载/在线阅读；受版权保护书籍一律走「书评 + 购买/借阅链接」模式。
 
@@ -119,10 +117,8 @@ docs/                           # 归档文档
 | 02 | AI 学习 | `ai` | ✅ 新增 | AI 工具实测 / 学习路径 / 实战笔记 |
 | 03 | 实用技巧 | `tips` | ✅ | 效率工具 / WPS / 建站教程 |
 | 04 | 书籍专区 | `books` | ✅ | 书评 + 阅读笔记，公版书在线阅读 |
-| ~~05~~ | ~~投资复盘~~ | `invest` | 🕳 隐藏 | 路由保留、数据不删，未来可恢复 |
 
-- 导航栏 / 首页卡片 / 关于页只展示前 4 栏。
-- `invest` 路由仍在 `getStaticPaths` 中生成（`src/lib/sections.ts` 的 `ALL_SECTIONS`），避免旧链接 404。
+- 导航栏 / 首页卡片 / 关于页展示全部栏目。
 - `sites`（设计灵感收藏夹）为隐藏栏目：不在导航/首页展示，入口是页脚的小书签图标，键盘按 `g` `s` 也可直达，供站主个人查阅；sitemap 已过滤。
 
 ---
@@ -170,7 +166,6 @@ docs/                           # 归档文档
 | `/ai` | `[section].astro` | AI 学习 |
 | `/tips` | `[section].astro` | 实用技巧 |
 | `/books` | `[section].astro` | 书籍专区 |
-| `/invest` | `[section].astro` | 投资复盘（隐藏，保留路由） |
 | `/sites` | `sites.astro` | 设计灵感收藏夹（隐藏入口，页脚小书签 + 快捷键 `g s`） |
 | `/sites/oiloil` | `sites/[slug].astro` | 收藏夹报告详情 |
 | `/tips/vibe-coding` | `[section]/[slug].astro` | 文章详情 |
@@ -207,7 +202,6 @@ Overlay 点击关闭逻辑简化。
 - ✅ `AGENT_OPS.md` 去除写死的 `D:/personal-site` 路径
 
 ### 8.6 评审修正（2026-08-08）
-- ✅ sitemap 过滤隐藏路由 `/invest/`，避免搜索引擎收录不对外栏目
 - ✅ `MAINTENANCE.md` 组件数由 16 修正为 15，标注 GitHub/CNB 双仓库地址
 - ✅ `AGENT_OPS.md` section 列表改为 `insights/ai/tips/books`
 

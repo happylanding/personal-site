@@ -36,7 +36,6 @@ const PALETTES = {
   ai:       { c1: "#1E3A8A", c2: "#27477F", tag: "#8FB4F5" }, // AI 学习·深蓝
   tips:     { c1: "#B45309", c2: "#4ADE80", tag: "#FBBF24" }, // 实用技巧·琥珀棕
   books:    { c1: "#7C3AED", c2: "#F33BD6", tag: "#A78BFA" }, // 书籍专区·紫罗兰
-  invest:   { c1: "#8E1F2F", c2: "#6C2A33", tag: "#E8A2AC" }, // 复用酒红
 };
 const DEFAULT_PALETTE = PALETTES.ai;
 
@@ -45,28 +44,24 @@ const SECTION_TAG_CN = {
   ai: "AI · 智能实践",
   tips: "TIPS · 实用技巧",
   books: "BOOKS · 阅读",
-  invest: "INVEST · 投资复盘",
 };
 const SECTION_TAG_EN = {
   insights: "INSIGHTS",
   ai: "AI IN PRACTICE",
   tips: "TIPS",
   books: "BOOKS",
-  invest: "INVEST",
 };
 const SECTION_SIG_CN = {
   insights: "Galvin × CodeBuddy · 洞察趋势，沉淀判断",
   ai: "Galvin × CodeBuddy · 先会用，再理解，后深入",
   tips: "Galvin × CodeBuddy · 内容优先，安静克制",
   books: "Galvin × CodeBuddy · 读书，读世界",
-  invest: "Galvin × CodeBuddy · 认知决定收益",
 };
 const SECTION_SIG_EN = {
   insights: "Galvin x CodeBuddy · Insight & Judgment",
   ai: "Galvin x CodeBuddy · Use it first, then go deeper",
   tips: "Galvin x CodeBuddy · Content-first, quiet and calm",
   books: "Galvin x CodeBuddy · Read, reflect, grow",
-  invest: "Galvin x CodeBuddy · Mindset drives returns",
 };
 
 /* ============ 工具函数 ============ */

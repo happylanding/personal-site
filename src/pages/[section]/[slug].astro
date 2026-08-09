@@ -65,7 +65,7 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
 
       <div class="flex items-center gap-3 mb-4">
         <span class="text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/50 dark:text-white/50 inline-flex items-center gap-1">
-          <ColumnIcon section={section as "insights"|"ai"|"tips"|"books"|"invest"} class="w-3 h-3" /> {t(`columns.${section}.name`)}
+          <ColumnIcon section={section as import("../lib/sections").SectionKey} class="w-3 h-3" /> {t(`columns.${section}.name`)}
         </span>
         {article.data.featured && (
           <span class="text-xs px-2 py-0.5 rounded-full bg-black dark:bg-white text-white dark:text-black inline-flex items-center gap-1">

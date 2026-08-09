@@ -5,6 +5,7 @@ import ScrollReveal from "../components/ScrollReveal.astro";
 import { getLangFromUrl, useTranslations } from "../i18n/utils";
 import { getCollection } from "astro:content";
 import ColumnIcon from "../components/ColumnIcon.astro";
+import type { SectionKey } from "../lib/sections";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -41,7 +42,7 @@ const grouped = sorted.reduce<YearGroups>((acc, article) => {
                   class="block mt-1"
                 >
                   <span class="text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/40 dark:text-white/40 mr-2 inline-flex items-center gap-1">
-                    <ColumnIcon section={article.data.section as "insights"|"tips"|"books"|"invest"} class="w-3 h-3" />
+                    <ColumnIcon section={article.data.section as SectionKey} class="w-3 h-3" />
                     {t(`columns.${article.data.section}.name`)}
                   </span>
                   <span class="font-serif font-bold group-hover:opacity-70 transition-opacity">{title}</span>

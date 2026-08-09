@@ -40,7 +40,7 @@ This article records how I turned the vague thought "I want a personal website" 
 
 My requirements were simple:
 
-- An online space for thoughts, insights, tips, reading notes, and investment reviews
+- An online space for thoughts, insights, tips, and reading notes
 - Bilingual, serving two kinds of readers at once
 - Clean, quiet, not flashy
 - Searchable
@@ -92,7 +92,7 @@ AI helped me choose Astro. The reasoning was practical: a website is essentially
 This stage set up:
 - Project initialization and directory structure
 - Markdown + frontmatter data model for articles
-- Homepage + four column pages (Industry Insights, Practical Tips, Book Shelf, Investment Review)
+- Homepage + four column pages (Industry Insights, Practical Tips, Book Shelf)
 - About / Contact pages
 
 ### Stage 2: Core Features (~1 hour)

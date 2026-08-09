@@ -13,7 +13,7 @@ const articlesCollection = defineCollection({
     tags: z.array(z.string()).default([]),
     tagsEn: z.array(z.string()).default([]),
     /** 所属专栏 */
-    section: z.enum(["insights", "ai", "tips", "books", "invest"]).default("tips"),
+    section: z.enum(["insights", "ai", "tips", "books"]).default("tips"),
     draft: z.boolean().default(false),
     featured: z.boolean().default(false),
     /** 英文正文（可选），填写后在英文页面优先展示 */
@@ -40,9 +40,6 @@ const articlesCollection = defineCollection({
     /** 购买链接 */
     buyUrl: z.string().optional(),
     rating: z.number().min(0).max(5).optional(),
-    /** 投资复盘专属字段 */
-    ticker: z.string().optional(),
-    pnl: z.string().optional(),
   }),
 });
 
@@ -62,7 +59,7 @@ const articlesEnCollection = defineCollection({
     updated: z.date().optional(),
     tags: z.array(z.string()).default([]),
     tagsEn: z.array(z.string()).default([]),
-    section: z.enum(["insights", "ai", "tips", "books", "invest"]).default("tips"),
+    section: z.enum(["insights", "ai", "tips", "books"]).default("tips"),
     draft: z.boolean().default(false),
     featured: z.boolean().default(false),
     bodyEn: z.string().optional(),
@@ -81,8 +78,6 @@ const articlesEnCollection = defineCollection({
     reviewUrl: z.string().optional(),
     buyUrl: z.string().optional(),
     rating: z.number().min(0).max(5).optional(),
-    ticker: z.string().optional(),
-    pnl: z.string().optional(),
   }),
 });
 
@@ -108,7 +103,7 @@ const sitesCollection = defineCollection({
     tags: z.array(z.string()).default([]),
     tagsEn: z.array(z.string()).default([]),
     /** 所属专栏 */
-    section: z.enum(["insights", "ai", "tips", "books", "invest"]).default("insights"),
+    section: z.enum(["insights", "ai", "tips", "books"]).default("insights"),
     draft: z.boolean().default(false),
     featured: z.boolean().default(false),
     /** 被收藏的网站地址 */

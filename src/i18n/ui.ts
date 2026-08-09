@@ -12,7 +12,6 @@ export const ui = {
       ai: "AI 学习",
       tips: "实用技巧",
       books: "书籍资源",
-      invest: "投资复盘",
       about: "关于",
       contact: "联系",
       all: "全部",
@@ -47,11 +46,6 @@ export const ui = {
         name: "书籍专区",
         enName: "Book Shelf",
         desc: "书评与阅读笔记，公版书支持在线阅读与下载",
-      },
-      invest: {
-        name: "投资复盘",
-        enName: "Investment Review",
-        desc: "个人投资记录与复盘总结，在实战中巩固认知",
       },
     },
     tools: {
@@ -138,8 +132,8 @@ export const ui = {
       description: "了解更多关于我和这个网站",
       bio: [
         "你好，我是 Galvin。",
-        "我是一名终身学习者，热爱探索技术与人文的交汇点。这个网站是我记录思考、分享知识和进行投资复盘的个人空间。",
-        "我关注 AI 如何改变我们的工作方式、WPS 等效率工具如何提升生产力、个人理财与投资如何帮助我们实现财务自由。",
+        "我是一名终身学习者，热爱探索技术与人文的交汇点。这个网站是我记录思考、分享知识的个人空间。",
+        "我关注 AI 如何改变我们的工作方式、WPS 等效率工具如何提升生产力。",
         "如果你对以上话题也有兴趣，欢迎通过邮件或微信与我交流。",
       ],
       pin: {
@@ -219,7 +213,6 @@ export const ui = {
       ai: "AI Learning",
       tips: "Tips",
       books: "Books",
-      invest: "Invest",
       about: "About",
       contact: "Contact",
       all: "All",
@@ -254,11 +247,6 @@ export const ui = {
         name: "Book Shelf",
         enName: "Book Shelf",
         desc: "Book reviews & reading notes — public-domain titles with online reading",
-      },
-      invest: {
-        name: "Investment Review",
-        enName: "Investment Review",
-        desc: "Personal investment journal — learning by doing",
       },
     },
     tools: {
@@ -345,8 +333,8 @@ export const ui = {
       description: "Learn more about me and this site",
       bio: [
         "Hi, I'm Galvin.",
-        "I'm a lifelong learner passionate about exploring the intersection of technology and humanity. This site is my personal space for recording thoughts, sharing knowledge, and reviewing investment decisions.",
-        "I'm interested in how AI reshapes our work, how tools like WPS boost productivity, and how personal finance leads to freedom.",
+        "I'm a lifelong learner passionate about exploring the intersection of technology and humanity. This site is my personal space for recording thoughts and sharing knowledge.",
+        "I'm interested in how AI reshapes our work and how tools like WPS boost productivity.",
         "If these topics resonate with you, feel free to reach out via email or WeChat.",
       ],
       pin: {
