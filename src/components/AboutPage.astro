@@ -51,6 +51,17 @@ const email = t("contact.emailValue");
 const xLink = t("contact.xLink");
 const xHandle = t("contact.xHandle");
 const wechatName = t("contact.officialAccountName");
+
+// ---- 图片区（单图轮播）----
+// 轮播：精选文章（排除书籍），按发布日期倒序，单图左右自动切换
+const carouselArticles = allArticles
+  .filter((a) => a.data.featured && a.data.section !== "books")
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const articleCover = (a: (typeof allArticles)[number]) =>
+  (lang === "en" ? a.data.ogImageEn || a.data.ogImage : a.data.ogImage || "").replace(/\.png$/, ".webp");
+const articleTitle = (a: (typeof allArticles)[number]) =>
+  lang === "en" ? a.data.titleEn || a.data.title : a.data.title;
 ---
 
 <Breadcrumb crumbs={[{ label: t("about.title"), href: `${prefix}/about/` }]} />
@@ -101,33 +112,90 @@ const wechatName = t("contact.officialAccountName");
     </div>
   </section>
 
-  <!-- ============ 自我介绍：全宽身份卡 ============ -->
+  <!-- ============ 自我介绍：全宽身份卡（左身份 + 右图片区 A+C） ============ -->
   <section class="about-bio" id="about-me" aria-label={t("about.bio.title")}>
     <div class="about-person-card glass-card relative overflow-hidden" data-reveal data-spotlight>
-      <span class="ghost-num text-black/5 dark:text-white/5" aria-hidden="true">01</span>
       <span class="about-person-glow" aria-hidden="true"></span>
 
-      <div class="about-person-main">
-        <div class="about-person-avatar" aria-hidden="true">
-          <Icon name="user" class="w-10 h-10" />
+      <div class="about-person-grid">
+        <!-- 左：身份信息 -->
+        <div class="about-person-main">
+          <div class="about-person-avatar" aria-hidden="true">
+            <Icon name="user" class="w-10 h-10" />
+          </div>
+
+          <div class="about-person-info">
+            <p class="about-person-kicker">{t("about.bio.kicker")}</p>
+            <h2 class="about-person-name">{t("about.bio.title")}</h2>
+
+            <ul class="about-person-roles">
+              {roles.map((r: string) => (
+                <li class="about-person-role">{r}</li>
+              ))}
+            </ul>
+
+            <p class="about-person-location">
+              <Icon name="sparkles" class="w-3.5 h-3.5" />
+              {t("about.bio.location")}
+            </p>
+
+            <p class="about-person-signature">{t("about.bio.signature")}</p>
+          </div>
         </div>
 
-        <div class="about-person-info">
-          <p class="about-person-kicker">{t("about.bio.kicker")}</p>
-          <h2 class="about-person-name">{t("about.bio.title")}</h2>
+        <!-- 右：图片区（单图轮播） -->
+        <div class="about-person-media">
+          {carouselArticles.length > 0 && (
+            <div class="about-carousel">
+              <p class="about-media-label">{t("about.media.galleryLabel")}</p>
+              <div class="about-carousel-viewport" data-about-carousel>
+                <ul class="about-carousel-track">
+                  {carouselArticles.map((a, i) => (
+                    <li class="about-carousel-slide" aria-hidden={i === 0 ? "false" : "true"}>
+                      <a
+                        href={`${prefix}/${a.data.section}/${a.id}`}
+                        class="about-carousel-item group"
+                        data-spotlight
+                        data-tilt
+                      >
+                        <img
+                          src={articleCover(a)}
+                          alt={articleTitle(a)}
+                          loading={i === 0 ? "eager" : "lazy"}
+                          decoding="async"
+                        />
+                        <span class="about-gallery-overlay">
+                          <span class="about-gallery-section">{t(`columns.${a.data.section}.name`)}</span>
+                          <span class="about-gallery-title">{articleTitle(a)}</span>
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
 
-          <ul class="about-person-roles">
-            {roles.map((r: string) => (
-              <li class="about-person-role">{r}</li>
-            ))}
-          </ul>
+                <button class="about-carousel-arrow about-carousel-prev" type="button" data-carousel-prev aria-label="Previous">
+                  <Icon name="arrowLeft" class="w-4 h-4" />
+                </button>
+                <button class="about-carousel-arrow about-carousel-next" type="button" data-carousel-next aria-label="Next">
+                  <Icon name="arrowRight" class="w-4 h-4" />
+                </button>
 
-          <p class="about-person-location">
-            <Icon name="sparkles" class="w-3.5 h-3.5" />
-            {t("about.bio.location")}
-          </p>
-
-          <p class="about-person-signature">{t("about.bio.signature")}</p>
+                {carouselArticles.length > 1 && (
+                  <div class="about-carousel-dots" role="tablist" aria-label="Slides">
+                    {carouselArticles.map((_, i) => (
+                      <button
+                        class="about-carousel-dot"
+                        type="button"
+                        data-carousel-dot={i}
+                        aria-label={`Go to slide ${i + 1}`}
+                        aria-selected={i === 0 ? "true" : "false"}
+                      ></button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -228,3 +296,92 @@ const wechatName = t("contact.officialAccountName");
     </div>
   </section>
 </section>
+
+<script>
+  /**
+   * 精选文章单图轮播：左右自动切换 + 手动切图
+   * - 自动播放：每 4.5s 切到下一张（无缝循环）
+   * - 鼠标悬停暂停自动播放，离开继续
+   * - 左右箭头手动切；底部圆点可直接跳转
+   * - 尊重 prefers-reduced-motion（关闭自动播放，但仍可手动切换）
+   */
+  (function () {
+    var viewport = document.querySelector("[data-about-carousel]");
+    if (!viewport) return;
+
+    var track = viewport.querySelector(".about-carousel-track");
+    var slides = Array.prototype.slice.call(viewport.querySelectorAll(".about-carousel-slide"));
+    if (!track || slides.length < 2) return;
+
+    var index = 0;
+    var timer = null;
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var interval = 4500;
+
+    var dots = Array.prototype.slice.call(viewport.querySelectorAll("[data-carousel-dot]"));
+    var prevBtn = viewport.querySelector("[data-carousel-prev]");
+    var nextBtn = viewport.querySelector("[data-carousel-next]");
+
+    function update(animate) {
+      if (animate === false) {
+        track.style.transition = "none";
+      } else {
+        track.style.transition = "";
+      }
+      track.style.transform = "translateX(-" + index * 100 + "%)";
+      slides.forEach(function (s, i) {
+        s.setAttribute("aria-hidden", i === index ? "false" : "true");
+      });
+      dots.forEach(function (d, i) {
+        d.setAttribute("aria-selected", i === index ? "true" : "false");
+        d.classList.toggle("is-active", i === index);
+      });
+      // 强制回流，确保 disable-transition 后位置立即生效
+      if (animate === false) void track.offsetWidth;
+    }
+
+    function go(i) {
+      var n = slides.length;
+      index = ((i % n) + n) % n;
+      update(true);
+    }
+
+    function start() {
+      if (reduce) return;
+      stop();
+      timer = setInterval(function () {
+        go(index + 1);
+      }, interval);
+    }
+
+    function stop() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    }
+
+    function restart() {
+      stop();
+      start();
+    }
+
+    if (prevBtn) prevBtn.addEventListener("click", function () { go(index - 1); restart(); });
+    if (nextBtn) nextBtn.addEventListener("click", function () { go(index + 1); restart(); });
+    dots.forEach(function (d, i) {
+      d.addEventListener("click", function () { go(i); restart(); });
+    });
+
+    // 悬停暂停、离开继续
+    viewport.addEventListener("mouseenter", stop);
+    viewport.addEventListener("mouseleave", start);
+    // 页面可见时才播放，切走标签页暂停
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) stop();
+      else start();
+    });
+
+    update(false);
+    start();
+  })();
+</script>

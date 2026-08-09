@@ -638,11 +638,21 @@ html:not(.js) .lmask-inner {
   background: radial-gradient(circle, rgba(245, 158, 11, 0.16), transparent 65%);
 }
 
+/* 两栏：左身份信息 + 右图片区（精选封面轮播） */
+.about-person-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2rem;
+  align-items: center;
+}
+
 .about-person-main {
   position: relative;
   display: flex;
   align-items: center;
   gap: 1.8rem;
+  min-width: 0;
 }
 
 .about-person-avatar {
@@ -663,6 +673,192 @@ html:not(.js) .lmask-inner {
 
 .about-person-info {
   min-width: 0;
+}
+
+/* ---- 右：图片区（精选文章单图轮播） ---- */
+.about-person-media {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.about-media-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.38);
+  margin: 0 0 0.55rem;
+}
+
+.dark .about-media-label {
+  color: rgba(255, 255, 255, 0.42);
+}
+
+/* A：精选文章单图轮播（左右自动切换） */
+.about-carousel {
+  min-width: 0;
+}
+
+.about-carousel-viewport {
+  position: relative;
+  border-radius: 0.8rem;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.dark .about-carousel-viewport {
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.about-carousel-track {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.about-carousel-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+.about-carousel-item {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  transform-style: preserve-3d;
+}
+
+.about-carousel-item img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.45s ease;
+}
+
+.about-carousel-item:hover img {
+  transform: scale(1.04);
+}
+
+.about-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+  opacity: 0;
+}
+
+.about-carousel:hover .about-carousel-arrow,
+.about-carousel-arrow:focus-visible {
+  opacity: 1;
+}
+
+.about-carousel-prev {
+  left: 0.6rem;
+}
+
+.about-carousel-next {
+  right: 0.6rem;
+}
+
+.about-carousel-arrow:hover {
+  background: rgba(0, 0, 0, 0.6);
+  transform: translateY(-50%) scale(1.06);
+}
+
+.about-carousel-dots {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0.55rem;
+  z-index: 5;
+  display: flex;
+  gap: 0.4rem;
+}
+
+.about-carousel-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.5);
+  transition: background 0.25s ease, transform 0.25s ease, width 0.25s ease;
+}
+
+.about-carousel-dot.is-active {
+  width: 1.1rem;
+  border-radius: 9999px;
+  background: #fff;
+}
+
+.about-carousel-dot:hover {
+  background: #fff;
+  transform: scale(1.15);
+}
+
+.about-gallery-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.15rem;
+  padding: 0.65rem 0.7rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.66) 0%, rgba(0, 0, 0, 0.12) 55%, transparent 100%);
+  transition: background 0.3s ease;
+}
+
+.about-carousel-item:hover .about-gallery-overlay,
+.about-carousel-item:focus-visible .about-gallery-overlay {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.28) 55%, transparent 100%);
+}
+
+.about-gallery-section {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.about-gallery-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #fff;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 移动端：两栏变一栏，图片区放身份信息下方 */
+@media (max-width: 1023px) {
+  .about-person-grid {
+    grid-template-columns: 1fr;
+    gap: 1.6rem;
+  }
 }
 
 .about-person-kicker {

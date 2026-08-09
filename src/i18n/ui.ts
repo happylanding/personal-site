@@ -148,6 +148,9 @@ export const ui = {
         location: "坐标中国",
         signature: "把「终身学习」当主业，把「折腾」当副业。",
       },
+      media: {
+        galleryLabel: "精选文章",
+      },
       journey: {
         kicker: "MY STORY · 一段旅程",
         title: "我是怎么走到今天的",
@@ -370,6 +373,9 @@ export const ui = {
         role: "Lifelong learner · Digital economy · Tool tinkerer",
         location: "Based in China",
         signature: "Full-time hobby: keep learning. Side hustle: tinkering.",
+      },
+      media: {
+        galleryLabel: "Featured",
       },
       journey: {
         kicker: "MY STORY · A JOURNEY",
