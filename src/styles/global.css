@@ -174,15 +174,63 @@ body {
 
 /* ===== 封面正文排版：超大字号 · 渐变标语 ===== */
 .hero-eyebrow {
-  font-size: 0.72rem;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.28);
+  /* 时令 / 节日题记：节日优先、节气兜底（如：立秋 · 云天收夏色） */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+  letter-spacing: 0.18em;
+  color: rgba(0, 0, 0, 0.45);
   font-family: var(--font-mono);
+  white-space: nowrap;
 }
 
 .dark .hero-eyebrow {
-  color: rgba(255, 255, 255, 0.38);
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* 节气 / 节日点：呼吸小圆点，颜色随四季轮换（绿/金/橙/蓝） */
+.hero-term-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 9999px;
+  background: var(--term-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--term-accent) 18%, transparent);
+  animation: hero-term-pulse 2.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.dark .hero-term-dot {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--term-accent) 26%, transparent);
+}
+
+@keyframes hero-term-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.28); opacity: 1; }
+}
+
+/* 分隔细线 */
+.hero-term-sep {
+  width: 1.5px;
+  height: 1em;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.dark .hero-term-sep {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+/* 节气 / 节日名：颜色随四季轮换，与光点同色 */
+.hero-term-name {
+  color: var(--term-accent);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+}
+
+/* 物候 / 节日短句：淡一点，与主名形成主次 */
+.hero-term-line {
+  opacity: 0.8;
+  font-size: 0.92em;
 }
 
 .hero-motto {
