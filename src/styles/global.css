@@ -1124,19 +1124,6 @@ html:not(.js) .lmask-inner {
   }
 }
 
-.about-timeline-num {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.18em;
-  color: rgba(0, 0, 0, 0.42);
-  margin-top: 0.4rem;
-  writing-mode: vertical-rl;
-}
-
-.dark .about-timeline-num {
-  color: rgba(255, 255, 255, 0.55);
-}
-
 /* 连接线：覆盖在节点下方 */
 .about-timeline-item::before {
   content: "";

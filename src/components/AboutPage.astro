@@ -215,11 +215,10 @@ const articleTitle = (a: (typeof allArticles)[number]) =>
     </div>
 
     <ol class="about-timeline" data-reveal-stagger>
-      {journeyChapters.map((c: string, i: number) => (
+      {journeyChapters.map((c: string) => (
         <li class="about-timeline-item" data-tilt>
           <span class="about-timeline-node" aria-hidden="true">
             <span class="about-timeline-dot"></span>
-            <span class="about-timeline-num">{String(i + 1).padStart(2, "0")}</span>
           </span>
           <div class="about-timeline-card glass-card">
             <p>{c}</p>
