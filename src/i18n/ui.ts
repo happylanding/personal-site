@@ -29,22 +29,22 @@ export const ui = {
       insights: {
         name: "行业洞察",
         enName: "Industry Insights",
-        desc: "数字经济、数字政府与产业观察——以本职行业视角，理解世界运行规律",
+        desc: "数字经济与产业观察，记录我在这个行业里的一点见闻和思考",
       },
       ai: {
         name: "AI 学习",
         enName: "AI Learning",
-        desc: "AI 工具实测、学习路径与实战笔记，低门槛持续产出",
+        desc: "AI 工具实测、学习路径与实战笔记，从入门到上手，一起慢慢摸索",
       },
       tips: {
         name: "实用技巧",
         enName: "Practical Tips",
-        desc: "WPS 操作、AI 工具使用心得，让技术为你所用",
+        desc: "效率工具、办公技巧与折腾心得，让技术为你所用",
       },
       books: {
         name: "书籍专区",
         enName: "Book Shelf",
-        desc: "书评与阅读笔记，公版书支持在线阅读与下载",
+        desc: "书评与阅读笔记，经典好书支持在线阅读与下载",
       },
     },
     tools: {
@@ -253,22 +253,22 @@ export const ui = {
       insights: {
         name: "Industry Insights",
         enName: "Industry Insights",
-        desc: "Digital economy, digital government & industry observations — understanding how the world works",
+        desc: "Notes & observations on the digital economy and industry trends",
       },
       ai: {
         name: "AI Learning",
         enName: "AI Learning",
-        desc: "AI tool reviews, learning paths & hands-on notes — low-friction, continuous output",
+        desc: "AI tool reviews, learning paths & hands-on notes — from zero to practical, one step at a time",
       },
       tips: {
         name: "Practical Tips",
         enName: "Practical Tips",
-        desc: "WPS skills, AI tool guides — making tech work for you",
+        desc: "Productivity tools, work hacks & tinkering notes — making tech work for you",
       },
       books: {
         name: "Book Shelf",
         enName: "Book Shelf",
-        desc: "Book reviews & reading notes — public-domain titles with online reading",
+        desc: "Book reviews & reading notes — classics available for online reading & download",
       },
     },
     tools: {
