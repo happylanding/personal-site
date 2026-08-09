@@ -37,9 +37,12 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
     </div>
 
     <div class="hero-content">
-      <!-- Location / date ribbon -->
+      <!-- Beijing time badge: live ticking · frosted-glass capsule (location as timezone) -->
       <p class="hero-eyebrow mb-8">
-        {t("home.location")} · {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+        <Icon name="sparkles" class="hero-clock-icon" aria-hidden="true" />
+        <span class="hero-clock-text">{t("home.location")}</span>
+        <span class="hero-clock-sep" aria-hidden="true"></span>
+        <time class="hero-clock-time" data-local-clock aria-label={t("home.localClock")}></time>
       </p>
 
       <!-- 英文座右铭：超大手写体 -->
@@ -183,3 +186,28 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
     )}
   </section>
 </BaseLayout>
+
+<script define:vars={{ lang }}>
+  // Beijing time badge: fixed to Asia/Shanghai (the “China” coordinate), date & time stay consistent
+  const fmtTime = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Shanghai",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+  const fmtDate = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  function tick() {
+    const now = new Date();
+    const el = document.querySelector("[data-local-clock]");
+    if (el) el.textContent = `${fmtTime.format(now)} · ${fmtDate.format(now)}`;
+  }
+  tick();
+  setInterval(tick, 1000);
+</script>

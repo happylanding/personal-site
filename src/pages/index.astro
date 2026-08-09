@@ -38,9 +38,12 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
     </div>
 
     <div class="hero-content">
-      <!-- Location / date ribbon -->
+      <!-- 北京时间徽标：实时跳动 · 毛玻璃胶囊（坐标即时区，日期变成流动的时间） -->
       <p class="hero-eyebrow mb-8">
-        {t("home.location")} · {new Date().toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", { year: "numeric", month: "long", day: "numeric" })}
+        <Icon name="sparkles" class="hero-clock-icon" aria-hidden="true" />
+        <span class="hero-clock-text">{t("home.location")}</span>
+        <span class="hero-clock-sep" aria-hidden="true"></span>
+        <time class="hero-clock-time" data-local-clock aria-label={t("home.localClock")}></time>
       </p>
 
       <!-- 英文座右铭：超大手写体 -->
@@ -201,3 +204,28 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
     )}
   </section>
 </BaseLayout>
+
+<script define:vars={{ lang }}>
+  // 北京时间徽标：锚定 Asia/Shanghai（即“中国”坐标），日期与时间统一，每秒跳动让眉标活起来
+  const fmtTime = new Intl.DateTimeFormat(lang === "en" ? "en-US" : "zh-CN", {
+    timeZone: "Asia/Shanghai",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+  const fmtDate = new Intl.DateTimeFormat(lang === "en" ? "en-US" : "zh-CN", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  function tick() {
+    const now = new Date();
+    const el = document.querySelector("[data-local-clock]");
+    if (el) el.textContent = `${fmtTime.format(now)} · ${fmtDate.format(now)}`;
+  }
+  tick();
+  setInterval(tick, 1000);
+</script>
