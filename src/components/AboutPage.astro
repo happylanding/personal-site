@@ -64,7 +64,7 @@ const articleTitle = (a: (typeof allArticles)[number]) =>
   lang === "en" ? a.data.titleEn || a.data.title : a.data.title;
 ---
 
-<Breadcrumb crumbs={[{ label: t("about.title"), href: `${prefix}/about/` }]} />
+<Breadcrumb crumbs={[{ label: t("about.title"), href: `${prefix}/about/` }]} class="mb-4" />
 
 <section class="max-w-6xl 2xl:max-w-[1400px]">
 

@@ -9,14 +9,15 @@ interface Crumb {
 
 interface Props {
   crumbs: Crumb[];
+  class?: string;
 }
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-const { crumbs } = Astro.props;
+const { crumbs, class: navClass = "mb-8" } = Astro.props;
 ---
 
-<nav aria-label="Breadcrumb" class="mb-8">
+<nav aria-label="Breadcrumb" class={navClass}>
   <ol class="flex flex-wrap items-center gap-1 text-sm text-black/40 dark:text-white/40">
     <li>
       <a
