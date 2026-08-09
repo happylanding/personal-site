@@ -6,13 +6,13 @@ import Currently from "../../components/Currently.astro";
 import { useTranslations } from "../../i18n/utils";
 import { getCollection } from "astro:content";
 import { SECTION_ORDER, type SectionKey } from "../../lib/sections";
-import { getCurrentTerm, SEASON_COLORS } from "../../lib/solarTerms";
+import { getMotto, SEASON_COLORS } from "../../lib/solarTerms";
 
 const lang = "en" as const;
 const t = useTranslations(lang);
 
-// Hero 眉标：时令题记——随二十四节气轮换的物候短句（构建时计算，静态输出）
-const term = getCurrentTerm();
+// Hero 眉标：节日优先、节气兜底的题记（构建时计算，静态输出）
+const term = getMotto();
 const termAccent = SEASON_COLORS[term.season];
 
 const allArticles = await getCollection("articles", ({ data }) => !data.draft);
@@ -42,12 +42,11 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
     </div>
 
     <div class="hero-content">
-      <!-- 时令题记：随二十四节气轮换（如：China · Start of Autumn · summer fades, autumn sings） -->
+      <!-- 时令 / 节日题记：节日优先、节气兜底（如：Qixi Festival · one meeting outshines...） -->
       <p class="hero-eyebrow mb-8" style={`--term-accent:${termAccent}`}>
         <span class="hero-term-dot" aria-hidden="true"></span>
-        <span class="hero-term-loc">{t("home.location")}</span>
-        <span class="hero-term-sep" aria-hidden="true"></span>
         <span class="hero-term-name">{lang === "en" ? term.en : term.zh}</span>
+        <span class="hero-term-sep" aria-hidden="true"></span>
         <span class="hero-term-line">{lang === "en" ? term.lineEn : term.lineZh}</span>
       </p>
 

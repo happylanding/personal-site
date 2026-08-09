@@ -20,7 +20,6 @@ export const ui = {
     home: {
       greeting: "你好，我是",
       intro: "终身学习者，扎根数字经济行业，热爱 AI 学习与知识分享。探索 AI、行业洞察与生产力工具的交汇点，记录成长路上的思考与实践。",
-      location: "中国",
       latestArticles: "最新文章",
       viewAll: "查看全部",
       exploreColumns: "探索专栏",
@@ -251,7 +250,6 @@ export const ui = {
     home: {
       greeting: "Hi, I'm",
       intro: "A lifelong learner rooted in the digital economy, passionate about AI learning and knowledge sharing. Exploring the intersection of AI, industry insights, and productivity tools — documenting the journey.",
-      location: "China",
       latestArticles: "Latest Articles",
       viewAll: "View All",
       exploreColumns: "Explore Columns",
