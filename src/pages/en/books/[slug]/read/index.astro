@@ -26,6 +26,8 @@ const displayTitle = lang === "en" ? (book.data.titleEn || book.data.title) : bo
 const displayDesc = lang === "en" ? (book.data.descriptionEn || book.data.description) : book.data.description;
 const displayAuthor = lang === "en" ? (book.data.authorEn || book.data.author) : book.data.author;
 const base = "/en/books";
+// PDF 原书：用原图展示 + 翻页（不做文本解析）；其他格式用章节文本
+const isPdf = chapters && chapters.type === "pdf";
 ---
 
 <BaseLayout title={`${displayTitle} · ${t("articles.preview")}`} description={displayDesc}>
@@ -59,30 +61,108 @@ const base = "/en/books";
     </a>
   </div>
 
-  <!-- 正文居左 + 右侧 sticky 目录（套用本站文章页排版） -->
-  <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14" data-reveal>
-    <!-- 正文：左侧 -->
-    <div class="min-w-0 order-1">
-      <div class="book-reader lang-en article-content max-w-none">
-        {chapters.map((c) => (
-          <section id={`ch-${c.num}`} class="book-chapter mb-12">
-            <h2 id={`ch-title-${c.num}`} class="flex items-center gap-2">
-              <span class="font-mono text-black/40 dark:text-white/40">{c.num}</span>
-              Chapter {c.num}
-            </h2>
-            <div class="book-chapter-body">
-              {c.text.split(/\n\s*\n/).filter(Boolean).map((p) => (
-                <p>{p}</p>
-              ))}
-            </div>
-          </section>
-        ))}
+  {isPdf ? (
+    /* ===== PDF 原图：翻页阅读 ===== */
+    <div class="article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14" data-reveal>
+      <div class="min-w-0 order-1">
+        <div class="pdf-reader max-w-3xl mx-auto" data-pdf-reader>
+          <div class="pdf-page-wrap bg-black/[0.03] dark:bg-white/[0.04] rounded-lg overflow-hidden shadow-sm">
+            <img
+              id="pdf-page-img"
+              class="pdf-page-img w-full h-auto block"
+              src={chapters.dir + chapters.files[0]}
+              alt={`${displayTitle} · Page 1`}
+              loading="eager"
+            />
+          </div>
+          <div class="flex items-center justify-center gap-3 mt-5">
+            <button type="button" class="pdf-prev inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 text-sm hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors disabled:opacity-30" data-pdf-prev disabled>
+              <Icon name="arrowLeft" class="w-4 h-4" /> Prev
+            </button>
+            <span class="text-sm text-black/50 dark:text-white/50 font-mono" data-pdf-page-indicator>
+              1 / {chapters.pages}
+            </span>
+            <button type="button" class="pdf-next inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 text-sm hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors disabled:opacity-30" data-pdf-next {chapters.pages <= 1 ? "disabled" : ""}>
+              Next <Icon name="arrowRight" class="w-4 h-4" />
+            </button>
+          </div>
+          <div class="flex items-center justify-center gap-2 mt-4">
+            {chapters.files.map((f, i) => (
+              <button
+                type="button"
+                class="pdf-jump w-6 h-6 text-[11px] rounded-full border border-black/10 dark:border-white/10 hover:bg-black/[0.06] dark:hover:bg-white/[0.06] transition-colors {i === 0 ? 'bg-black/5 dark:bg-white/5 font-semibold' : ''}"
+                data-pdf-jump={String(i + 1)}
+                title={`Page ${i + 1}`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div class="min-w-0 order-2"></div>
+    </div>
+  ) : (
+    /* ===== 章节文本阅读 ===== */
+    <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14" data-reveal>
+      <div class="min-w-0 order-1">
+        <div class="book-reader lang-en article-content max-w-none">
+          {chapters.map((c) => (
+            <section id={`ch-${c.num}`} class="book-chapter mb-12">
+              <h2 id={`ch-title-${c.num}`} class="flex items-center gap-2">
+                <span class="font-mono text-black/40 dark:text-white/40">{c.num}</span>
+                Chapter {c.num}
+              </h2>
+              <div class="book-chapter-body">
+                {c.text.split(/\n\s*\n/).filter(Boolean).map((p) => (
+                  <p>{p}</p>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      </div>
+      <div class="min-w-0 order-2">
+        <ArticleTOC label={t("articles.toc")} countFormat={t("articles.tocCount")} />
       </div>
     </div>
+  )}
 
-    <!-- 右侧 sticky 目录 -->
-    <div class="min-w-0 order-2">
-      <ArticleTOC label={t("articles.toc")} countFormat={t("articles.tocCount")} />
-    </div>
-  </div>
+  {/* PDF 翻页逻辑 */}
+  {isPdf && (
+    <script define:vars={{ total: chapters.pages, pages: chapters.files, dir: chapters.dir, title: displayTitle }}>
+      const img = document.getElementById("pdf-page-img");
+      const prevBtn = document.querySelector("[data-pdf-prev]");
+      const nextBtn = document.querySelector("[data-pdf-next]");
+      const indicator = document.querySelector("[data-pdf-page-indicator]");
+      const jumpBtns = Array.from(document.querySelectorAll("[data-pdf-jump]"));
+      let current = 1;
+
+      const render = () => {
+        img.src = dir + pages[current - 1];
+        img.alt = title;
+        indicator.textContent = current + " / " + total;
+        prevBtn.disabled = current <= 1;
+        nextBtn.disabled = current >= total;
+        jumpBtns.forEach((btn, i) => {
+          const active = i + 1 === current;
+          btn.classList.toggle("bg-black/5", active);
+          btn.classList.toggle("dark:bg-white/5", active);
+          btn.classList.toggle("font-semibold", active);
+          btn.classList.toggle("opacity-70", !active);
+        });
+      };
+
+      prevBtn.addEventListener("click", () => { if (current > 1) { current--; render(); } });
+      nextBtn.addEventListener("click", () => { if (current < total) { current++; render(); } });
+      jumpBtns.forEach((btn) => {
+        btn.addEventListener("click", () => { current = Number(btn.dataset.pdfJump); render(); });
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft") { if (current > 1) { current--; render(); } }
+        if (e.key === "ArrowRight") { if (current < total) { current++; render(); } }
+      });
+      render();
+    </script>
+  )}
 </BaseLayout>

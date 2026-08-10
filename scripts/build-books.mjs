@@ -14,9 +14,10 @@
  *
  * 幂等：已生成且源文件未变动的书籍会被跳过；已有文章的 slug 不会被覆盖。
  */
-import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync, statSync } from "node:fs";
+import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync, statSync, rmSync } from "node:fs";
 import { join, dirname, basename, extname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { execSync } from "node:child_process";
 import JSZip from "jszip";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -193,6 +194,35 @@ async function parsePdf(filePath) {
   return chapters;
 }
 
+// —— PDF 原图渲染：将 PDF 每页渲染为 PNG，供阅读页“原图展示 + 翻页”使用 ——
+// 返回：{ pages: number, dir: 相对站点的图片目录, files: string[] }
+function renderPdfPages(slug, filePath) {
+  const pagesDir = join(ROOT, "public", "books", slug, "pages");
+  mkdirSync(pagesDir, { recursive: true });
+
+  // 清理旧页面图（幂等：源文件变化时重新整目录渲染，避免残留旧页）
+  for (const f of readdirSync(pagesDir)) {
+    if (/^page-\d+\.png$/i.test(f)) {
+      try { rmSync(join(pagesDir, f), { force: true }); } catch { /* 忽略 */ }
+    }
+  }
+
+  const pages = execSync(
+    `pdftoppm -png -r 110 "${filePath}" "${join(pagesDir, "page")}"`,
+    { stdio: "pipe" }
+  );
+  const files = readdirSync(pagesDir)
+    .filter((f) => /^page-\d+\.png$/i.test(f))
+    .sort((a, b) => {
+      const na = parseInt(a.match(/page-(\d+)/)?.[1] || "0", 10);
+      const nb = parseInt(b.match(/page-(\d+)/)?.[1] || "0", 10);
+      return na - nb;
+    });
+  if (files.length === 0) throw new Error("pdftoppm 未渲染出任何页面图片");
+
+  return { pages: files.length, dir: `/books/${slug}/pages/`, files };
+}
+
 // 规范化 slug（文件名 → 可作文章 id / json 文件名）
 function toSlug(name) {
   return name
@@ -293,17 +323,64 @@ async function main() {
     const existing = findExistingArticleForFile(file);
     const slug = existing ? existing.slug : toSlug(basename(file, ext));
 
-    // 幂等：已有 JSON 且比源文件新则跳过
+    // 幂等：已有 JSON 且比源文件新则跳过；
+    // 但对 PDF 增加校验：若 JSON 非 type:"pdf"，或页面图片目录缺失/页数不符，视为需重新渲染原图
     const jsonPath = join(DATA_DIR, `${slug}.json`);
-    if (existsSync(jsonPath) && statSync(jsonPath).mtimeMs >= stat.mtimeMs) {
+    let needReRenderPdf = false;
+    if (ext === ".pdf" && existsSync(jsonPath)) {
+      try {
+        const parsed = JSON.parse(readFileSync(jsonPath, "utf8"));
+        needReRenderPdf = !parsed || parsed.type !== "pdf";
+        if (parsed && parsed.type === "pdf") {
+          // 校验页面图片是否齐全
+          const pagesDir = join(ROOT, "public", "books", slug, "pages");
+          const actual = existsSync(pagesDir)
+            ? readdirSync(pagesDir).filter((f) => /^page-\d+\.png$/i.test(f)).length
+            : 0;
+          needReRenderPdf = actual !== parsed.pages;
+        }
+      } catch {
+        needReRenderPdf = true;
+      }
+    }
+    if (existsSync(jsonPath) && !needReRenderPdf && statSync(jsonPath).mtimeMs >= stat.mtimeMs) {
       console.log(`[build-books] 跳过（已生成）: ${file} -> ${slug}.json`);
+      continue;
+    }
+
+    // PDF 保持原图展示（不解析文本）：渲染每页图片 + 写入页面元数据 JSON
+    if (ext === ".pdf") {
+      console.log(`[build-books] 渲染 PDF 页面原图 ${file} ...`);
+      let pageMeta;
+      try {
+        pageMeta = renderPdfPages(slug, filePath);
+      } catch (e) {
+        console.error(`[build-books] ✗ PDF 渲染失败 ${file}: ${e.message}`);
+        continue;
+      }
+      const payload = {
+        type: "pdf",
+        pages: pageMeta.pages,
+        dir: pageMeta.dir,
+        files: pageMeta.files,
+      };
+      writeFileSync(jsonPath, JSON.stringify(payload, null, 2), "utf8");
+      console.log(`[build-books] ✓ 生成 ${slug}.json（PDF 原图 ${pageMeta.pages} 页）`);
+
+      // 自动补建文章（仅当尚无文章时）
+      if (!existing) {
+        if (autoCreateArticle(slug, file, ext, {})) {
+          console.log(`[build-books] ✓ 自动补建文章 ${slug}.md`);
+        }
+      }
+      generated++;
       continue;
     }
 
     console.log(`[build-books] 解析 ${file} ...`);
     let chapters;
     try {
-      chapters = ext === ".epub" ? await parseEpub(filePath) : await parsePdf(filePath);
+      chapters = await parseEpub(filePath);
     } catch (e) {
       console.error(`[build-books] ✗ 解析失败 ${file}: ${e.message}`);
       continue;
@@ -320,7 +397,7 @@ async function main() {
 
     // 自动补建文章（仅当尚无文章时）；EPUB 尽量带上真实书名/作者
     if (!existing) {
-      const meta = ext === ".epub" ? await extractMeta(filePath) : {};
+      const meta = await extractMeta(filePath);
       if (autoCreateArticle(slug, file, ext, meta)) {
         console.log(`[build-books] ✓ 自动补建文章 ${slug}.md`);
       }
