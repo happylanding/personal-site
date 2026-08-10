@@ -1639,7 +1639,8 @@ html:not(.js) .lmask-inner {
 .article-toc-fab {
   position: fixed;
   right: 1.25rem;
-  bottom: max(5.5rem, calc(env(safe-area-inset-bottom, 0px) + 5rem));
+  /* 默认位置放高一些，与右下角「回到顶部」按钮错开垂直距离，避免滚动后两球重叠 */
+  bottom: max(7rem, calc(env(safe-area-inset-bottom, 0px) + 6.5rem));
   z-index: 60;
   width: 3.25rem;
   height: 3.25rem;
@@ -1651,10 +1652,31 @@ html:not(.js) .lmask-inner {
   color: #fff;
   border: none;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
-  cursor: pointer;
+  cursor: grab;
   -webkit-tap-highlight-color: transparent;
   transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
   touch-action: none; /* 允许 pointer 拖拽，避免浏览器默认滚动 */
+  /* 首次加载时轻微弹跳，引导用户注意这个可拖拽的目录入口 */
+  animation: toc-fab-nudge 2.4s ease 0.6s 2;
+}
+
+/* 悬浮球首次加载的引导动画：轻微放大回弹，暗示“可操作/可拖拽” */
+@keyframes toc-fab-nudge {
+  0%, 100% {
+    transform: scale(1);
+  }
+  15% {
+    transform: scale(1.12);
+  }
+  30% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.08);
+  }
+  60% {
+    transform: scale(1);
+  }
 }
 
 .dark .article-toc-fab {
@@ -1665,8 +1687,10 @@ html:not(.js) .lmask-inner {
 
 .article-toc-fab.dragging {
   transition: none;
+  animation: none;
   opacity: 0.85;
   transform: scale(1.08);
+  cursor: grabbing;
 }
 
 .article-toc-fab.open {

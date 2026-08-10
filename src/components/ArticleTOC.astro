@@ -211,6 +211,8 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
 
       fab.addEventListener("pointerdown", function (e) {
         if (e.pointerType === "mouse" && e.button !== 0) return;
+        // 用户开始操作后停止首次加载的引导动画，避免动画干扰拖拽/点击
+        fab.style.animation = "none";
         dragging = false;
         startX = e.clientX;
         startY = e.clientY;
