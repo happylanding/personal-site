@@ -167,8 +167,9 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
 
       rail.classList.remove("hidden");
       fab.classList.remove("hidden");
-      // 弹出面板初始隐藏，点击悬浮球后才显示
-      mobile.classList.add("hidden");
+      // 弹出面板/遮罩初始为“关闭态”：不加 .open，translateY(100%) 且 visibility:hidden，位于屏幕外待命
+      mobile.classList.remove("hidden");
+      if (overlay) overlay.classList.remove("hidden");
 
       // 移动端：显示标题计数（面板头部 + 悬浮球角标）
       if (countEl) {
@@ -183,25 +184,28 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
 
       // ---- 移动端：悬浮球交互 ----
       var dragging = false; // 拖拽中不触发点击
+      var justDragged = false; // 标记“刚刚完成过一次真实拖拽”，用于抑制紧随其后的 click 误触面板开关
       var overlay = document.getElementById("article-toc-overlay");
 
       function openPanel() {
-        mobile.classList.remove("hidden");
         mobile.classList.add("open");
         fab.classList.add("open");
-        if (overlay) overlay.classList.remove("hidden");
+        if (overlay) overlay.classList.add("open");
       }
       function closePanel() {
-        mobile.classList.add("hidden");
         mobile.classList.remove("open");
         fab.classList.remove("open");
-        if (overlay) overlay.classList.add("hidden");
+        if (overlay) overlay.classList.remove("open");
       }
 
       // 点击悬浮球开关面板（直接赋值避免重复绑定）
       fab.onclick = function () {
-        if (dragging) return;
-        if (mobile.classList.contains("hidden")) {
+        // 若刚刚完成真实拖拽，抑制本次 click，避免松手误触开关面板
+        if (justDragged) {
+          justDragged = false;
+          return;
+        }
+        if (!mobile.classList.contains("open")) {
           openPanel();
         } else {
           closePanel();
@@ -216,6 +220,7 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
       // 悬浮球拖拽（pointer 事件，兼容触屏 / 鼠标）
       var startX = 0, startY = 0, originX = 0, originY = 0;
       var left, top;
+      var fabDragMargin = 8; // 悬浮球距屏幕边缘的最小边距
 
       function getPos() {
         var rect = fab.getBoundingClientRect();
@@ -233,7 +238,10 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
         originX = p.left;
         originY = p.top;
         fab.setPointerCapture(e.pointerId);
+        justDragged = false;
+        // 按压反馈：先进入“按压态”，进入真正拖拽时再切换为拖拽态
         fab.classList.add("dragging");
+        fab.classList.add("pressed");
       });
 
       fab.addEventListener("pointermove", function (e) {
@@ -241,6 +249,7 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
         var dx = e.clientX - startX;
         var dy = e.clientY - startY;
         if (!dragging && Math.abs(dx) + Math.abs(dy) < 8) return; // 小于阈值为点击
+        if (!dragging) fab.classList.remove("pressed"); // 进入拖拽，去掉按压缩放
         dragging = true;
         left = originX + dx;
         top = originY + dy;
@@ -249,7 +258,7 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
         var vh = document.documentElement.clientHeight;
         var fw = fab.offsetWidth;
         var fh = fab.offsetHeight;
-        var m = 8;
+        var m = fabDragMargin;
         left = Math.max(m, Math.min(vw - fw - m, left));
         top = Math.max(m, Math.min(vh - fh - m, top));
         fab.style.left = left + "px";
@@ -259,10 +268,27 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
       });
 
       function endDrag(e) {
-        if (!fab.classList.contains("dragging")) return;
+        var wasDragging = fab.classList.contains("dragging");
+        if (!wasDragging) return;
         fab.classList.remove("dragging");
+        fab.classList.remove("pressed");
         // 手指抬起时如果有指针捕获需释放
         try { fab.releasePointerCapture(e.pointerId); } catch (err) {}
+        // 磁性吸附：松手后自动滑靠最近的左/右边缘，避免停在半空
+        if (dragging) {
+          var vw = document.documentElement.clientWidth;
+          var fw = fab.offsetWidth;
+          var m = fabDragMargin;
+          var currentLeft = parseFloat(fab.style.left) || 0;
+          // 取当前悬浮球中心相对视口的水平位置，决定吸附到左还是右
+          var centerX = currentLeft + fw / 2;
+          var snapLeft = centerX < vw / 2 ? m : vw - fw - m;
+          if (Math.abs(snapLeft - currentLeft) > 1) {
+            fab.style.left = snapLeft + "px"; // 通过 left transition 平滑归位
+          }
+          justDragged = true; // 标记本次为真实拖拽，抑制随后的 click 误触
+        }
+        dragging = false; // 复位拖拽态，保证后续点击可正常开关面板
       }
       fab.addEventListener("pointerup", endDrag);
       fab.addEventListener("pointercancel", endDrag);
@@ -307,14 +333,11 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
         flashHeading(target);
         // 移动端：点击后关闭弹出面板
         var mobile = document.getElementById("article-toc-mobile");
-        if (mobile) {
-          mobile.classList.add("hidden");
-          mobile.classList.remove("open");
-        }
+        if (mobile) mobile.classList.remove("open");
         var fab = document.getElementById("article-toc-fab");
         if (fab) fab.classList.remove("open");
         var overlay = document.getElementById("article-toc-overlay");
-        if (overlay) overlay.classList.add("hidden");
+        if (overlay) overlay.classList.remove("open");
       }
     });
 
@@ -323,12 +346,11 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
       if (e.key !== "Escape") return;
       var mobile = document.getElementById("article-toc-mobile");
       var fab = document.getElementById("article-toc-fab");
-      if (mobile && !mobile.classList.contains("hidden")) {
-        mobile.classList.add("hidden");
+      if (mobile && mobile.classList.contains("open")) {
         mobile.classList.remove("open");
         if (fab) fab.classList.remove("open");
         var overlay = document.getElementById("article-toc-overlay");
-        if (overlay) overlay.classList.add("hidden");
+        if (overlay) overlay.classList.remove("open");
       }
     });
 

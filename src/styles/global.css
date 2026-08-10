@@ -1654,7 +1654,9 @@ html:not(.js) .lmask-inner {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
   cursor: grab;
   -webkit-tap-highlight-color: transparent;
-  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+  /* left/top 用于松手后磁性吸附到边缘的平滑归位；transform 用于按压/状态切换 */
+  transition: left 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.2s ease, opacity 0.2s ease;
   touch-action: none; /* 允许 pointer 拖拽，避免浏览器默认滚动 */
   /* 首次加载时轻微弹跳，引导用户注意这个可拖拽的目录入口 */
   animation: toc-fab-nudge 2.4s ease 0.6s 2;
@@ -1693,8 +1695,22 @@ html:not(.js) .lmask-inner {
   cursor: grabbing;
 }
 
+/* 按压反馈：按下去轻微缩小 + 阴影收缩，松开回弹 */
+.article-toc-fab.pressed {
+  transition: none;
+  animation: none;
+  transform: scale(0.92);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dark .article-toc-fab.pressed {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* 激活（面板打开）状态：放大一圈 + 图标旋转，表示“可关闭” */
 .article-toc-fab.open {
   background: #b45309;
+  transform: scale(1.1);
 }
 
 .dark .article-toc-fab.open {
@@ -1704,6 +1720,11 @@ html:not(.js) .lmask-inner {
 .article-toc-fab-icon {
   width: 1.4rem;
   height: 1.4rem;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.article-toc-fab.open .article-toc-fab-icon {
+  transform: rotate(180deg);
 }
 
 /* 悬浮球角标：显示章节数 */
@@ -1728,19 +1749,29 @@ html:not(.js) .lmask-inner {
   color: #000;
 }
 
-/* 弹出遮罩 */
+/* 弹出遮罩：默认淡出隐藏，打开时淡入（visibility 参与过渡，实现真正的淡入淡出） */
 .article-toc-overlay {
   position: fixed;
   inset: 0;
   z-index: 70;
   background: rgba(0, 0, 0, 0.32);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .dark .article-toc-overlay {
   background: rgba(0, 0, 0, 0.5);
 }
 
-/* 弹出面板（从底部滑入） */
+.article-toc-overlay.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* 弹出面板：默认滑出屏幕外，打开时从底部滑入（visibility 参与过渡，实现真正的滑入滑出） */
 .article-toc-panel {
   position: fixed;
   left: 0;
@@ -1754,7 +1785,16 @@ html:not(.js) .lmask-inner {
   display: flex;
   flex-direction: column;
   padding: 1rem 1.1rem calc(1rem + env(safe-area-inset-bottom, 0px));
+  transform: translateY(100%);
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.38s;
+}
+
+.article-toc-panel.open {
   transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .dark .article-toc-panel {
@@ -1853,7 +1893,9 @@ html:not(.js) .lmask-inner {
 
 @media (prefers-reduced-motion: reduce) {
   .article-toc-link,
-  .article-toc-fab {
+  .article-toc-fab,
+  .article-toc-panel,
+  .article-toc-overlay {
     transition: none;
   }
 }
