@@ -14,7 +14,7 @@ export const ALL_SECTIONS: SectionKey[] = ["insights", "ai", "tips", "books"];
  * - insights 行业洞察：酒红 #8E1F2F（专属配色，含图标/导航栏/配图底色）
  * - ai       AI 学习：深蓝 #1E3A8A（专属配色，含图标/导航栏/配图底色）
  * - tips     实用技巧：琥珀棕 #B45309
- * - books    书籍专区：紫罗兰 #7C3AED
+ * - books    阅读思考：紫罗兰 #7C3AED
  */
 export const SECTION_COLORS: Record<SectionKey, string> = {
   insights: "#8E1F2F",

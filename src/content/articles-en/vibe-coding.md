@@ -92,7 +92,7 @@ AI helped me choose Astro. The reasoning was practical: a website is essentially
 This stage set up:
 - Project initialization and directory structure
 - Markdown + frontmatter data model for articles
-- Homepage + four column pages (Industry Insights, Practical Tips, Book Shelf)
+- Homepage + four column pages (Industry Insights, Practical Tips, Reading & Thinking)
 - About / Contact pages
 
 ### Stage 2: Core Features (~1 hour)
