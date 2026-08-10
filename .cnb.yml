@@ -30,7 +30,11 @@ main:
         - name: install
           script: npm ci
         - name: build
-          script: npm run build
+          # 先自动解析 public/books/ 下的书本文件（生成在线阅读数据），再执行构建
+          script: |
+            apt-get update && apt-get install -y --no-install-recommends poppler-utils
+            node scripts/build-books.mjs
+            npm run build
         - name: sync-to-github
           image: tencentcom/git-sync
           settings:
@@ -68,7 +72,11 @@ $:
         - name: install
           script: npm ci
         - name: build
-          script: npm run build
+          # 先自动解析 public/books/ 下的书本文件（生成在线阅读数据），再执行构建
+          script: |
+            apt-get update && apt-get install -y --no-install-recommends poppler-utils
+            node scripts/build-books.mjs
+            npm run build
 
   # 云原生开发环境（点「云原生开发」按钮或 API 启动时生效）
   vscode:
@@ -83,7 +91,10 @@ $:
         - name: install
           script: npm ci
         - name: start-dev
+          # 先解析书本文件，再启动 dev server，保证新上传的书本可在线阅读
           script: |
+            apt-get update && apt-get install -y --no-install-recommends poppler-utils
+            node scripts/build-books.mjs
             nohup npm run dev -- --host 0.0.0.0 > /tmp/astro-dev.log 2>&1 &
             sleep 5
             echo "--- dev server check ---"

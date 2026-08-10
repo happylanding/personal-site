@@ -12,7 +12,7 @@ tagsEn: ["philosophy", "stoicism", "classic"]
 author: "马可·奥勒留 (Marcus Aurelius)"
 authorEn: "Marcus Aurelius"
 pdfUrl: "/books/meditations.pdf"
-readUrl: "/books/meditations.pdf"
+readUrl: "/books/meditations/read/"
 rating: 5
 featured: true
 draft: false

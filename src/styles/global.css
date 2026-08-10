@@ -1965,3 +1965,66 @@ body {
   to { opacity: 1; }
 }
 
+
+/* ===== 书籍在线阅读器 ===== */
+/* 阅读排版：英文新罗马体，中文楷体（同一 font-family 栈，拉丁字符落到 Times New Roman，CJK 字符落到楷体） */
+.book-reader {
+  --book-font: "Times New Roman", "Georgia", "KaiTi", "STKaiti", "楷体", "Kaiti SC", "Noto Serif SC", serif;
+  font-family: var(--book-font);
+  font-size: 1.075rem;
+  line-height: 1.95;
+  color: rgba(0, 0, 0, 0.86);
+  letter-spacing: 0.01em;
+  text-rendering: optimizeLegibility;
+}
+.dark .book-reader {
+  color: rgba(255, 255, 255, 0.9);
+}
+.book-reader .book-chapter h2 {
+  /* !important 覆盖 .article-content h2 的站点 serif 字体，保证章标题跟随书体 */
+  font-family: var(--book-font) !important;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding-top: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.5rem;
+  scroll-margin-top: 6rem;
+}
+.dark .book-reader .book-chapter h2 {
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+.book-chapter:target {
+  scroll-margin-top: 6rem;
+}
+.book-reader .book-chapter-body {
+  font-size: inherit;
+  line-height: inherit;
+  text-align: justify;
+  text-justify: inter-ideograph;
+  white-space: pre-wrap;
+  word-break: break-word;
+  /* 中文段首两字缩进；英文段首保持顶格（用 CSS 区分） */
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+/* 中文正文：段首空两格 + 楷体优先 */
+.book-reader.lang-zh .book-chapter-body {
+  font-family: "KaiTi", "STKaiti", "楷体", "Kaiti SC", "Noto Serif SC", serif;
+  text-indent: 2em;
+}
+/* 英文正文：段首顶格 + 新罗马优先 */
+.book-reader.lang-en .book-chapter-body {
+  font-family: "Times New Roman", "Georgia", "KaiTi", "STKaiti", "楷体", "Noto Serif SC", serif;
+  text-indent: 0;
+}
+.book-reader .book-chapter-body p {
+  margin: 0 0 1em 0;
+}
+.dark .book-reader .book-chapter-body {
+  color: rgba(255, 255, 255, 0.9);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}

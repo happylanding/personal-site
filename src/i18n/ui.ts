@@ -114,6 +114,7 @@ export const ui = {
       author: "作者",
       rating: "评分",
       formatNote: "支持多种电子书格式，点击下载",
+      chapter: "章节",
       featured: "精选",
     },
     archive: {
@@ -340,6 +341,7 @@ export const ui = {
       author: "Author",
       rating: "Rating",
       formatNote: "Multiple ebook formats available — click to download",
+      chapter: "Chapter",
       featured: "Featured",
     },
     archive: {

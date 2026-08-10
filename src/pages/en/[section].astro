@@ -90,7 +90,7 @@ const isBooksSection = section === "books";
                   )}
                   <div class="flex flex-wrap gap-2 mt-1">
                     {hasRead && (
-                      <a href={article.data.readUrl} target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 text-xs font-medium hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors">
+                      <a href={`/en/books/${article.id}/read/`} class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 text-xs font-medium hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors">
                         <Icon name="bookOpen" class="w-3.5 h-3.5" />
                         {t("articles.preview")}
                       </a>
