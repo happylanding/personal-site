@@ -177,6 +177,42 @@ docs/                           # 归档文档
 
 ---
 
+## 7.1 书籍在线阅读：自动化导入链路
+
+### 手动上传 → 自动生成在线阅读
+
+把公版书文件（`.epub` / `.pdf`）直接放进 `public/books/` 即可，构建时会**自动解析并生成在线阅读内容**，无需人工干预：
+
+```
+public/books/xxx.epub 或 xxx.pdf
+        │
+        ▼  （scripts/build-books.mjs 自动解析）
+src/data/books/xxx.json        ← 阅读页读取的章节数据
+src/content/articles/xxx.md    ← 自动补建的书籍文章页（若尚无文章）
+        │
+        ▼
+/books/xxx/read/ 在线阅读页（构建生成）
+```
+
+**触发时机**：
+- CI 构建（`.cnb.yml` 的 `build` 阶段在 `npm run build` 前先跑 `node scripts/build-books.mjs`）
+- 本地 `npm run build` / `npm run dev`（经 `astro.config.mjs` 的 `astro:build:start` 钩子自动调用）
+
+**幂等规则**：
+- 已生成的 JSON 比源文件新 → 跳过（不重复解析，不覆盖人工精修过的章节）
+- 已存在同名文章 → 不覆盖（保留已有简介/书评）
+- 只有**新出现**的文件才触发解析 + 自动补建文章
+
+**支持的解析能力**：
+- **EPUB**：读取 `toc.ncx` + `spine` 自动切分章节，逐章提取正文（最准确）
+- **PDF**：提取全文，按「第X章 / Chapter X / Book X / FIRST BOOK」等标题启发式切分；无法识别章节时降级为单章整本阅读
+
+> 自动生成的章节是「完整原文、按文件结构切分」，不同于人工精修的版本（可能已做精选/拆分）。若想让某本公版书达到《孙子兵法》那种精修效果，可让 AI 基于 `src/data/books/{slug}.json` 二次整理。
+>
+> ⚠️ 仅限**公版书**（Public Domain）使用；受版权保护书籍请走「书评 + 购买/借阅链接」模式。
+
+---
+
 ## 8. 已知问题与修复记录
 
 ### 8.1 View Transitions + ScrollReveal 冲突（已修复）
