@@ -129,7 +129,7 @@ const isChineseContent = !isEn && hasCJK(firstText);
                     : `第 ${c.num} 章`}
               </h2>
               <div class="book-chapter-body">
-                {chapterText(c).split(/\n\s*\n/).filter(Boolean).map((p) => (
+                {chapterText(c).split(/\n\s*\n/).map((p) => p.replace(/\s+/g, " ").trim()).filter(Boolean).map((p) => (
                   <p>{p}</p>
                 ))}
               </div>
