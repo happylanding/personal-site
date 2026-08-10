@@ -88,6 +88,19 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
       var article = document.querySelector(".article-content");
       if (!article || !rail || !railList || !mobile || !mobileList || !fab) return;
 
+      // 修复：把 fixed 定位的悬浮球 / 弹出面板 / 遮罩移到 body 下，
+      // 避免被 data-reveal 等祖先的 transform 属性破坏 position:fixed 的视口定位
+      // （transform 非 none 时会创建 containing block，使 fixed 相对该祖先而非视口，
+      //   表现为悬浮球跟着文章滚动、固定在文章的某一处）。移到 body 后恢复正确的视口固定。
+      function mountToBody(el) {
+        if (el && el.parentNode && el.parentNode !== document.body) {
+          document.body.appendChild(el);
+        }
+      }
+      mountToBody(fab);
+      mountToBody(mobile);
+      mountToBody(document.getElementById("article-toc-overlay"));
+
       // 无目录时把外层 .article-grid 退回单栏，避免右侧空出一列
       var grid = document.getElementById("article-grid");
 
