@@ -245,6 +245,48 @@ function findExistingArticleForFile(fileName) {
   return null;
 }
 
+// —— 拆分大书章节为独立 JSON（懒加载用）——
+// 章节 >= 30 时，把每章写入 public/books/{slug}/chapters/ch-{index}.json
+function splitChaptersForLazyLoad(slug, chapters) {
+  if (chapters.length < 30) return false;
+  const chunkDir = join(ROOT, "public", "books", slug, "chapters");
+  mkdirSync(chunkDir, { recursive: true });
+  // 清理旧的章节文件（幂等重建）
+  if (existsSync(chunkDir)) {
+    for (const f of readdirSync(chunkDir)) {
+      if (/^ch-\d+\.json$/.test(f)) {
+        try { rmSync(join(chunkDir, f), { force: true }); } catch { /* 忽略 */ }
+      }
+    }
+  }
+  chapters.forEach((c, i) => {
+    const chunk = { index: i, num: c.num, titleZh: c.titleZh || null, text: c.text, textZh: c.textZh || null };
+    writeFileSync(join(chunkDir, `ch-${i}.json`), JSON.stringify(chunk), "utf8");
+  });
+  console.log(`[build-books] ✓ 拆分 ${chapters.length} 章到 public/books/${slug}/chapters/（懒加载）`);
+  return true;
+}
+
+// 检查大书章节拆分文件是否已就绪（补齐缺失的章节文件）
+function ensureChaptersSplit(slug, chapters) {
+  if (chapters.length < 30) return;
+  const chunkDir = join(ROOT, "public", "books", slug, "chapters");
+  const missing = [];
+  for (let i = 0; i < chapters.length; i++) {
+    const f = join(chunkDir, `ch-${i}.json`);
+    if (!existsSync(f)) {
+      missing.push(i);
+      const c = chapters[i];
+      const chunk = { index: i, num: c.num, titleZh: c.titleZh || null, text: c.text, textZh: c.textZh || null };
+      mkdirSync(chunkDir, { recursive: true });
+      writeFileSync(f, JSON.stringify(chunk), "utf8");
+    }
+  }
+  if (missing.length > 0) {
+    console.log(`[build-books] ✓ 补齐 ${missing.length} 个缺失章节文件 → public/books/${slug}/chapters/`);
+  }
+}
+
 // 从 EPUB metadata 提取标题/作者
 async function extractMeta(filePath) {
   try {
@@ -363,6 +405,11 @@ async function main() {
     }
     if (existsSync(jsonPath) && !needReRenderPdf && statSync(jsonPath).mtimeMs >= stat.mtimeMs) {
       console.log(`[build-books] 跳过（已生成）: ${file} -> ${slug}.json`);
+      // 即便幂等跳过，也确保大书章节拆分文件就绪（第一次升级懒加载时补建）
+      try {
+        const parsed = JSON.parse(readFileSync(jsonPath, "utf8"));
+        if (Array.isArray(parsed)) ensureChaptersSplit(slug, parsed);
+      } catch { /* JSON 损坏则重新走完整流程 */ }
       continue;
     }
 
@@ -412,6 +459,9 @@ async function main() {
     const payload = chapters.map((c) => ({ num: c.num, text: c.text }));
     writeFileSync(jsonPath, JSON.stringify(payload, null, 2), "utf8");
     console.log(`[build-books] ✓ 生成 ${slug}.json（${chapters.length} 章）`);
+
+    // —— 大书懒加载：章节较多时拆分为独立 JSON，供阅读页按需 fetch ——
+    splitChaptersForLazyLoad(slug, chapters);
 
     // 自动补建文章（仅当尚无文章时）；EPUB 尽量带上真实书名/作者
     if (!existing) {
