@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>收藏夹目录原型 — 设计灵感收藏夹</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900&family=Source+Sans+3:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=Caveat:wght@400;500;600;700&family=Cascadia+Code&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --font-serif: "Playfair Display", "Noto Serif SC", Georgia, "SimSun", serif;
+    --font-sans: "Source Sans 3", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+    --font-mono: "Cascadia Code", "Consolas", monospace;
+    --font-hand: "Caveat", cursive;
+    --bg: #fbfaf8;
+    --bg-soft: #ffffff;
+    --ink: #16130e;
+    --ink-2: rgba(22, 19, 14, .62);
+    --ink-3: rgba(22, 19, 14, .42);
+    --ink-4: rgba(22, 19, 14, .26);
+    --line: rgba(22, 19, 14, .10);
+    --line-strong: rgba(22, 19, 14, .16);
+    --accent: #0E96E9;
+    --accent2: #6C7AFF;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 28px; }
+  .serif { font-family: var(--font-serif); }
+
+  /* ============ 顶部导航 ============ */
+  header.site-header {
+    position: sticky; top: 0; z-index: 70;
+    background: color-mix(in srgb, var(--bg) 84%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 62px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .02em; }
+  .brand-mark {
+    width: 30px; height: 30px; border-radius: 9px;
+    background: conic-gradient(from 210deg, #0E96E9, #7C3AED, #16A34A, #B45309, #0E96E9);
+    display: grid; place-items: center; color: #fff;
+    font-family: var(--font-serif); font-weight: 900; font-size: 15px;
+    box-shadow: 0 2px 10px rgba(124, 58, 237, .28);
+  }
+  .nav-links { display: flex; align-items: center; gap: 26px; font-size: 14px; }
+  .nav-links a { color: var(--ink-2); font-weight: 500; transition: color .2s; }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-links a.active { color: var(--ink); font-weight: 700; }
+  .nav-links a.nav-collect {
+    position: relative; display: inline-flex; align-items: center; gap: 6px;
+    color: var(--accent); font-weight: 700;
+  }
+  .badge {
+    display: inline-grid; place-items: center; min-width: 19px; height: 19px;
+    padding: 0 5px; border-radius: 999px; background: var(--accent); color: #fff;
+    font-size: 11px; font-weight: 700; font-family: var(--font-mono);
+  }
+  .nav-ctrls { display: flex; align-items: center; gap: 8px; }
+  .ctrl {
+    width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--line);
+    background: var(--bg-soft); cursor: pointer; font-size: 14px; display: grid; place-items: center;
+  }
+
+  /* ============ 页头 ============ */
+  .page-head { padding: 42px 0 8px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .14em;
+    color: var(--accent); text-transform: uppercase; margin-bottom: 16px;
+  }
+  .page-head h1 {
+    font-family: var(--font-serif); font-size: 34px; font-weight: 800; letter-spacing: .01em;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .page-head h1 .cnt {
+    font-family: var(--font-sans); font-size: 13px; font-weight: 600; color: var(--ink-2);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    padding: 3px 12px; border-radius: 999px; letter-spacing: .02em;
+  }
+  .page-head .en { font-family: var(--font-serif); font-style: italic; color: var(--ink-3); font-size: 15px; margin-top: 4px; }
+  .page-head .intro { font-size: 14px; color: var(--ink-2); margin-top: 14px; max-width: 640px; }
+
+  /* ============ 统计条 ============ */
+  .statbar {
+    margin-top: 22px; padding: 14px 20px; border: 1px solid var(--line); border-radius: 14px;
+    background: var(--bg-soft); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+  .statbar .stat-item { font-size: 12.5px; color: var(--ink-3); }
+  .statbar .stat-item b { color: var(--ink); font-weight: 700; font-family: var(--font-mono); margin-right: 4px; }
+
+  /* ============ 搜索框 ============ */
+  .search-wrap { margin-top: 18px; position: relative; }
+  .search-box {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 18px; border: 1.5px solid var(--line-strong); border-radius: 14px;
+    background: var(--bg-soft); transition: border-color .2s, box-shadow .2s;
+  }
+  .search-box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent); }
+  .search-box .ico { font-size: 16px; opacity: .5; }
+  .search-box input {
+    flex: 1; border: none; outline: none; background: transparent;
+    font-size: 14.5px; font-family: var(--font-sans); color: var(--ink);
+  }
+  .search-box input::placeholder { color: var(--ink-4); }
+  .kbd {
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-3);
+    border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; padding: 2px 8px;
+  }
+
+  /* ============ 分组锚点 ============ */
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .chip {
+    font-size: 13px; padding: 7px 16px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--line); color: var(--ink-2); background: var(--bg-soft);
+    transition: all .2s; font-weight: 500;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+  .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+
+  /* ============ 卡片列表（含可展开） ============ */
+  .list { margin-top: 22px; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: var(--bg-soft); }
+  .item { border-top: 1px solid var(--line); }
+  .item:first-child { border-top: none; }
+  .row {
+    display: grid; grid-template-columns: 44px 40px 1fr auto; align-items: center; gap: 14px;
+    padding: 17px 22px; transition: background .2s; cursor: pointer;
+  }
+  .item.open .row,
+  .row:hover { background: color-mix(in srgb, var(--accent) 4%, transparent); }
+  .row-num { font-family: var(--font-serif); font-size: 13px; font-weight: 700; color: var(--ink-4); }
+  .row-ico {
+    width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center;
+    font-size: 18px; background: color-mix(in srgb, var(--accent) 12%, transparent);
+  }
+  .row-main { min-width: 0; }
+  .row-title { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+  .row-domain {
+    font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-3);
+    background: color-mix(in srgb, var(--ink) 5%, transparent); padding: 2px 8px; border-radius: 6px;
+  }
+  .row-desc { font-size: 13px; color: var(--ink-3); margin-top: 4px; line-height: 1.55; }
+  .row-tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .tag {
+    font-size: 10.5px; padding: 2px 9px; border-radius: 999px; font-weight: 600;
+    background: color-mix(in srgb, var(--accent) 10%, transparent); color: var(--accent);
+  }
+  .row-meta { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+  .row-date { font-family: var(--font-mono); font-size: 12px; color: var(--ink-4); }
+  .row-arrow {
+    width: 32px; height: 32px; border-radius: 9px; border: 1px solid var(--line);
+    display: grid; place-items: center; color: var(--ink-3); transition: all .2s;
+    font-size: 13px; user-select: none;
+  }
+  .row:hover .row-arrow { background: var(--accent); border-color: var(--accent); color: #fff; }
+  /* 展开/收起小三角提示 */
+  .row-arrow .caret { transition: transform .25s; display: inline-block; }
+  .item.open .row-arrow .caret { transform: rotate(90deg); }
+
+  /* ============ 展开详情区 ============ */
+  .row-detail { max-height: 0; overflow: hidden; transition: max-height .32s ease; }
+  .row-detail-inner {
+    margin: 0 22px 18px 110px; padding: 15px 18px 16px;
+    border: 1px dashed var(--line-strong); border-radius: 12px;
+    background: color-mix(in srgb, var(--accent) 4%, transparent);
+  }
+  .item.open .row-detail { max-height: 400px; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 26px; }
+  .detail-block h4 {
+    font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 5px; display: flex; align-items: center; gap: 6px;
+  }
+  .detail-block p { font-size: 13px; color: var(--ink-2); line-height: 1.6; }
+  .detail-full { grid-column: 1 / -1; }
+  .detail-full p { color: var(--ink-3); }
+  .detail-go {
+    margin-top: 12px; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12.5px; font-weight: 600; color: var(--accent);
+  }
+  .detail-go:hover { text-decoration: underline; }
+
+  @media (max-width: 720px) {
+    .row-detail-inner { margin: 0 14px 14px; }
+    .detail-grid { grid-template-columns: 1fr; }
+  }
+
+  /* 原型标注 */
+  .proto-badge {
+    position: fixed; left: 18px; bottom: 18px; z-index: 99;
+    background: #111; color: #fff; font-size: 11px; font-family: var(--font-mono);
+    padding: 8px 14px; border-radius: 999px; letter-spacing: .06em;
+    box-shadow: 0 6px 20px rgba(0,0,0,.25); opacity: .85;
+  }
+
+  @media (max-width: 720px) {
+    .nav-links { display: none; }
+    .row { grid-template-columns: 30px 34px 1fr; }
+    .row-meta { display: none; }
+    .wrap { padding: 0 18px; }
+  }
+</style>
+</head>
+<body>
+  <div class="proto-badge">PROTOTYPE · 收藏夹目录 · 方案 D+C · 含可展开列表</div>
+
+  <!-- 顶部导航 -->
+  <header class="site-header">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#"><span class="brand-mark">G</span><span>Galvin</span></a>
+      <nav class="nav-links">
+        <a href="#">首页</a>
+        <a href="#">行业洞察</a>
+        <a href="#">AI 学习</a>
+        <a href="#">实用技巧</a>
+        <a href="#">阅读思考</a>
+        <a href="#" class="active nav-collect">收藏夹 <span class="badge">5</span></a>
+        <a href="#">工具箱</a>
+        <a href="#">关于</a>
+      </nav>
+      <div class="nav-ctrls">
+        <button class="ctrl" title="搜索">🔍</button>
+        <button class="ctrl" title="切换主题">🌙</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 页头 -->
+  <section class="page-head">
+    <div class="wrap">
+      <span class="eyebrow">◈ Collection</span>
+      <h1>设计灵感收藏夹 <span class="cnt">已收录 5 篇</span></h1>
+      <p class="en">Design Inspiration Collection</p>
+      <p class="intro">平时刷到的好网站、好设计都收录在这里，每篇都是一份「网站拆解 + 创意分析 + 亮点特色」报告。目录自动生成，你只需持续收录。</p>
+    </div>
+  </section>
+
+  <!-- 统计条 -->
+  <div class="wrap">
+    <div class="statbar">
+      <span class="stat-item">共收录 <b>5</b> 篇</span>
+      <span class="stat-item">最近更新 <b>2026-08-10</b></span>
+      <span class="stat-item">排序 <b>收录时间 ↓</b></span>
+      <span class="stat-item">来源 <b>src/content/sites</b></span>
+    </div>
+  </div>
+
+  <!-- 搜索框 -->
+  <div class="wrap">
+    <div class="search-wrap">
+      <div class="search-box">
+        <span class="ico">🔍</span>
+        <input type="text" placeholder="搜索网站名 / 域名 / 描述，例如输入「日报」试试…" />
+        <span class="kbd">⌘K</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 分组锚点 -->
+  <div class="wrap">
+    <div class="chips">
+      <span class="chip on">全部</span>
+      <span class="chip">个人品牌站</span>
+      <span class="chip">教程站</span>
+      <span class="chip">策展日报</span>
+      <span class="chip">作品集</span>
+      <span class="chip">知识库</span>
+    </div>
+  </div>
+
+  <!-- 卡片列表（可展开） -->
+  <div class="wrap">
+    <div class="list">
+      <div class="item open">
+        <div class="row">
+          <span class="row-num">01</span>
+          <span class="row-ico">🛠️</span>
+          <div class="row-main">
+            <div class="row-title">Oil® — 欧呦：把「产品、作品、个人」织成一张网 <span class="row-domain">oiloil.org</span></div>
+            <div class="row-desc">AI 产品经理的个人品牌站，单页叙事 + 视差动效 + 产品矩阵 + 作品集。</div>
+            <div class="row-tags"><span class="tag">个人品牌站</span><span class="tag">作品集</span><span class="tag">动效</span></div>
+          </div>
+          <div class="row-meta">
+            <span class="row-date">2026-08-08</span>
+            <span class="row-arrow"><span class="caret">▸</span></span>
+          </div>
+        </div>
+        <div class="row-detail">
+          <div class="row-detail-inner">
+            <div class="detail-grid">
+              <div class="detail-block">
+                <h4>✦ 核心亮点</h4>
+                <p>把「产品、作品、个人」织成一张网：单页叙事 + 视差动效 + 产品矩阵，个人品牌站里少见的叙事完整性。</p>
+              </div>
+              <div class="detail-block">
+                <h4>✦ 一句话点评</h4>
+                <p>用个人品牌把产品与作品连成线，值得借鉴的「个人→产品」表达范本。</p>
+              </div>
+              <div class="detail-block detail-full">
+                <h4>✦ 完整摘要</h4>
+                <p>AI 产品经理的个人品牌站，以「从好奇，到创造」为主线，用单页长滚 + 视差动效串联起产品矩阵、个人作品与站点拆解，视觉克制而叙事完整。</p>
+              </div>
+            </div>
+            <a href="#" class="detail-go">查看完整拆解 →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="row">
+          <span class="row-num">02</span>
+          <span class="row-ico">🌸</span>
+          <div class="row-main">
+            <div class="row-title">花叔 Alchain：一个人用「代码杠杆」撑起一家公司 <span class="row-domain">huasheng.ai</span></div>
+            <div class="row-desc">暗色胶片质感 + 数据驱动 REEL 作品集 + 媒体矩阵 + 合作服务。</div>
+            <div class="row-tags"><span class="tag">个人品牌站</span><span class="tag">作品集</span><span class="tag">暗色系</span></div>
+          </div>
+          <div class="row-meta">
+            <span class="row-date">2026-08-08</span>
+            <span class="row-arrow"><span class="caret">▸</span></span>
+          </div>
+        </div>
+        <div class="row-detail">
+          <div class="row-detail-inner">
+            <div class="detail-grid">
+              <div class="detail-block">
+                <h4>✦ 核心亮点</h4>
+                <p>暗色胶片质感 + 数据驱动 REEL 作品集，媒体矩阵与「代码杠杆」叙事贯穿全站。</p>
+              </div>
+              <div class="detail-block">
+                <h4>✦ 一句话点评</h4>
+                <p>把「一人公司」的信念做成视觉语言，作品集里少有的强情绪表达。</p>
+              </div>
+              <div class="detail-block detail-full">
+                <h4>✦ 完整摘要</h4>
+                <p>花叔一个人用「代码杠杆」撑起一家公司，站点以暗色胶片质感 + 数据驱动 REEL 作品集呈现个人品牌，附媒体矩阵与可合作的服务入口。</p>
+              </div>
+            </div>
+            <a href="#" class="detail-go">查看完整拆解 →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="row">
+          <span class="row-num">03</span>
+          <span class="row-ico">🎓</span>
+          <div class="row-main">
+            <div class="row-title">Easy-Vibe：从零到全栈的 Vibe Coding 教程站 <span class="row-domain">datawhalechina.github.io</span></div>
+            <div class="row-desc">Datawhale 开源教程，10 种语言的单页导航，信息架构清晰得像产品手册。</div>
+            <div class="row-tags"><span class="tag">教程站</span><span class="tag">信息架构</span><span class="tag">AI 编程</span></div>
+          </div>
+          <div class="row-meta">
+            <span class="row-date">2026-08-08</span>
+            <span class="row-arrow"><span class="caret">▸</span></span>
+          </div>
+        </div>
+        <div class="row-detail">
+          <div class="row-detail-inner">
+            <div class="detail-grid">
+              <div class="detail-block">
+                <h4>✦ 核心亮点</h4>
+                <p>Datawhale 开源教程，10 种语言的单页导航，信息架构清晰得像产品手册。</p>
+              </div>
+              <div class="detail-block">
+                <h4>✦ 一句话点评</h4>
+                <p>把复杂的技术教程拆成极简目录，学习路径一目了然。</p>
+              </div>
+              <div class="detail-block detail-full">
+                <h4>✦ 完整摘要</h4>
+                <p>从零到全栈的 Vibe Coding 教程站，Datawhale 开源，用 10 种语言的单页导航把学习路径组织成产品级的信息架构。</p>
+              </div>
+            </div>
+            <a href="#" class="detail-go">查看完整拆解 →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="row">
+          <span class="row-num">04</span>
+          <span class="row-ico">📰</span>
+          <div class="row-main">
+            <div class="row-title">Peek Paper：每天精选网页的「网络日报」 <span class="row-domain">peekpaper.com</span></div>
+            <div class="row-desc">手工策展美学，报纸头版式编辑排版 + 双色主题切换，把策展做成审美产品。</div>
+            <div class="row-tags"><span class="tag">策展日报</span><span class="tag">编辑设计</span><span class="tag">网站灵感</span></div>
+          </div>
+          <div class="row-meta">
+            <span class="row-date">2026-08-10</span>
+            <span class="row-arrow"><span class="caret">▸</span></span>
+          </div>
+        </div>
+        <div class="row-detail">
+          <div class="row-detail-inner">
+            <div class="detail-grid">
+              <div class="detail-block">
+                <h4>✦ 核心亮点</h4>
+                <p>手工策展美学，报纸头版式编辑排版 + 双色主题切换，把策展做成审美产品。</p>
+              </div>
+              <div class="detail-block">
+                <h4>✦ 一句话点评</h4>
+                <p>让「每天精选」这件小事拥有了纸媒般的仪式感与审美。</p>
+              </div>
+              <div class="detail-block detail-full">
+                <h4>✦ 完整摘要</h4>
+                <p>每天精选网页的「网络日报」，手工策展 + 报纸头版式编辑排版 + 双色主题切换，把策展本身做成了一件可欣赏的审美产品。</p>
+              </div>
+            </div>
+            <a href="#" class="detail-go">查看完整拆解 →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="row">
+          <span class="row-num">05</span>
+          <span class="row-ico">🧠</span>
+          <div class="row-main">
+            <div class="row-title">陈硕 everlightai.top：用「知识结构」做壁垒 <span class="row-domain">everlightai.top</span></div>
+            <div class="row-desc">AI 连续创业者的「结构外脑」，把知识库、工具库、阅览室、社群织成一张网。</div>
+            <div class="row-tags"><span class="tag">个人品牌站</span><span class="tag">知识库</span><span class="tag">动效</span></div>
+          </div>
+          <div class="row-meta">
+            <span class="row-date">2026-08-10</span>
+            <span class="row-arrow"><span class="caret">▸</span></span>
+          </div>
+        </div>
+        <div class="row-detail">
+          <div class="row-detail-inner">
+            <div class="detail-grid">
+              <div class="detail-block">
+                <h4>✦ 核心亮点</h4>
+                <p>把知识库、工具库、阅览室、社群织成一张网，用「结构外脑」做内容壁垒。</p>
+              </div>
+              <div class="detail-block">
+                <h4>✦ 一句话点评</h4>
+                <p>以知识结构为核心资产，是个人知识管理型站点的高配示范。</p>
+              </div>
+              <div class="detail-block detail-full">
+                <h4>✦ 完整摘要</h4>
+                <p>AI 连续创业者的「结构外脑」，把知识库、工具库、阅览室、社群织成一张网，用「知识结构」构建个人内容壁垒。</p>
+              </div>
+            </div>
+            <a href="#" class="detail-go">查看完整拆解 →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 可展开列表：点卡片原地展开/收起，同时只展开一个
+    document.querySelectorAll(".item").forEach(function (item) {
+      var row = item.querySelector(".row");
+      row.addEventListener("click", function (e) {
+        // 阻止进入详情页链接的事件冒泡（原型中此处箭头仅示意）
+        if (e.target.closest(".detail-go")) return;
+        var wasOpen = item.classList.contains("open");
+        // 收起其它
+        document.querySelectorAll(".item.open").forEach(function (o) {
+          o.classList.remove("open");
+        });
+        if (!wasOpen) item.classList.add("open");
+      });
+    });
+  </script>
+
+</body>
+</html>
