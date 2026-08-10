@@ -47,8 +47,8 @@ const INITIAL_CHAPTERS = 3;
 const initialChapters = isLargeBook ? chapters.slice(0, INITIAL_CHAPTERS) : chapters;
 // 章节标题显示（构建时 + 懒加载统一逻辑）
 const chapterTitle = (c) => (c.titleZh ? c.titleZh : isEn ? `Chapter ${c.num}` : `第 ${c.num} 章`);
-// 渲染章节正文段落
-const chapterBody = (c) => chapterText(c).split(/\n\s*\n/).filter(Boolean);
+// 渲染章节正文段落（合并段内硬换行，消除排版空白）
+const chapterBody = (c) => chapterText(c).split(/\n\s*\n/).map((p) => p.replace(/\s+/g, " ").trim()).filter(Boolean);
 ---
 
 <BaseLayout title={`${displayTitle} · ${t("articles.preview")}`} description={displayDesc}>
@@ -205,7 +205,7 @@ const chapterBody = (c) => chapterText(c).split(/\n\s*\n/).filter(Boolean);
         function renderParagraphs(text) {
           return text
             .split(/\n\s*\n/)
-            .map((p) => p.trim())
+            .map((p) => p.replace(/\s+/g, " ").trim())
             .filter(Boolean)
             .map((p) => {
               const el = document.createElement("p");

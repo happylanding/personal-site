@@ -35,7 +35,7 @@ const isLargeBook = Array.isArray(chapters) && chapters.length >= LARGE_BOOK_THR
 const INITIAL_CHAPTERS = 3;
 const initialChapters = isLargeBook ? chapters.slice(0, INITIAL_CHAPTERS) : chapters;
 const chapterTitle = (c) => (c.titleZh ? c.titleZh : `Chapter ${c.num}`);
-const chapterBody = (c) => (c.textZh || c.text || "").split(/\n\s*\n/).filter(Boolean);
+const chapterBody = (c) => (c.textZh || c.text || "").split(/\n\s*\n/).map((p) => p.replace(/\s+/g, " ").trim()).filter(Boolean);
 ---
 
 <BaseLayout title={`${displayTitle} · ${t("articles.preview")}`} description={displayDesc}>
@@ -185,7 +185,7 @@ const chapterBody = (c) => (c.textZh || c.text || "").split(/\n\s*\n/).filter(Bo
         function renderParagraphs(text) {
           return text
             .split(/\n\s*\n/)
-            .map((p) => p.trim())
+            .map((p) => p.replace(/\s+/g, " ").trim())
             .filter(Boolean)
             .map((p) => {
               const el = document.createElement("p");

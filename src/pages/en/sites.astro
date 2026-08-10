@@ -1,75 +1,283 @@
 ---
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import Icon from "../../components/Icon.astro";
 import { getCollection } from "astro:content";
-import { useTranslations } from "../../i18n/utils";
 
 const isEn = true;
-const lang = "en" as const;
-const t = useTranslations(lang);
 
 // 已收录的站点报告（按日期倒序）
 const siteEntries = (await getCollection("sites", ({ data }) => !data.draft && !!data.siteUrl))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+// 从 markdown 正文提取「一句话定位」与「亮点特色总结」小节的首段（正文为中文）
+function extractSection(content: string, heading: string): string {
+  const re = new RegExp(`^##\\s*${heading}\\s*\\n+([\\s\\S]*?)(?=^##\\s|\\Z)`, "m");
+  const m = content.match(re);
+  if (!m) return "";
+  const para = m[1]
+    .split(/\n\s*\n/)
+    .map((s) => s.trim())
+    .find((s) => s.length > 0 && !s.startsWith(">") && !s.startsWith("#"));
+  if (!para) return "";
+  return para
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\*([^*]+)\*/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// 从中文 + 英文标签自动归并出展示分类
+function classify(entry): string {
+  const tags = [...(entry.data.tags || []), ...(entry.data.tagsEn || [])].map((x) => x.toLowerCase());
+  const has = (...kw: string[]) => tags.some((tag) => kw.some((k) => tag.includes(k)));
+  if (has("个人品牌站", "personal-site", "作品集", "portfolio")) return "personal";
+  if (has("策展", "日报", "编辑", "curation", "daily", "editorial")) return "curation";
+  if (has("教程站", "教程", "course-site", "tutorial", "学习", "开源教育")) return "course";
+  if (has("产品", "工具", "知识库", "product", "knowledge-base")) return "product";
+  return "other";
+}
+
+const CATEGORY_NAMES = {
+  personal: "Personal Brands",
+  curation: "Curation & Editorial",
+  course: "Courses & Learning",
+  product: "Products & Knowledge",
+  other: "Others",
+};
+const CATEGORY_ORDER = ["personal", "curation", "course", "product", "other"];
+const usedCategories = CATEGORY_ORDER.filter((c) => siteEntries.some((e) => classify(e) === c));
+
+// 构建前端数据
+const siteData = siteEntries.map((entry) => {
+  let body = "";
+  try {
+    body = readFileSync(join(process.cwd(), "src/content/sites", `${entry.id}.md`), "utf-8");
+  } catch {
+    body = "";
+  }
+  const title = entry.data.titleEn || entry.data.title;
+  const desc = entry.data.descriptionEn || entry.data.description;
+  const tags = entry.data.tagsEn || [];
+  return {
+    id: entry.id,
+    slug: entry.id,
+    title,
+    desc,
+    host: entry.data.siteUrl ? new URL(entry.data.siteUrl).hostname : "",
+    siteUrl: entry.data.siteUrl || "",
+    date: entry.data.date.toLocaleDateString("en-US", {
+      year: "numeric", month: "long", day: "numeric",
+    }),
+    tags,
+    category: classify(entry),
+    tagline: extractSection(body, "一句话定位"),
+    highlight: extractSection(body, "亮点特色总结"),
+    href: `/en/sites/${entry.id}/`,
+  };
+});
+
+const updatedDateStr = siteEntries.length
+  ? siteEntries[0].data.date.toLocaleDateString("en-US", {
+      year: "numeric", month: "long", day: "numeric",
+    })
+  : "";
 ---
 
 <BaseLayout
   title="Design Inspiration Collection"
   description="Great sites & designs I come across, with breakdowns, creative analysis and highlights."
 >
-  <Breadcrumb
-    crumbs={[{ label: "Collection", href: "/en/sites/" }]}
-  />
+  <Breadcrumb crumbs={[{ label: "Collection", href: "/en/sites/" }]} />
 
   <section data-reveal>
-    <header class="mb-10">
-      <h1 class="text-3xl font-serif font-bold mb-2 flex items-center gap-3">
+    <header class="mb-6">
+      <div class="flex items-center gap-3">
         <span class="block opacity-70 flex-shrink-0"><Icon name="bookmark" class="w-9 h-9" style="color:#0E96E9" /></span>
-        <span>Design Inspiration Collection</span>
-      </h1>
-      <p class="text-sm text-black/40 dark:text-white/40">Curated sites & designs with breakdowns</p>
-      <p class="text-base text-black/50 dark:text-white/50 mt-3 leading-relaxed max-w-2xl">
+        <div>
+          <h1 class="text-3xl font-serif font-bold flex items-center gap-3">
+            <span>Design Inspiration Collection</span>
+            <span class="text-sm font-mono font-normal px-2.5 py-0.5 rounded-full bg-[#0E96E9]/10 text-[#0E96E9] dark:text-[#6CC3FF]">{siteEntries.length}</span>
+          </h1>
+          <p class="text-sm text-black/40 dark:text-white/40 mt-1">Curated sites & designs with breakdowns</p>
+        </div>
+      </div>
+      <p class="text-base text-black/50 dark:text-white/50 mt-4 leading-relaxed max-w-2xl">
         Great sites & designs I come across are archived here — each entry is a breakdown of structure, creative analysis and highlights.
       </p>
     </header>
 
+    <!-- 统计条 -->
+    <div class="flex flex-wrap items-center gap-x-5 gap-y-1 mb-6 text-[13px] text-black/45 dark:text-white/60 font-mono">
+      <span>Collected {siteEntries.length} entries</span>
+      {updatedDateStr && <span class="inline-flex items-center gap-1"><Icon name="arrowUp" class="w-3 h-3" />Updated {updatedDateStr}</span>}
+      <span class="inline-flex items-center gap-1"><Icon name="list" class="w-3 h-3" />Newest first</span>
+    </div>
+
+    <!-- 搜索框 -->
+    <div class="relative mb-5">
+      <Icon name="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-black/35 dark:text-white/40 pointer-events-none" />
+      <input
+        id="sites-search"
+        type="text"
+        class="w-full pl-11 pr-16 py-3 rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-neutral-900 focus:outline-none focus:border-[#0E96E9] focus:ring-2 focus:ring-[#0E96E9]/20 transition-all text-sm placeholder:text-black/35 dark:placeholder:text-white/35"
+        placeholder="Search name / domain / description…"
+      />
+      <kbd class="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-mono px-1.5 py-0.5 rounded border border-black/10 dark:border-white/10 text-black/40 dark:text-white/50 pointer-events-none">⌘K</kbd>
+    </div>
+
+    <!-- 分组锚点 -->
+    <div id="sites-cats" class="flex flex-wrap gap-2 mb-6">
+      <button data-cat="all" class="cat-chip text-[13px] px-3.5 py-1.5 rounded-full border transition-all cursor-pointer border-black/10 dark:border-white/10 text-black/60 dark:text-white/75 hover:border-black/30 dark:hover:border-white/30 cat-active">All</button>
+      {usedCategories.map((c) => (
+        <button data-cat={c} class="cat-chip text-[13px] px-3.5 py-1.5 rounded-full border transition-all cursor-pointer border-black/10 dark:border-white/10 text-black/60 dark:text-white/75 hover:border-black/30 dark:hover:border-white/30">
+          {CATEGORY_NAMES[c]}
+          <span class="opacity-50 ml-1">{siteEntries.filter((e) => classify(e) === c).length}</span>
+        </button>
+      ))}
+    </div>
+
+    <!-- 卡片列表（可展开） -->
     {siteEntries.length > 0 ? (
-      <div class="space-y-3">
-        {siteEntries.map((entry, i) => {
-          const title = entry.data.titleEn || entry.data.title;
-          const desc = entry.data.descriptionEn || entry.data.description;
-          const dateStr = entry.data.date.toLocaleDateString("en-US", {
-            year: "numeric", month: "long", day: "numeric",
-          });
-          return (
-            <a
-              href={`/en/sites/${entry.id}/`}
-              class="block p-5 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover-lift transition-all duration-300 group"
-            >
-              <div class="flex items-center gap-2 mb-2">
-                <span class="text-[13px] font-mono text-black/45 dark:text-white/60">
-                  {String(i + 1).padStart(2, "0")}
+      <div id="sites-list" class="space-y-3">
+        {siteData.map((item, i) => (
+          <div
+            class="site-card block p-5 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-all duration-300 cursor-pointer group"
+            data-id={item.id}
+            data-cat={item.category}
+            data-search={(item.title + " " + item.host + " " + (item.desc || "") + " " + (item.tags || []).join(" ")).toLowerCase()}
+          >
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[13px] font-mono text-black/45 dark:text-white/60">{String(i + 1).padStart(2, "0")}</span>
+              {item.host && (
+                <span class="text-[13px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/75 inline-flex items-center gap-1">
+                  <Icon name="link" class="w-3 h-3" />{item.host}
                 </span>
-                {entry.data.siteUrl && (
-                  <span class="text-[13px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/75 inline-flex items-center gap-1">
-                    <Icon name="link" class="w-3 h-3" />
-                    {new URL(entry.data.siteUrl).hostname}
-                  </span>
-                )}
-              </div>
-              <h3 class="font-bold font-serif text-base mb-1.5 group-hover:opacity-70 transition-opacity leading-snug">{title}</h3>
-              {desc && <p class="text-sm text-black/40 dark:text-white/40 line-clamp-2 leading-relaxed">{desc}</p>}
-              <div class="flex items-center justify-between mt-3">
-                <time class="text-[13px] text-black/45 dark:text-white/60 font-mono">{dateStr}</time>
-                <span class="text-xs opacity-0 group-hover:opacity-40 transition-opacity"><Icon name="arrowRight" class="w-3.5 h-3.5" /></span>
-              </div>
-            </a>
-          );
-        })}
+              )}
+              <span class="ml-auto text-xs opacity-30 group-hover:opacity-60 transition-opacity"><Icon name="arrowRight" class="w-3.5 h-3.5" /></span>
+            </div>
+            <h3 class="font-bold font-serif text-base mb-1.5 leading-snug">{item.title}</h3>
+            {item.desc && <p class="text-sm text-black/40 dark:text-white/40 line-clamp-2 leading-relaxed">{item.desc}</p>}
+
+            <!-- 展开区 -->
+            <div class="site-expand hidden mt-3 pt-3 border-t border-black/5 dark:border-white/5">
+              {item.desc && (
+                <div class="mb-2.5">
+                  <p class="text-[11px] uppercase tracking-wider opacity-40 mb-1">Full summary</p>
+                  <p class="text-sm text-black/60 dark:text-white/70 leading-relaxed">{item.desc}</p>
+                </div>
+              )}
+              {item.tagline && (
+                <div class="mb-2.5">
+                  <p class="text-[11px] uppercase tracking-wider opacity-40 mb-1">One-liner</p>
+                  <p class="text-sm text-black/60 dark:text-white/70 leading-relaxed">{item.tagline}</p>
+                </div>
+              )}
+              {item.highlight && (
+                <div class="mb-2.5">
+                  <p class="text-[11px] uppercase tracking-wider opacity-40 mb-1">Highlights</p>
+                  <p class="text-sm text-black/60 dark:text-white/70 leading-relaxed">{item.highlight}</p>
+                </div>
+              )}
+              <a href={item.href} class="inline-flex items-center gap-1.5 text-[13px] text-[#0E96E9] dark:text-[#6CC3FF] hover:opacity-80 mt-1">
+                Read full breakdown →
+              </a>
+            </div>
+
+            <div class="flex items-center justify-between mt-3">
+              <time class="text-[13px] text-black/45 dark:text-white/60 font-mono">{item.date}</time>
+              <span class="text-xs text-[#0E96E9] dark:text-[#6CC3FF] inline-flex items-center gap-1 expand-hint">
+                <Icon name="chevronDown" class="w-3 h-3 transition-transform" />Expand
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
     ) : (
       <p class="py-12 text-center text-black/30 dark:text-white/30 italic">Nothing collected yet.</p>
     )}
+
+    <p id="sites-empty" class="hidden py-12 text-center text-black/30 dark:text-white/30 italic">No matches — try another keyword.</p>
   </section>
 </BaseLayout>
+
+<style is:global>
+  .cat-chip.cat-active {
+    background: #0E96E9;
+    border-color: #0E96E9;
+    color: #fff;
+  }
+  :global(.dark) .cat-chip.cat-active {
+    color: #06121a;
+    background: #6CC3FF;
+    border-color: #6CC3FF;
+  }
+</style>
+
+<script>
+  (function () {
+    var list = document.getElementById("sites-list");
+    if (!list) return;
+    var cards = Array.prototype.slice.call(list.querySelectorAll(".site-card"));
+    var search = document.getElementById("sites-search");
+    var empty = document.getElementById("sites-empty");
+    var catBtns = Array.prototype.slice.call(document.querySelectorAll(".cat-chip"));
+    var state = { query: "", cat: "all" };
+
+    document.addEventListener("keydown", function (e) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        if (search) { search.focus(); search.select(); }
+      }
+    });
+
+    function apply() {
+      var q = state.query.trim().toLowerCase();
+      var shown = 0;
+      cards.forEach(function (card) {
+        var okCat = state.cat === "all" || card.getAttribute("data-cat") === state.cat;
+        var okQ = !q || card.getAttribute("data-search").indexOf(q) !== -1;
+        var show = okCat && okQ;
+        card.style.display = show ? "" : "none";
+        if (show) shown++;
+      });
+      if (empty) empty.style.display = shown ? "none" : "";
+      if (list) list.style.display = shown ? "" : "none";
+    }
+
+    if (search) {
+      search.addEventListener("input", function () { state.query = search.value; apply(); });
+    }
+
+    catBtns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        catBtns.forEach(function (b) { b.classList.remove("cat-active"); });
+        btn.classList.add("cat-active");
+        state.cat = btn.getAttribute("data-cat");
+        apply();
+      });
+    });
+
+    // 可展开列表：同时只展开一个
+    cards.forEach(function (card) {
+      card.addEventListener("click", function (e) {
+        if (e.target.closest("a")) return;
+        var expand = card.querySelector(".site-expand");
+        var isOpen = expand && !expand.classList.contains("hidden");
+        cards.forEach(function (c) {
+          var ex = c.querySelector(".site-expand");
+          if (ex) ex.classList.add("hidden");
+          c.classList.remove("expanded");
+        });
+        if (!isOpen && expand) {
+          expand.classList.remove("hidden");
+          var openArrow = card.querySelector(".expand-hint .icon-svg, .expand-hint svg");
+          if (openArrow) openArrow.style.transform = "rotate(180deg)";
+        }
+      });
+    });
+  })();
+</script>
