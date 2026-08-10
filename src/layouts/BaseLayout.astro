@@ -108,14 +108,14 @@ const alternateZh = lang === "en" ? path.replace(/^\/en/, "") || "/" : path;
 
     <title>{pageTitle}</title>
   </head>
-  <body class="bg-white dark:bg-black text-black dark:text-white font-sans transition-colors duration-300">
+  <body class="bg-white dark:bg-black text-black dark:text-white font-sans transition-colors duration-300 flex min-h-screen flex-col">
     <ReadingProgress />
     <MouseGlow />
     <Header />
 
     <!-- 合并后的滚动/进度/视差/MouseGlow 统一驱动（一次 scroll 回调 + 一次 rAF） -->
     <script src="../scripts/scroll-effects.js"></script>
-    <main class="mx-auto max-w-6xl px-6 pt-12 pb-6 min-h-[60vh] 2xl:max-w-[1400px]">
+    <main class="mx-auto w-full max-w-6xl px-6 pt-12 pb-6 flex-1 2xl:max-w-[1400px]">
       <slot />
       <ScrollReveal />
     </main>
