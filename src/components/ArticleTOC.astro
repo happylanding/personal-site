@@ -1,8 +1,8 @@
 ---
-// ArticleTOC v3 — 文章目录
+// ArticleTOC v4 — 文章目录
 // 单个组件根节点内同时包含：
 //   - 桌面（≥lg）：右侧 sticky 侧栏，随滚动高亮当前章节
-//   - 移动端 / 平板：文章顶部可折叠目录卡片（默认收起）
+//   - 移动端 / 平板：右下角可拖拽目录悬浮球，点击弹出章节选择面板
 // 两个变体通过 responsive class 切换显隐，页面只需渲染一份，避免重复 DOM id。
 //
 // 样式全部放在全局作用域（src/styles/global.css）：
@@ -32,18 +32,25 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
     <ul id="article-toc-rail-list" class="article-toc-list"></ul>
   </nav>
 
-  <!-- 移动端 / 平板：文章内可折叠目录卡片（<lg 显示；JS 在标题数不足 2 时加 hidden 隐藏） -->
-  <div id="article-toc-mobile" class="article-toc-mobile lg:hidden">
-    <button id="article-toc-toggle" class="article-toc-toggle" type="button" aria-expanded="false" aria-controls="article-toc-mobile-body">
-      <Icon name="list" class="article-toc-toggle-icon" />
+  <!-- 移动端 / 平板：章节选择弹出面板（<lg 显示；JS 在标题数不足 2 时加 hidden 隐藏） -->
+  <div id="article-toc-overlay" class="article-toc-overlay hidden"></div>
+  <div id="article-toc-mobile" class="article-toc-panel hidden" role="dialog" aria-modal="true" aria-label={label}>
+    <div class="article-toc-panel-head">
+      <Icon name="listTree" class="article-toc-panel-icon" />
       <span class="article-toc-label">{label}</span>
       <span id="article-toc-count" class="article-toc-count hidden" data-count-format={countFormat}></span>
-      <Icon name="chevronDown" class="article-toc-chevron" />
-    </button>
-    <div id="article-toc-mobile-body" class="article-toc-mobile-body hidden">
-      <ul id="article-toc-mobile-list" class="article-toc-list"></ul>
+      <button id="article-toc-close" class="article-toc-close" type="button" aria-label="关闭目录">
+        <Icon name="close" class="article-toc-close-icon" />
+      </button>
     </div>
+    <ul id="article-toc-mobile-list" class="article-toc-list"></ul>
   </div>
+
+  <!-- 移动端 / 平板：目录悬浮球（<lg 显示；可拖拽，点击弹出章节面板） -->
+  <button id="article-toc-fab" class="article-toc-fab" type="button" aria-label={label} aria-haspopup="dialog" aria-controls="article-toc-mobile">
+    <Icon name="listTree" class="article-toc-fab-icon" />
+    <span id="article-toc-fab-count" class="article-toc-fab-count hidden"></span>
+  </button>
 </div>
 
 <script>
@@ -73,12 +80,13 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
       var railList = document.getElementById("article-toc-rail-list");
       var mobile = document.getElementById("article-toc-mobile");
       var mobileList = document.getElementById("article-toc-mobile-list");
-      var mobileBody = document.getElementById("article-toc-mobile-body");
       var countEl = document.getElementById("article-toc-count");
-      var toggle = document.getElementById("article-toc-toggle");
+      var fab = document.getElementById("article-toc-fab");
+      var fabCount = document.getElementById("article-toc-fab-count");
+      var closeBtn = document.getElementById("article-toc-close");
 
       var article = document.querySelector(".article-content");
-      if (!article || !rail || !railList || !mobile || !mobileList) return;
+      if (!article || !rail || !railList || !mobile || !mobileList || !fab) return;
 
       // 无目录时把外层 .article-grid 退回单栏，避免右侧空出一列
       var grid = document.getElementById("article-grid");
@@ -89,6 +97,7 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
       if (headings.length < 2) {
         rail.classList.add("toc-hide");
         mobile.classList.add("hidden");
+        fab.classList.add("hidden");
         if (grid) grid.classList.add("no-toc");
         // 上一篇/下一篇导航同步退回整行（无目录时右侧不留空白列）
         var prevnext = document.querySelector(".article-prevnext");
@@ -144,24 +153,104 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
       );
 
       rail.classList.remove("hidden");
-      mobile.classList.remove("hidden");
+      fab.classList.remove("hidden");
+      // 弹出面板初始隐藏，点击悬浮球后才显示
+      mobile.classList.add("hidden");
 
-      // 移动端：显示标题计数
+      // 移动端：显示标题计数（面板头部 + 悬浮球角标）
       if (countEl) {
         var fmt = countEl.getAttribute("data-count-format") || "{count}";
         countEl.textContent = fmt.replace("{count}", String(items.length));
         countEl.classList.remove("hidden");
       }
-
-      // 移动端：折叠 / 展开
-      if (toggle) {
-        // 直接赋值，避免重复绑定导致多次 toggle
-        toggle.onclick = function () {
-          var open = mobile.classList.toggle("open");
-          toggle.setAttribute("aria-expanded", open ? "true" : "false");
-          if (mobileBody) mobileBody.classList.toggle("hidden", !open);
-        };
+      if (fabCount) {
+        fabCount.textContent = String(items.length);
+        fabCount.classList.remove("hidden");
       }
+
+      // ---- 移动端：悬浮球交互 ----
+      var dragging = false; // 拖拽中不触发点击
+      var overlay = document.getElementById("article-toc-overlay");
+
+      function openPanel() {
+        mobile.classList.remove("hidden");
+        mobile.classList.add("open");
+        fab.classList.add("open");
+        if (overlay) overlay.classList.remove("hidden");
+      }
+      function closePanel() {
+        mobile.classList.add("hidden");
+        mobile.classList.remove("open");
+        fab.classList.remove("open");
+        if (overlay) overlay.classList.add("hidden");
+      }
+
+      // 点击悬浮球开关面板（直接赋值避免重复绑定）
+      fab.onclick = function () {
+        if (dragging) return;
+        if (mobile.classList.contains("hidden")) {
+          openPanel();
+        } else {
+          closePanel();
+        }
+      };
+      if (closeBtn) {
+        closeBtn.onclick = closePanel;
+      }
+      // 点击面板背景 / 遮罩关闭
+      if (overlay) overlay.onclick = closePanel;
+
+      // 悬浮球拖拽（pointer 事件，兼容触屏 / 鼠标）
+      var startX = 0, startY = 0, originX = 0, originY = 0;
+      var left, top;
+
+      function getPos() {
+        var rect = fab.getBoundingClientRect();
+        return { left: rect.left, top: rect.top };
+      }
+
+      fab.addEventListener("pointerdown", function (e) {
+        if (e.pointerType === "mouse" && e.button !== 0) return;
+        dragging = false;
+        startX = e.clientX;
+        startY = e.clientY;
+        var p = getPos();
+        originX = p.left;
+        originY = p.top;
+        fab.setPointerCapture(e.pointerId);
+        fab.classList.add("dragging");
+      });
+
+      fab.addEventListener("pointermove", function (e) {
+        if (!fab.classList.contains("dragging")) return;
+        var dx = e.clientX - startX;
+        var dy = e.clientY - startY;
+        if (!dragging && Math.abs(dx) + Math.abs(dy) < 8) return; // 小于阈值为点击
+        dragging = true;
+        left = originX + dx;
+        top = originY + dy;
+        // 限制在视口内
+        var vw = document.documentElement.clientWidth;
+        var vh = document.documentElement.clientHeight;
+        var fw = fab.offsetWidth;
+        var fh = fab.offsetHeight;
+        var m = 8;
+        left = Math.max(m, Math.min(vw - fw - m, left));
+        top = Math.max(m, Math.min(vh - fh - m, top));
+        fab.style.left = left + "px";
+        fab.style.top = top + "px";
+        fab.style.right = "auto";
+        fab.style.bottom = "auto";
+      });
+
+      function endDrag(e) {
+        if (!fab.classList.contains("dragging")) return;
+        fab.classList.remove("dragging");
+        // 手指抬起时如果有指针捕获需释放
+        try { fab.releasePointerCapture(e.pointerId); } catch (err) {}
+      }
+      fab.addEventListener("pointerup", endDrag);
+      fab.addEventListener("pointercancel", endDrag);
 
       // 滚动高亮当前章节（桌面 + 移动端共用）
       var observer = new IntersectionObserver(
@@ -186,7 +275,7 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
     }
 
     // 事件委托：点击目录链接平滑滚动到目标（兼容动态创建的节点）
-    // 立即高亮 + 目标标题闪烁，保证短章节也有明确反馈；移动端点击后自动收起
+    // 立即高亮 + 目标标题闪烁，保证短章节也有明确反馈；移动端点击后自动关闭面板
     document.addEventListener("click", function (e) {
       var t = e.target;
       if (!t || !t.classList || !t.classList.contains("article-toc-link")) return;
@@ -201,15 +290,30 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
         setActive(id);
         // 目标标题闪烁，明确"跳到了这里"
         flashHeading(target);
-        // 移动端：点击后收起目录卡片
+        // 移动端：点击后关闭弹出面板
         var mobile = document.getElementById("article-toc-mobile");
-        var toggle = document.getElementById("article-toc-toggle");
-        var mobileBody = document.getElementById("article-toc-mobile-body");
-        if (mobile && mobile.classList.contains("open")) {
+        if (mobile) {
+          mobile.classList.add("hidden");
           mobile.classList.remove("open");
-          if (toggle) toggle.setAttribute("aria-expanded", "false");
-          if (mobileBody) mobileBody.classList.add("hidden");
         }
+        var fab = document.getElementById("article-toc-fab");
+        if (fab) fab.classList.remove("open");
+        var overlay = document.getElementById("article-toc-overlay");
+        if (overlay) overlay.classList.add("hidden");
+      }
+    });
+
+    // 按 Esc 关闭移动端弹出面板
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      var mobile = document.getElementById("article-toc-mobile");
+      var fab = document.getElementById("article-toc-fab");
+      if (mobile && !mobile.classList.contains("hidden")) {
+        mobile.classList.add("hidden");
+        mobile.classList.remove("open");
+        if (fab) fab.classList.remove("open");
+        var overlay = document.getElementById("article-toc-overlay");
+        if (overlay) overlay.classList.add("hidden");
       }
     });
 
