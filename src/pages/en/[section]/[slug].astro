@@ -155,6 +155,10 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
           {t("articles.formatNote") || "Multiple ebook formats available — click to download"}
         </p>
         <div class="flex flex-wrap gap-3">
+          <a href={`/en/books/${slug}/read/`} class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-black dark:bg-white text-white dark:text-black text-sm hover:opacity-80 transition-opacity">
+            <Icon name="bookOpen" class="w-4 h-4" />
+            {t("articles.preview")}
+          </a>
           {article.data.epubUrl && (
             <a href={article.data.epubUrl} class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-black dark:bg-white text-white dark:text-black text-sm hover:opacity-80 transition-opacity" download>
               <Icon name="download" class="w-4 h-4" />

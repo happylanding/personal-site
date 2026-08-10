@@ -1952,3 +1952,29 @@ body {
   to { opacity: 1; }
 }
 
+
+/* ===== 书籍在线阅读器 ===== */
+.book-chapter h2 {
+  padding-top: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.25rem;
+  scroll-margin-top: 6rem;
+}
+.dark .book-chapter h2 {
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+.book-chapter:target {
+  scroll-margin-top: 6rem;
+}
+.book-chapter .book-chapter-body {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: rgba(0, 0, 0, 0.82);
+}
+.dark .book-chapter .book-chapter-body {
+  color: rgba(255, 255, 255, 0.86);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}

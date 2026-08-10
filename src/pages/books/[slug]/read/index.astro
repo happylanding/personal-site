@@ -1,0 +1,102 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import Breadcrumb from "../../../../components/Breadcrumb.astro";
+import ColumnIcon from "../../../../components/ColumnIcon.astro";
+import Icon from "../../../../components/Icon.astro";
+import { getLangFromUrl, useTranslations } from "../../../../i18n/utils";
+
+export async function getStaticPaths() {
+  const books = await getCollection("articles", ({ data }) => !data.draft && data.section === "books");
+  return books.map((b) => ({ params: { slug: b.id } }));
+}
+
+const { slug } = Astro.params;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const allBooks = await getCollection("articles", ({ data }) => !data.draft && data.section === "books");
+const book = allBooks.find((b) => b.id === slug);
+if (!book) return Astro.redirect("/404");
+
+// 加载书籍正文数据
+const { default: chapters } = await import(`../../../../data/books/${slug}.json`);
+
+const displayTitle = lang === "en" ? (book.data.titleEn || book.data.title) : book.data.title;
+const displayDesc = lang === "en" ? (book.data.descriptionEn || book.data.description) : book.data.description;
+const displayAuthor = lang === "en" ? (book.data.authorEn || book.data.author) : book.data.author;
+const isEn = lang === "en";
+const base = isEn ? "/en/books" : "/books";
+const chapterLabel = t("articles.chapter") || (isEn ? "Chapter" : "章节");
+---
+
+<BaseLayout title={`${displayTitle} · ${t("articles.preview")}`} description={displayDesc}>
+  <Breadcrumb
+    crumbs={[
+      { label: t(`columns.books.name`), href: `${base}/` },
+      { label: displayTitle, href: `${base}/${slug}/` },
+      { label: t("articles.preview"), href: "#" },
+    ]}
+  />
+
+  <div class="mb-8" data-reveal>
+    <div class="flex items-center gap-3 mb-3">
+      <span class="text-[13px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/75 inline-flex items-center gap-1">
+        <ColumnIcon section="books" class="w-3 h-3" /> {t(`columns.books.name`)}
+      </span>
+    </div>
+    <h1 class="text-3xl md:text-4xl font-serif font-bold leading-tight mb-3">
+      {displayTitle}
+    </h1>
+    {displayAuthor && (
+      <p class="text-base text-black/50 dark:text-white/50 mb-2">
+        {t("articles.author")}: {displayAuthor}
+      </p>
+    )}
+    {displayDesc && (
+      <p class="text-sm text-black/40 dark:text-white/40 leading-relaxed max-w-3xl mb-4">{displayDesc}</p>
+    )}
+    <a href={`${base}/${slug}/`} class="inline-flex items-center gap-1.5 text-sm text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white transition-colors">
+      <Icon name="arrowLeft" class="w-3.5 h-3.5" /> {isEn ? "Back to book page" : "返回书籍页"}
+    </a>
+  </div>
+
+  <div class="grid lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)] lg:gap-8" data-reveal>
+    <!-- 章节导航 -->
+    <nav class="book-chapters order-2 lg:order-1 mb-8 lg:mb-0">
+      <div class="lg:sticky lg:top-24 max-h-[70vh] overflow-y-auto pr-2">
+        <p class="text-xs font-semibold uppercase tracking-wider text-black/40 dark:text-white/40 mb-3 flex items-center gap-1.5">
+          <Icon name="list" class="w-3.5 h-3.5" /> {chapterLabel} · {chapters.length}
+        </p>
+        <ul class="space-y-0.5 text-sm">
+          {chapters.map((c, i) => (
+            <li>
+              <a
+                href={`#ch-${c.num}`}
+                class="flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-black/[0.04] dark:hover:bg-white/[0.04] text-black/70 dark:text-white/75 transition-colors"
+              >
+                <span class="font-mono text-xs text-black/35 dark:text-white/40 w-8 flex-shrink-0">{c.num}</span>
+                <span class="truncate">{isEn ? `Chapter ${c.num}` : `第 ${c.num} 章`}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </nav>
+
+    <!-- 正文 -->
+    <div class="min-w-0 order-1 lg:order-2">
+      <div class="book-reader prose dark:prose-invert article-content max-w-none">
+        {chapters.map((c) => (
+          <section id={`ch-${c.num}`} class="book-chapter mb-12">
+            <h2 class="flex items-center gap-2">
+              <span class="font-mono text-black/40 dark:text-white/40">{c.num}</span>
+              {isEn ? `Chapter ${c.num}` : `第 ${c.num} 章`}
+            </h2>
+            <div class="whitespace-pre-line leading-relaxed">{c.text}</div>
+          </section>
+        ))}
+      </div>
+    </div>
+  </div>
+</BaseLayout>
