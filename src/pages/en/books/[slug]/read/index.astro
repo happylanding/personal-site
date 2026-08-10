@@ -82,14 +82,18 @@ const chapterLabel = t("articles.chapter") || "Chapter";
     </nav>
 
     <div class="min-w-0 order-1 lg:order-2">
-      <div class="book-reader prose dark:prose-invert article-content max-w-none">
+      <div class="book-reader lang-en max-w-none">
         {chapters.map((c) => (
           <section id={`ch-${c.num}`} class="book-chapter mb-12">
             <h2 class="flex items-center gap-2">
               <span class="font-mono text-black/40 dark:text-white/40">{c.num}</span>
               Chapter {c.num}
             </h2>
-            <div class="whitespace-pre-line leading-relaxed">{c.text}</div>
+            <div class="book-chapter-body">
+              {c.text.split(/\n\s*\n/).filter(Boolean).map((p) => (
+                <p>{p}</p>
+              ))}
+            </div>
           </section>
         ))}
       </div>

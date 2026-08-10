@@ -88,14 +88,18 @@ const chapterLabel = t("articles.chapter") || (isEn ? "Chapter" : "章节");
 
     <!-- 正文 -->
     <div class="min-w-0 order-1 lg:order-2">
-      <div class="book-reader prose dark:prose-invert article-content max-w-none">
+      <div class={`book-reader ${isEn ? "lang-en" : "lang-zh"} max-w-none`}>
         {chapters.map((c) => (
           <section id={`ch-${c.num}`} class="book-chapter mb-12">
             <h2 class="flex items-center gap-2">
               <span class="font-mono text-black/40 dark:text-white/40">{c.num}</span>
               {isEn ? `Chapter ${c.num}` : (c.titleZh ? c.titleZh : `第 ${c.num} 章`)}
             </h2>
-            <div class="whitespace-pre-line leading-relaxed">{chapterText(c)}</div>
+            <div class="book-chapter-body">
+              {chapterText(c).split(/\n\s*\n/).filter(Boolean).map((p) => (
+                <p>{p}</p>
+              ))}
+            </div>
           </section>
         ))}
       </div>
