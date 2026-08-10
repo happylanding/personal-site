@@ -23,6 +23,7 @@ featured: true
 | 2 | [花叔 Alchain](https://www.huasheng.ai/) | AI Native Coder 个人品牌站，电影化 REEL 叙事 + 数据驱动，一人持有一家公司 | 2026-08-08 | [完整拆解](./huasheng) |
 | 3 | [Easy-Vibe 教程](https://datawhalechina.github.io/easy-vibe/zh-cn/) | Datawhale 开源 AI 编程教程站，'会说话就能编程' + 四段式成长路径 + 10 语言国际化，封面打字机循环标语 | 2026-08-08 | [完整拆解](./easy-vibe) |
 | 4 | [Peek Paper](https://peekpaper.com/) | 每天手工精选优秀网站的『网络日报』，报纸头版式编辑排版 + 纸张色×薄荷绿双主题 + 克制的翻页/入场动效 | 2026-08-10 | [完整拆解](./peekpaper) |
+| 5 | [陈硕 everlightai](https://everlightai.top/) | AI 连续创业者的个人知识产品站，以『结构外脑』为核心把知识库/工具/阅览室/社群织成一张持续生长的网，报纸编辑部风 + 动态眼睛 + 半色调肖像 + 滚动揭幕 | 2026-08-10 | [完整拆解](./everlightai) |
 
 ## 报告模板
 
