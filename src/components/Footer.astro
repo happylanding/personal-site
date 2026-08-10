@@ -1,9 +1,8 @@
 ---
-import { getLangFromUrl, useTranslations } from "../i18n/utils";
+import { getLangFromUrl } from "../i18n/utils";
 import Icon from "./Icon.astro";
 
 const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 const isEn = lang === "en";
 const sitesHref = isEn ? "/en/sites/" : "/sites/";
 const toolsHref = isEn ? "/en/tools/" : "/tools/";
@@ -13,7 +12,7 @@ const toolsHref = isEn ? "/en/tools/" : "/tools/";
   <div class="mx-auto max-w-6xl px-6 py-8 text-center 2xl:max-w-[1400px]">
     <!-- 隐藏入口：收藏夹（低调的小书签图标，放在版权说明右侧同一行，仅供站主快速访问） -->
     <p class="inline-flex items-center justify-center gap-2 text-xs text-black/40 dark:text-white/40">
-      &copy; {new Date().getFullYear()} {t("footer.rights")}
+      &copy; {new Date().getFullYear()} Galvin
       <a
         href={sitesHref}
         id="sites-hidden-link"
