@@ -4,6 +4,7 @@ import BaseLayout from "../../../../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../../../../components/Breadcrumb.astro";
 import ColumnIcon from "../../../../../components/ColumnIcon.astro";
 import Icon from "../../../../../components/Icon.astro";
+import ArticleTOC from "../../../../../components/ArticleTOC.astro";
 import { getLangFromUrl, useTranslations } from "../../../../../i18n/utils";
 
 export async function getStaticPaths() {
@@ -25,7 +26,6 @@ const displayTitle = lang === "en" ? (book.data.titleEn || book.data.title) : bo
 const displayDesc = lang === "en" ? (book.data.descriptionEn || book.data.description) : book.data.description;
 const displayAuthor = lang === "en" ? (book.data.authorEn || book.data.author) : book.data.author;
 const base = "/en/books";
-const chapterLabel = t("articles.chapter") || "Chapter";
 ---
 
 <BaseLayout title={`${displayTitle} · ${t("articles.preview")}`} description={displayDesc}>
@@ -59,33 +59,14 @@ const chapterLabel = t("articles.chapter") || "Chapter";
     </a>
   </div>
 
-  <div class="grid lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)] lg:gap-8" data-reveal>
-    <nav class="book-chapters order-2 lg:order-1 mb-8 lg:mb-0">
-      <div class="lg:sticky lg:top-24 max-h-[70vh] overflow-y-auto pr-2">
-        <p class="text-xs font-semibold uppercase tracking-wider text-black/40 dark:text-white/40 mb-3 flex items-center gap-1.5">
-          <Icon name="list" class="w-3.5 h-3.5" /> {chapterLabel} · {chapters.length}
-        </p>
-        <ul class="space-y-0.5 text-sm">
-          {chapters.map((c) => (
-            <li>
-              <a
-                href={`#ch-${c.num}`}
-                class="flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-black/[0.04] dark:hover:bg-white/[0.04] text-black/70 dark:text-white/75 transition-colors"
-              >
-                <span class="font-mono text-xs text-black/35 dark:text-white/40 w-8 flex-shrink-0">{c.num}</span>
-                <span class="truncate">Chapter {c.num}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </nav>
-
-    <div class="min-w-0 order-1 lg:order-2">
-      <div class="book-reader lang-en max-w-none">
+  <!-- 正文居左 + 右侧 sticky 目录（套用本站文章页排版） -->
+  <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14" data-reveal>
+    <!-- 正文：左侧 -->
+    <div class="min-w-0 order-1">
+      <div class="book-reader lang-en article-content max-w-none">
         {chapters.map((c) => (
           <section id={`ch-${c.num}`} class="book-chapter mb-12">
-            <h2 class="flex items-center gap-2">
+            <h2 id={`ch-title-${c.num}`} class="flex items-center gap-2">
               <span class="font-mono text-black/40 dark:text-white/40">{c.num}</span>
               Chapter {c.num}
             </h2>
@@ -97,6 +78,11 @@ const chapterLabel = t("articles.chapter") || "Chapter";
           </section>
         ))}
       </div>
+    </div>
+
+    <!-- 右侧 sticky 目录 -->
+    <div class="min-w-0 order-2">
+      <ArticleTOC label={t("articles.toc")} countFormat={t("articles.tocCount")} />
     </div>
   </div>
 </BaseLayout>
