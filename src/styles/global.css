@@ -1,13 +1,13 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-/* ===== 字体管家印象体（自定义品牌中文字体） =====
-   仅用于中文标语「从好奇，到创造」。woff2 体积更小加载更快，ttf 作回退。
+/* ===== 钟齐陈伟勋硬笔行楷简（自定义品牌中文字体） =====
+   仅用于中文标语「从好奇，到创造」。已做子集化（只保留这 7 个字），woff2 更小更快，ttf 作回退。
    字体实际为单一常规字重（400），故 font-weight 声明为 400，避免浏览器合成加粗失真。 */
 @font-face {
-  font-family: "字体管家印象";
-  src: url("/fonts/font-guanyin-yinxiangti.woff2") format("woff2"),
-       url("/fonts/font-guanyin-yinxiangti.ttf") format("truetype");
+  font-family: "钟齐陈伟勋硬笔行楷简";
+  src: url("/fonts/font-zhongqi.woff2") format("woff2"),
+       url("/fonts/font-zhongqi.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -22,7 +22,7 @@
   --font-sans: "Source Sans 3", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
   --font-mono: "Cascadia Code", "Consolas", monospace;
   --font-hand: "Caveat", cursive;
-  --font-yinxiang: "字体管家印象", "Noto Serif SC", serif;
+  --font-zhongqi: "钟齐陈伟勋硬笔行楷简", "Noto Serif SC", serif;
 
   --color-accent: #333333;
   --color-accent-light: #666666;
@@ -259,7 +259,7 @@ body {
 }
 
 .hero-subtitle {
-  font-family: var(--font-yinxiang);
+  font-family: var(--font-zhongqi);
   font-weight: 400;
   font-size: clamp(2.4rem, 6.5vw, 5.5rem);
   line-height: 1.2;
@@ -498,7 +498,7 @@ html:not(.js) .lmask-inner {
 }
 
 .about-hero-title {
-  font-family: var(--font-yinxiang);
+  font-family: var(--font-zhongqi);
   font-size: clamp(2.4rem, 6vw, 4.6rem);
   font-weight: 400;
   letter-spacing: -0.015em;
