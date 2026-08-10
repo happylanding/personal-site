@@ -12,7 +12,7 @@ tagsEn: ["classic", "strategy", "philosophy"]
 author: "孙武 (Sun Tzu)"
 authorEn: "Sun Tzu"
 epubUrl: "/books/the-art-of-war.epub"
-readUrl: "/books/the-art-of-war.epub"
+readUrl: "/books/the-art-of-war/read/"
 rating: 5
 featured: true
 draft: false

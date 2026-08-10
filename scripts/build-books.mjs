@@ -343,6 +343,24 @@ async function main() {
         needReRenderPdf = true;
       }
     }
+    // 保护已人工精修/已清理翻译稿件的书：若已有 JSON 带 textZh 或 titleZh（说明内容已按原始语言精修），
+    // 绝不自动重新解析覆盖，避免把中文原书重新变成英文译本。
+    let isCurated = false;
+    if (existsSync(jsonPath) && ext === ".epub") {
+      try {
+        const parsed = JSON.parse(readFileSync(jsonPath, "utf8"));
+        isCurated =
+          Array.isArray(parsed) &&
+          parsed.length > 0 &&
+          (parsed[0].textZh !== undefined || parsed[0].titleZh !== undefined);
+      } catch {
+        isCurated = false;
+      }
+    }
+    if (isCurated) {
+      console.log(`[build-books] 跳过（已精修/已清理，保持原始语言）: ${file} -> ${slug}.json`);
+      continue;
+    }
     if (existsSync(jsonPath) && !needReRenderPdf && statSync(jsonPath).mtimeMs >= stat.mtimeMs) {
       console.log(`[build-books] 跳过（已生成）: ${file} -> ${slug}.json`);
       continue;

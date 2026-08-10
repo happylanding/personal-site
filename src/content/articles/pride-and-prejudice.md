@@ -12,7 +12,7 @@ tagsEn: ["classic", "literature", "fiction"]
 author: "简·奥斯汀 (Jane Austen)"
 authorEn: "Jane Austen"
 epubUrl: "/books/pride-prejudice.epub"
-readUrl: "/books/pride-prejudice.epub"
+readUrl: "/books/pride-and-prejudice/read/"
 rating: 5
 featured: true
 draft: false

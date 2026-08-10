@@ -113,7 +113,7 @@ const isPdf = chapters && chapters.type === "pdf";
                 {c.title ? c.title : `Chapter ${c.num}`}
               </h2>
               <div class="book-chapter-body">
-                {c.text.split(/\n\s*\n/).filter(Boolean).map((p) => (
+                {(c.textZh || c.text || "").split(/\n\s*\n/).filter(Boolean).map((p) => (
                   <p>{p}</p>
                 ))}
               </div>
