@@ -85,6 +85,10 @@ export const ui = {
       empty: "这里还空着，等待第一件工具入库",
       footer: "有好用的工具？丢给 CodeBuddy 收录进武器库 ⚙️ 更多实用神器排队上线中，敬请期待！",
     },
+    sites: {
+      name: "收藏夹",
+      enName: "Collection",
+    },
     breadcrumb: {
       home: "首页",
     },
@@ -311,6 +315,10 @@ export const ui = {
       gachaEmpty: "The arsenal is empty — add a tool first",
       empty: "Nothing here yet — waiting for the first tool",
       footer: "Found a handy tool? Hand it to CodeBuddy and it goes into the arsenal ⚙️ More useful gems are queuing up — stay tuned!",
+    },
+    sites: {
+      name: "Collection",
+      enName: "Collection",
     },
     breadcrumb: {
       home: "Home",
