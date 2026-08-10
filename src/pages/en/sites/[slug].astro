@@ -45,7 +45,7 @@ const displayTags = entry.data.tagsEn?.length ? entry.data.tagsEn : entry.data.t
     ]}
   />
 
-  <article class="max-w-2xl mx-auto" data-reveal>
+  <article data-reveal>
     <header class="mb-10">
       <div class="flex items-center gap-3 mb-4">
         <span class="text-[13px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/75 inline-flex items-center gap-1">
@@ -66,7 +66,7 @@ const displayTags = entry.data.tagsEn?.length ? entry.data.tagsEn : entry.data.t
       </div>
 
       <h1 class="text-3xl md:text-4xl font-serif font-bold leading-tight mb-4">{title}</h1>
-      {desc && <p class="text-base text-black/50 dark:text-white/50 mb-4 leading-relaxed">{desc}</p>}
+      {desc && <p class="text-base text-black/50 dark:text-white/50 mb-4 leading-relaxed max-w-3xl">{desc}</p>}
 
       <time class="text-sm text-black/45 dark:text-white/60 font-mono" datetime={entry.data.date.toISOString()}>
         {dateStr}
