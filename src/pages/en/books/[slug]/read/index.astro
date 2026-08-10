@@ -28,6 +28,14 @@ const displayAuthor = lang === "en" ? (book.data.authorEn || book.data.author) :
 const base = "/en/books";
 // PDF 原书：用原图展示 + 翻页（不做文本解析）；其他格式用章节文本
 const isPdf = chapters && chapters.type === "pdf";
+
+// —— 大书懒加载：章节 >= 30 时启用“滚动到哪章加载哪章”——
+const LARGE_BOOK_THRESHOLD = 30;
+const isLargeBook = Array.isArray(chapters) && chapters.length >= LARGE_BOOK_THRESHOLD;
+const INITIAL_CHAPTERS = 3;
+const initialChapters = isLargeBook ? chapters.slice(0, INITIAL_CHAPTERS) : chapters;
+const chapterTitle = (c) => (c.titleZh ? c.titleZh : `Chapter ${c.num}`);
+const chapterBody = (c) => (c.textZh || c.text || "").split(/\n\s*\n/).filter(Boolean);
 ---
 
 <BaseLayout title={`${displayTitle} · ${t("articles.preview")}`} description={displayDesc}>
@@ -107,24 +115,178 @@ const isPdf = chapters && chapters.type === "pdf";
     <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14" data-reveal>
       <div class="min-w-0 order-1">
         <div class="book-reader lang-en article-content max-w-none">
-          {chapters.map((c) => (
-            <section id={`ch-${c.num}`} class="book-chapter mb-12">
-              <h2 id={`ch-title-${c.num}`} class="book-chapter-title">
-                {c.title ? c.title : `Chapter ${c.num}`}
-              </h2>
-              <div class="book-chapter-body">
-                {(c.textZh || c.text || "").split(/\n\s*\n/).filter(Boolean).map((p) => (
-                  <p>{p}</p>
-                ))}
-              </div>
-            </section>
-          ))}
+          {isLargeBook ? (
+            <>
+              {initialChapters.map((c) => (
+                <section id={`ch-${c.num}`} class="book-chapter mb-12">
+                  <h2 id={`ch-title-${c.num}`} class="book-chapter-title">
+                    {chapterTitle(c)}
+                  </h2>
+                  <div class="book-chapter-body">
+                    {chapterBody(c).map((p) => (
+                      <p>{p}</p>
+                    ))}
+                  </div>
+                </section>
+              ))}
+              {chapters.slice(INITIAL_CHAPTERS).map((c, i) => (
+                <section
+                  id={`ch-${c.num}`}
+                  class="book-chapter book-chapter-lazy mb-12"
+                  data-ch-index={String(INITIAL_CHAPTERS + i)}
+                  data-ch-num={c.num}
+                  data-ch-title={chapterTitle(c)}
+                  data-loaded="false"
+                >
+                  <h2 id={`ch-title-${c.num}`} class="book-chapter-title">{chapterTitle(c)}</h2>
+                  <div class="book-chapter-loading">
+                    <span class="inline-flex items-center gap-2 text-sm text-black/40 dark:text-white/40">
+                      <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Loading chapter…
+                    </span>
+                  </div>
+                </section>
+              ))}
+            </>
+          ) : (
+            chapters.map((c) => (
+              <section id={`ch-${c.num}`} class="book-chapter mb-12">
+                <h2 id={`ch-title-${c.num}`} class="book-chapter-title">
+                  {chapterTitle(c)}
+                </h2>
+                <div class="book-chapter-body">
+                  {chapterBody(c).map((p) => (
+                    <p>{p}</p>
+                  ))}
+                </div>
+              </section>
+            ))
+          )}
         </div>
       </div>
       <div class="min-w-0 order-2">
         <ArticleTOC label={t("articles.toc")} countFormat={t("articles.tocCount")} />
       </div>
     </div>
+  )}
+
+  {/* 大书懒加载：滚动到哪章加载哪章 */}
+  {isLargeBook && !isPdf && (
+    <script define:vars={{ slug }}>
+      (function () {
+        const observerRoot = document.querySelector(".book-reader");
+        if (!observerRoot) return;
+
+        const chapterUrl = (i) => `/books/${slug}/chapters/ch-${i}.json`;
+
+        function renderParagraphs(text) {
+          return text
+            .split(/\n\s*\n/)
+            .map((p) => p.trim())
+            .filter(Boolean)
+            .map((p) => {
+              const el = document.createElement("p");
+              el.textContent = p;
+              return el;
+            });
+        }
+
+        function loadChapter(section) {
+          if (section.dataset.loaded === "true" || section.dataset.loading === "true") return;
+          const idx = section.dataset.chIndex;
+          if (!idx) return;
+
+          section.dataset.loading = "true";
+          const loadingEl = section.querySelector(".book-chapter-loading");
+
+          fetch(chapterUrl(idx))
+            .then((r) => {
+              if (!r.ok) throw new Error("HTTP " + r.status);
+              return r.json();
+            })
+            .then((chunk) => {
+              const bodyEl = document.createElement("div");
+              bodyEl.className = "book-chapter-body";
+
+              const text = chunk.textZh || chunk.text || "";
+              renderParagraphs(text).forEach((p) => bodyEl.appendChild(p));
+
+              if (loadingEl) loadingEl.replaceWith(bodyEl);
+              section.dataset.loaded = "true";
+              section.dataset.loading = "false";
+            })
+            .catch((e) => {
+              console.error("[lazy-chapter] 加载章节失败:", e);
+              section.dataset.loading = "false";
+              if (loadingEl) {
+                loadingEl.textContent = "Failed to load. Click to retry.";
+                loadingEl.style.cursor = "pointer";
+                loadingEl.addEventListener("click", () => loadChapter(section), { once: true });
+              }
+            });
+        }
+
+        const lazySections = Array.from(observerRoot.querySelectorAll("[data-ch-index]"));
+        if (lazySections.length === 0) return;
+
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                loadChapter(entry.target);
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { rootMargin: "1500px 0px", threshold: 0 }
+        );
+
+        lazySections.forEach((sec) => io.observe(sec));
+
+        if (window.__lazyBookIO) window.__lazyBookIO.disconnect();
+        window.__lazyBookIO = io;
+
+        // 点击 TOC 链接跳转到未加载章节时：先预加载再滚动
+        document.addEventListener("click", function (e) {
+          const t = e.target;
+          if (!t || !t.classList || !t.classList.contains("article-toc-link")) return;
+          const id = t.dataset.tocId;
+          if (!id) return;
+          const target = document.getElementById(id);
+          if (!target) return;
+          const section = target.closest("[data-ch-index]");
+          if (section && section.dataset.loaded !== "true") {
+            loadChapter(section);
+          }
+        });
+
+        // Astro View Transition 后重新初始化
+        document.addEventListener("astro:page-load", function () {
+          const reader = document.querySelector(".book-reader");
+          if (!reader) return;
+          const sections = Array.from(reader.querySelectorAll("[data-ch-index]"));
+          const newIO = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  loadChapter(entry.target);
+                  newIO.unobserve(entry.target);
+                }
+              });
+            },
+            { rootMargin: "1500px 0px", threshold: 0 }
+          );
+          sections.forEach((sec) => {
+            if (sec.dataset.loaded !== "true") newIO.observe(sec);
+          });
+          if (window.__lazyBookIO) window.__lazyBookIO.disconnect();
+          window.__lazyBookIO = newIO;
+        });
+      })();
+    </script>
   )}
 
   {/* PDF 翻页逻辑 */}
