@@ -3,6 +3,7 @@ import { getCollection, render } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../../components/Breadcrumb.astro";
 import Icon from "../../../components/Icon.astro";
+import ArticleTOC from "../../../components/ArticleTOC.astro";
 import { useTranslations } from "../../../i18n/utils";
 
 export async function getStaticPaths() {
@@ -82,38 +83,54 @@ const displayTags = entry.data.tagsEn?.length ? entry.data.tagsEn : entry.data.t
       )}
     </header>
 
-    <div class="prose dark:prose-invert article-content max-w-none">
-      <Content />
+    <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14">
+      <!-- Content -->
+      <div class="min-w-0 order-1">
+        <div class="prose dark:prose-invert article-content max-w-none">
+          <Content />
+        </div>
+      </div>
+
+      <!-- Sticky TOC -->
+      <div class="min-w-0 order-2">
+        <ArticleTOC label={t("articles.toc")} countFormat={t("articles.tocCount")} />
+      </div>
     </div>
 
-    <!-- Previous / Next -->
-    <nav class="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4">
-      {prevEntry ? (
-        <a
-          href={`/en/sites/${prevEntry.id}/`}
-          class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors"
-        >
-          <p class="text-xs text-black/30 dark:text-white/30 mb-1 inline-flex items-center gap-1"><Icon name="arrowLeft" class="w-3 h-3" /> Previous</p>
-          <p class="text-sm font-medium group-hover:opacity-70 transition-opacity line-clamp-2">
-            {prevEntry.data.titleEn || prevEntry.data.title}
-          </p>
-        </a>
-      ) : (
-        <span></span>
-      )}
-      {nextEntry ? (
-        <a
-          href={`/en/sites/${nextEntry.id}/`}
-          class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors sm:text-right"
-        >
-          <p class="text-xs text-black/30 dark:text-white/30 mb-1 inline-flex items-center gap-1">Next <Icon name="arrowRight" class="w-3 h-3" /></p>
-          <p class="text-sm font-medium group-hover:opacity-70 transition-opacity line-clamp-2">
-            {nextEntry.data.titleEn || nextEntry.data.title}
-          </p>
-        </a>
-      ) : (
-        <span></span>
-      )}
+    <!-- Previous / Next: aligned with content column (spacer matches TOC width) -->
+    <nav class="mt-12 article-prevnext" data-reveal>
+      <div class="lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14">
+        <div class="min-w-0 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {prevEntry ? (
+            <a
+              href={`/en/sites/${prevEntry.id}/`}
+              class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors"
+            >
+              <p class="text-xs text-black/30 dark:text-white/30 mb-1 inline-flex items-center gap-1"><Icon name="arrowLeft" class="w-3 h-3" /> Previous</p>
+              <p class="text-sm font-medium group-hover:opacity-70 transition-opacity line-clamp-2">
+                {prevEntry.data.titleEn || prevEntry.data.title}
+              </p>
+            </a>
+          ) : (
+            <span></span>
+          )}
+          {nextEntry ? (
+            <a
+              href={`/en/sites/${nextEntry.id}/`}
+              class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors sm:text-right"
+            >
+              <p class="text-xs text-black/30 dark:text-white/30 mb-1 inline-flex items-center gap-1">Next <Icon name="arrowRight" class="w-3 h-3" /></p>
+              <p class="text-sm font-medium group-hover:opacity-70 transition-opacity line-clamp-2">
+                {nextEntry.data.titleEn || nextEntry.data.title}
+              </p>
+            </a>
+          ) : (
+            <span></span>
+          )}
+        </div>
+        <!-- Spacer: keeps nav left-aligned with content on desktop -->
+        <div class="hidden lg:block article-prevnext-spacer" aria-hidden="true"></div>
+      </div>
     </nav>
 
     <nav class="mt-12">
