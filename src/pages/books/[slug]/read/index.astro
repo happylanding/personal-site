@@ -27,6 +27,8 @@ const displayDesc = lang === "en" ? (book.data.descriptionEn || book.data.descri
 const displayAuthor = lang === "en" ? (book.data.authorEn || book.data.author) : book.data.author;
 const isEn = lang === "en";
 const base = isEn ? "/en/books" : "/books";
+// 中文原书保持中文原文，外文原书保持原书内容；此处为中文界面，优先展示中文正文
+const chapterText = (c) => (isEn ? c.text : c.textZh || c.text);
 const chapterLabel = t("articles.chapter") || (isEn ? "Chapter" : "章节");
 ---
 
@@ -76,7 +78,7 @@ const chapterLabel = t("articles.chapter") || (isEn ? "Chapter" : "章节");
                 class="flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-black/[0.04] dark:hover:bg-white/[0.04] text-black/70 dark:text-white/75 transition-colors"
               >
                 <span class="font-mono text-xs text-black/35 dark:text-white/40 w-8 flex-shrink-0">{c.num}</span>
-                <span class="truncate">{isEn ? `Chapter ${c.num}` : `第 ${c.num} 章`}</span>
+                <span class="truncate">{isEn ? `Chapter ${c.num}` : (c.titleZh ? c.titleZh : `第 ${c.num} 章`)}</span>
               </a>
             </li>
           ))}
@@ -91,9 +93,9 @@ const chapterLabel = t("articles.chapter") || (isEn ? "Chapter" : "章节");
           <section id={`ch-${c.num}`} class="book-chapter mb-12">
             <h2 class="flex items-center gap-2">
               <span class="font-mono text-black/40 dark:text-white/40">{c.num}</span>
-              {isEn ? `Chapter ${c.num}` : `第 ${c.num} 章`}
+              {isEn ? `Chapter ${c.num}` : (c.titleZh ? c.titleZh : `第 ${c.num} 章`)}
             </h2>
-            <div class="whitespace-pre-line leading-relaxed">{c.text}</div>
+            <div class="whitespace-pre-line leading-relaxed">{chapterText(c)}</div>
           </section>
         ))}
       </div>
