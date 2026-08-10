@@ -2,8 +2,8 @@ export const ui = {
   zh: {
     site: {
       title: "Galvin",
-      subtitle: "持续精进，复利成长",
-      motto: "Hey friends, let's build something meaningful.",
+      subtitle: "从好奇，到创造",
+      motto: "From curiosity to creation.",
       description: "Galvin 的个人网站 — AI 学习 × 数字经济，记录思考、分享知识",
     },
     nav: {
@@ -130,7 +130,7 @@ export const ui = {
       description: "了解更多关于我和这个网站",
       hero: {
         kicker: "ABOUT ME · 关于我",
-        subtitle: "持续精进，复利成长",
+        subtitle: "从好奇，到创造",
         intro: "这里是我的数字小窝——记录思考、折腾工具、分享成长，顺便把故事讲得有趣一点。",
         cta: "往下翻，看看我的故事",
       },
@@ -228,8 +228,8 @@ export const ui = {
   en: {
     site: {
       title: "Galvin",
-      subtitle: "Keep improving, compound growth",
-      motto: "Hey friends, let's build something meaningful.",
+      subtitle: "From curiosity to creation.",
+      motto: "From curiosity to creation.",
       description: "Galvin's personal site — AI learning × digital economy",
     },
     nav: {
@@ -356,7 +356,7 @@ export const ui = {
       description: "Learn more about me and this site",
       hero: {
         kicker: "ABOUT ME",
-        subtitle: "Keep improving, compound growth.",
+        subtitle: "From curiosity to creation.",
         intro: "This is my digital nest — recording thoughts, tinkering with tools, sharing growth, and telling the story with a punchline or two.",
         cta: "Scroll down for my story",
       },
