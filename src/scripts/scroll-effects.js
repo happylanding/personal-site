@@ -85,6 +85,19 @@
   function init() {
     queryDom();
     updateScroll();
+
+    // 返回顶部：点击平滑滚动回顶部（原实现只做了显隐，漏掉了 click 绑定）
+    if (backToTop && !backToTop.__backToTopBound) {
+      backToTop.__backToTopBound = true;
+      backToTop.addEventListener("click", function () {
+        var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduceMotion) {
+          window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+        } else {
+          window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+        }
+      });
+    }
   }
 
   // 唯一的全局 scroll 监听（合并：进度条 / 返回顶部 / Hero 视差）
