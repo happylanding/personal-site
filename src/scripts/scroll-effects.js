@@ -6,8 +6,6 @@
  *    减少主线程上滚动帧的重复排队与 layout 触发。
  *  - ReadingProgress / BackToTop / HeroParallax 共享同一份滚动进度计算，
  *    一次 scroll 事件只跑一轮 rAF。
- *  - MouseGlow 不再用 offsetWidth/offsetHeight（每次 mousemove 都强制同步回流），
- *    改用固定半尺寸直算，只走合成器 transform。
  */
 (function () {
   "use strict";
@@ -18,12 +16,7 @@
   var backToTop = null;
   var hero = null;
   var heroLayer = null;
-  var glow = null;
-  var glowTicking = false;
-  var glowIdleTimer = null;
   var scrollTicking = false;
-  // 光斑固定尺寸：w-72 h-72 = 288px，取整避免强制回流读取 offsetWidth/offsetHeight
-  var GLOW_HALF = 144;
 
   function queryDom() {
     progressBar = document.getElementById("reading-progress-bar");
@@ -31,7 +24,6 @@
     backToTop = document.getElementById("back-to-top");
     hero = document.querySelector(".hero-section");
     heroLayer = document.querySelector(".hero-parallax");
-    glow = document.getElementById("mouse-glow");
 
     // reduced-motion 时隐藏百分比数字（保留细条）
     if (progressNum && reduce) progressNum.style.display = "none";
@@ -90,37 +82,9 @@
     requestAnimationFrame(updateScroll);
   }
 
-  function positionGlow(e) {
-    if (!glow) return;
-    glow.style.transform = "translate3d(" + (e.clientX - GLOW_HALF) + "px," + (e.clientY - GLOW_HALF) + "px,0)";
-    glow.classList.add("opacity-100");
-    glowTicking = false;
-    clearTimeout(glowIdleTimer);
-    glowIdleTimer = setTimeout(function () {
-      glow.classList.remove("opacity-100");
-    }, 2000);
-  }
-
-  function bindMouseGlow() {
-    if (!glow || reduce) return;
-    document.addEventListener("mousemove", function (e) {
-      if (glowTicking) return;
-      glowTicking = true;
-      requestAnimationFrame(function () {
-        positionGlow(e);
-      });
-    });
-    document.addEventListener("mouseleave", function () {
-      if (!glow) return;
-      glow.classList.remove("opacity-100");
-      clearTimeout(glowIdleTimer);
-    });
-  }
-
   function init() {
     queryDom();
     updateScroll();
-    bindMouseGlow();
   }
 
   // 唯一的全局 scroll 监听（合并：进度条 / 返回顶部 / Hero 视差）
