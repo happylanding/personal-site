@@ -1971,7 +1971,7 @@ body {
 .book-reader {
   --book-font: "Times New Roman", "Georgia", "KaiTi", "STKaiti", "楷体", "Kaiti SC", "Noto Serif SC", serif;
   font-family: var(--book-font);
-  font-size: 1.075rem;
+  font-size: 1.15rem;
   line-height: 1.95;
   color: rgba(0, 0, 0, 0.86);
   letter-spacing: 0.01em;
@@ -1983,7 +1983,7 @@ body {
 .book-reader .book-chapter h2 {
   /* !important 覆盖 .article-content h2 的站点 serif 字体，保证章标题跟随书体 */
   font-family: var(--book-font) !important;
-  font-size: 1.35rem;
+  font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   padding-top: 1rem;
@@ -2009,14 +2009,17 @@ body {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
 }
-/* 中文正文：段首空两格 + 楷体优先 */
+/* 中文正文：段首空两格 + 楷体优先，字号适当加大便于阅读 */
 .book-reader.lang-zh .book-chapter-body {
   font-family: "KaiTi", "STKaiti", "楷体", "Kaiti SC", "Noto Serif SC", serif;
+  font-size: 1.22rem;
+  line-height: 2;
   text-indent: 2em;
 }
-/* 英文正文：段首顶格 + 新罗马优先 */
+/* 英文正文：段首顶格 + 新罗马体优先 */
 .book-reader.lang-en .book-chapter-body {
-  font-family: "Times New Roman", "Georgia", "KaiTi", "STKaiti", "楷体", "Noto Serif SC", serif;
+  font-family: "Times New Roman", "Georgia", "Libre Baskerville", "Noto Serif", serif;
+  font-size: 1.15rem;
   text-indent: 0;
 }
 .book-reader .book-chapter-body p {

@@ -32,6 +32,11 @@ const base = isEn ? "/en/books" : "/books";
 const isPdf = chapters && chapters.type === "pdf";
 // 中文原书保持中文原文，外文原书保持原书内容；此处为中文界面，优先展示中文正文
 const chapterText = (c) => (isEn ? c.text : c.textZh || c.text);
+// 正文字体语言：按实际正文是否含中文字符判断（而非站点语言或 textZh 字段是否存在）。
+// 中文原书 → 楷体；外文原书 → 新罗马体
+const hasCJK = (s) => /[\u4e00-\u9fff]/.test(s || "");
+const firstText = Array.isArray(chapters) && chapters[0] ? chapterText(chapters[0]) : "";
+const isChineseContent = !isEn && hasCJK(firstText);
 ---
 
 <BaseLayout title={`${displayTitle} · ${t("articles.preview")}`} description={displayDesc}>
@@ -113,12 +118,15 @@ const chapterText = (c) => (isEn ? c.text : c.textZh || c.text);
     /* ===== 章节文本阅读 ===== */
     <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14" data-reveal>
       <div class="min-w-0 order-1">
-        <div class={`book-reader ${isEn ? "lang-en" : "lang-zh"} article-content max-w-none`}>
+        <div class={`book-reader ${isChineseContent ? "lang-zh" : "lang-en"} article-content max-w-none`}>
           {chapters.map((c) => (
             <section id={`ch-${c.num}`} class="book-chapter mb-12">
-              <h2 id={`ch-title-${c.num}`} class="flex items-center gap-2">
-                <span class="font-mono text-black/40 dark:text-white/40">{c.num}</span>
-                {isEn ? `Chapter ${c.num}` : (c.titleZh ? c.titleZh : `第 ${c.num} 章`)}
+              <h2 id={`ch-title-${c.num}`} class="book-chapter-title">
+                {isChineseContent && c.titleZh
+                  ? c.titleZh
+                  : isEn
+                    ? `Chapter ${c.num}`
+                    : `第 ${c.num} 章`}
               </h2>
               <div class="book-chapter-body">
                 {chapterText(c).split(/\n\s*\n/).filter(Boolean).map((p) => (
