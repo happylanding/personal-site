@@ -321,16 +321,3 @@ const updatedDateStr = siteEntries.length
     });
   })();
 </script>
-```
-
-我注意到 `extractSection` 中英文 heading 对应关系：英文站点正文其实也是中文的（titleEn/descriptionEn 只是 frontmatter，正文是中文）。让我确认英文版正文。
-
-英文版 `/en/sites/` 用的是同一批 md 文件（正文是中文），所以 `extractSection` 对 en 也应使用中文 heading（"一句话定位"、"亮点特色总结"）。我在 classify 用了中文匹配。让我修正 en 的 extractSection heading。
-
-实际上英文页面读取的也是中文正文，所以应该统一用中文 heading。让我修正 `extractSection` 调用，无论 isEn 都用中文标题。同时英文可展开区的 label 用英文。
-
-让我修正 sites.astro 中的 extractSection 调用。
-
-<｜｜DSML｜｜tool_calls>
-<｜｜DSML｜｜invoke name="edit">
-<｜｜DSML｜｜parameter name="path" string="true">/workspace/src/pages/sites.astro
