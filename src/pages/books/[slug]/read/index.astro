@@ -38,17 +38,23 @@ const hasCJK = (s) => /[\u4e00-\u9fff]/.test(s || "");
 const firstText = Array.isArray(chapters) && chapters[0] ? chapterText(chapters[0]) : "";
 const isChineseContent = !isEn && hasCJK(firstText);
 
-// —— 大书懒加载：章节 >= 30 时启用“滚动到哪章加载哪章”——
-// build-books.mjs 会同步把每章拆分为独立 JSON 到 public/books/{slug}/chapters/ch-{i}.json
+// —— 章节切换阅读：任意章节数的章节文本书统一用“选章节 → 只看该章”模式 ——
+// 大书（章节 >= 30）后续章节正文按需 fetch（build-books.mjs 拆分为独立 JSON 到
+// public/books/{slug}/chapters/ch-{i}.json）；小书章节正文全部内联在 HTML。
 const LARGE_BOOK_THRESHOLD = 30;
 const isLargeBook = Array.isArray(chapters) && chapters.length >= LARGE_BOOK_THRESHOLD;
-// 首屏预渲染章节数：前 N 章直接内联在 HTML，减少初始滚动时的等待
+// 首屏预渲染章节数：前 N 章直接内联在 HTML，减少初始切换等待
 const INITIAL_CHAPTERS = 3;
 const initialChapters = isLargeBook ? chapters.slice(0, INITIAL_CHAPTERS) : chapters;
 // 章节标题显示（构建时 + 懒加载统一逻辑）
 const chapterTitle = (c) => (c.titleZh ? c.titleZh : isEn ? `Chapter ${c.num}` : `第 ${c.num} 章`);
 // 渲染章节正文段落（合并段内硬换行，消除排版空白）
 const chapterBody = (c) => chapterText(c).split(/\n\s*\n/).map((p) => p.replace(/\s+/g, " ").trim()).filter(Boolean);
+// 章节元数据：供章节切换器下拉/导航使用（index 为 0-based 章节位置）
+const chaptersMeta = Array.isArray(chapters)
+  ? chapters.map((c, i) => ({ index: i, num: c.num, title: chapterTitle(c), inline: !isLargeBook || i < INITIAL_CHAPTERS }))
+  : [];
+const totalChapters = chaptersMeta.length;
 ---
 
 <BaseLayout title={`${displayTitle} · ${t("articles.preview")}`} description={displayDesc}>
@@ -127,36 +133,59 @@ const chapterBody = (c) => chapterText(c).split(/\n\s*\n/).map((p) => p.replace(
       <div class="min-w-0 order-2"></div>
     </div>
   ) : (
-    /* ===== 章节文本阅读 ===== */
+    /* ===== 章节切换阅读：选择章节 → 只看该章内容 ===== */
     <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14" data-reveal>
       <div class="min-w-0 order-1">
+        {/* 章节切换器：下拉 + 上一章/下一章 */}
+        <div class="chapter-switcher mb-8 p-3 rounded-xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.03] flex flex-wrap items-center gap-3" data-chapter-switcher>
+          <span class="text-[13px] font-medium text-black/55 dark:text-white/65 inline-flex items-center gap-1.5">
+            <Icon name="list" class="w-3.5 h-3.5" />
+            {isEn ? "Chapter" : "章节"}
+          </span>
+          <div class="flex items-center gap-2 flex-1 min-w-0">
+            <button type="button" class="ch-prev inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-black/15 dark:border-white/15 text-sm hover:bg-black/[0.05] dark:hover:bg-white/[0.05] transition-colors disabled:opacity-30 disabled:pointer-events-none" data-ch-prev disabled>
+              <Icon name="arrowLeft" class="w-4 h-4" />
+            </button>
+            <select data-ch-select class="ch-select flex-1 min-w-0 max-w-full px-3 py-1.5 rounded-lg border border-black/15 dark:border-white/15 bg-transparent text-sm text-black/80 dark:text-white/80 focus:outline-none focus:border-black/40 dark:focus:border-white/40">
+              {chaptersMeta.map((m) => (
+                <option value={m.index} class="text-black dark:text-white bg-white dark:bg-neutral-900">
+                  {m.title}
+                </option>
+              ))}
+            </select>
+            <button type="button" class="ch-next inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-black/15 dark:border-white/15 text-sm hover:bg-black/[0.05] dark:hover:bg-white/[0.05] transition-colors disabled:opacity-30 disabled:pointer-events-none" data-ch-next>
+              <Icon name="arrowRight" class="w-4 h-4" />
+            </button>
+          </div>
+          <span class="text-[12px] text-black/40 dark:text-white/45 font-mono" data-ch-count>
+            1 / {totalChapters}
+          </span>
+        </div>
+
         <div class={`book-reader ${isChineseContent ? "lang-zh" : "lang-en"} article-content max-w-none`}>
-          {isLargeBook ? (
-            <>
-              {/* 首屏预渲染：前 N 章完整渲染 */}
-              {initialChapters.map((c) => (
-                <section id={`ch-${c.num}`} class="book-chapter mb-12">
-                  <h2 id={`ch-title-${c.num}`} class="book-chapter-title">
-                    {chapterTitle(c)}
-                  </h2>
+          {chapters.map((c, i) => {
+            const inline = !isLargeBook || i < INITIAL_CHAPTERS;
+            return (
+              <section
+                id={`ch-${c.num}`}
+                class="book-chapter book-chapter-switch mb-12"
+                data-ch-index={String(i)}
+                data-ch-num={c.num}
+                data-ch-title={chapterTitle(c)}
+                data-inline={inline ? "true" : "false"}
+                data-loaded={inline ? "true" : "false"}
+                hidden={i !== 0}
+              >
+                <h2 id={`ch-title-${c.num}`} class="book-chapter-title">
+                  {chapterTitle(c)}
+                </h2>
+                {inline ? (
                   <div class="book-chapter-body">
                     {chapterBody(c).map((p) => (
                       <p>{p}</p>
                     ))}
                   </div>
-                </section>
-              ))}
-              {/* 后续章节：标题先渲染（供 TOC 使用），正文由前端懒加载填充 */}
-              {chapters.slice(INITIAL_CHAPTERS).map((c, i) => (
-                <section
-                  id={`ch-${c.num}`}
-                  class="book-chapter book-chapter-lazy mb-12"
-                  data-ch-index={String(INITIAL_CHAPTERS + i)}
-                  data-ch-num={c.num}
-                  data-ch-title={chapterTitle(c)}
-                  data-loaded="false"
-                >
-                  <h2 id={`ch-title-${c.num}`} class="book-chapter-title">{chapterTitle(c)}</h2>
+                ) : (
                   <div class="book-chapter-loading">
                     <span class="inline-flex items-center gap-2 text-sm text-black/40 dark:text-white/40">
                       <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -166,23 +195,10 @@ const chapterBody = (c) => chapterText(c).split(/\n\s*\n/).map((p) => p.replace(
                       {isEn ? "Loading chapter…" : "章节加载中…"}
                     </span>
                   </div>
-                </section>
-              ))}
-            </>
-          ) : (
-            chapters.map((c) => (
-              <section id={`ch-${c.num}`} class="book-chapter mb-12">
-                <h2 id={`ch-title-${c.num}`} class="book-chapter-title">
-                  {chapterTitle(c)}
-                </h2>
-                <div class="book-chapter-body">
-                  {chapterBody(c).map((p) => (
-                    <p>{p}</p>
-                  ))}
-                </div>
+                )}
               </section>
-            ))
-          )}
+            );
+          })}
         </div>
       </div>
       <div class="min-w-0 order-2">
@@ -191,126 +207,144 @@ const chapterBody = (c) => chapterText(c).split(/\n\s*\n/).map((p) => p.replace(
     </div>
   )}
 
-  {/* 大书懒加载：滚动到哪章加载哪章 */}
-  {isLargeBook && !isPdf && (
-    <script define:vars={{ slug, isEn, isChineseContent }}>
+  {/* 章节切换阅读器逻辑：选章节 → 只显示该章（大书按需 fetch 正文） */}
+  {!isPdf && (
+    <script define:vars={{ slug, isEn, totalChapters }}>
       (function () {
-        // —— 懒加载章节：仅用于大书（章节 >= 30）——
-        const observerRoot = document.querySelector(".book-reader");
-        if (!observerRoot) return;
+        var chapterUrl = function (i) { return "/books/" + slug + "/chapters/ch-" + i + ".json"; };
 
-        const chapterUrl = (i) => `/books/${slug}/chapters/ch-${i}.json`;
-
-        // 渲染一个章节的正文（段落）
         function renderParagraphs(text) {
           return text
             .split(/\n\s*\n/)
-            .map((p) => p.replace(/\s+/g, " ").trim())
+            .map(function (p) { return p.replace(/\s+/g, " ").trim(); })
             .filter(Boolean)
-            .map((p) => {
-              const el = document.createElement("p");
+            .map(function (p) {
+              var el = document.createElement("p");
               el.textContent = p;
               return el;
             });
         }
 
-        // 加载指定索引的章节并填入占位容器
+        // 获取当前 DOM 上的阅读器状态（View Transition 后 DOM 被替换，需实时查询）
+        function getState() {
+          var root = document.querySelector(".book-reader");
+          var switcher = document.querySelector("[data-chapter-switcher]");
+          if (!root || !switcher) return null;
+          var sections = Array.from(root.querySelectorAll("[data-ch-index]"));
+          if (sections.length === 0) return null;
+          return {
+            root: root,
+            select: switcher.querySelector("[data-ch-select]"),
+            prevBtn: switcher.querySelector("[data-ch-prev]"),
+            nextBtn: switcher.querySelector("[data-ch-next]"),
+            countEl: switcher.querySelector("[data-ch-count]"),
+            sections: sections
+          };
+        }
+
+        // 加载指定索引章节的正文（大书懒加载专用）
         function loadChapter(section) {
           if (section.dataset.loaded === "true" || section.dataset.loading === "true") return;
-          const idx = section.dataset.chIndex;
+          var idx = section.dataset.chIndex;
           if (!idx) return;
 
           section.dataset.loading = "true";
-          const loadingEl = section.querySelector(".book-chapter-loading");
+          var loadingEl = section.querySelector(".book-chapter-loading");
 
           fetch(chapterUrl(idx))
-            .then((r) => {
+            .then(function (r) {
               if (!r.ok) throw new Error("HTTP " + r.status);
               return r.json();
             })
-            .then((chunk) => {
-              const bodyEl = document.createElement("div");
+            .then(function (chunk) {
+              var bodyEl = document.createElement("div");
               bodyEl.className = "book-chapter-body";
-
               // 取正文：中文原书取 textZh，外文原书取 text
-              const text = chunk.textZh || chunk.text || "";
-              renderParagraphs(text).forEach((p) => bodyEl.appendChild(p));
-
-              // 替换占位 loading 区域
+              var text = chunk.textZh || chunk.text || "";
+              renderParagraphs(text).forEach(function (p) { bodyEl.appendChild(p); });
               if (loadingEl) loadingEl.replaceWith(bodyEl);
               section.dataset.loaded = "true";
               section.dataset.loading = "false";
             })
-            .catch((e) => {
-              console.error("[lazy-chapter] 加载章节失败:", e);
+            .catch(function (e) {
+              console.error("[chapter-switch] 加载章节失败:", e);
               section.dataset.loading = "false";
               if (loadingEl) {
                 loadingEl.textContent = isEn ? "Failed to load. Click to retry." : "加载失败，点击重试。";
                 loadingEl.style.cursor = "pointer";
-                loadingEl.addEventListener("click", () => loadChapter(section), { once: true });
+                loadingEl.addEventListener("click", function () { loadChapter(section); }, { once: true });
               }
             });
         }
 
-        // IntersectionObserver：提前 1500px 触发加载，保证滚动到之前内容已就绪
-        const lazySections = Array.from(observerRoot.querySelectorAll("[data-ch-index]"));
-        if (lazySections.length === 0) return;
+        // 显示第 index 章，隐藏其余（实时读取当前 DOM 状态）
+        function showChapter(index) {
+          var st = getState();
+          if (!st) return;
+          if (index < 0 || index >= st.sections.length) return;
+          st.sections.forEach(function (sec, i) {
+            sec.hidden = i !== index;
+            if (i === index && sec.dataset.loaded !== "true" && sec.dataset.inline !== "true") {
+              loadChapter(sec);
+            }
+          });
+          if (st.select) st.select.value = String(index);
+          if (st.prevBtn) st.prevBtn.disabled = index <= 0;
+          if (st.nextBtn) st.nextBtn.disabled = index >= st.sections.length - 1;
+          if (st.countEl) st.countEl.textContent = index + 1 + " / " + totalChapters;
+          // 滚动到阅读器顶部，保持阅读位置清晰
+          var top = st.root.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top: Math.max(top, 0), behavior: "smooth" });
+        }
 
-        const io = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                loadChapter(entry.target);
-                // 加载后继续观察（后续其他章节）——但本章节只加载一次，可取消观察
-                io.unobserve(entry.target);
-              }
-            });
-          },
-          { rootMargin: "1500px 0px", threshold: 0 }
-        );
+        // 初始化：绑定当前 DOM 上的控件，恢复或展示第一章
+        function init() {
+          var st = getState();
+          if (!st || !st.select) return;
 
-        lazySections.forEach((sec) => io.observe(sec));
+          st.select.onchange = function () { showChapter(Number(st.select.value)); };
+          st.prevBtn.onclick = function () { showChapter(Number(st.select.value) - 1); };
+          st.nextBtn.onclick = function () { showChapter(Number(st.select.value) + 1); };
 
-        // 保留引用，View Transition 时清理
-        if (window.__lazyBookIO) window.__lazyBookIO.disconnect();
-        window.__lazyBookIO = io;
+          // 只显示第一个可见章节（重新进入时回到第一章）
+          var anyVisible = Array.prototype.some.call(st.sections, function (s) { return !s.hidden; });
+          if (!anyVisible) showChapter(0);
+        }
 
-        // 点击 TOC 链接跳转到未加载章节时：先预加载再滚动（提升体验）
-        document.addEventListener("click", function (e) {
-          const t = e.target;
-          if (!t || !t.classList || !t.classList.contains("article-toc-link")) return;
-          const id = t.dataset.tocId;
-          if (!id) return;
-          // 找到对应章节 section
-          const target = document.getElementById(id);
-          if (!target) return;
-          const section = target.closest("[data-ch-index]");
-          if (section && section.dataset.loaded !== "true") {
-            loadChapter(section);
-          }
+        // —— 一次性绑定 document 级事件（不会随 View Transition 累积重复）——
+        // 键盘左右切换（同 PDF 翻页习惯）
+        document.addEventListener("keydown", function (e) {
+          var st = getState();
+          if (!st || !st.select) return;
+          if (/^(input|textarea|select)$/i.test((e.target.tagName) || "")) return;
+          var cur = Number(st.select.value);
+          if (e.key === "ArrowLeft") { e.preventDefault(); showChapter(cur - 1); }
+          if (e.key === "ArrowRight") { e.preventDefault(); showChapter(cur + 1); }
         });
 
-        // Astro View Transition 后重新初始化
+        // 点击 TOC 链接（侧栏目录）→ 切换到对应章节
+        document.addEventListener("click", function (e) {
+          var el = e.target;
+          if (!el || !el.classList || !el.classList.contains("article-toc-link")) return;
+          var st = getState();
+          if (!st) return;
+          var id = el.dataset.tocId;
+          if (!id) return;
+          var idx = -1;
+          for (var i = 0; i < st.sections.length; i++) {
+            var titleEl = st.sections[i].querySelector(".book-chapter-title");
+            if (titleEl && (titleEl.id === id || (titleEl.textContent || "").trim() === (el.textContent || "").trim())) {
+              idx = i;
+              break;
+            }
+          }
+          if (idx >= 0) showChapter(idx);
+        });
+
+        init();
+        // Astro View Transition 后重新初始化（旧 DOM 被替换时，事件重新绑定）
         document.addEventListener("astro:page-load", function () {
-          const reader = document.querySelector(".book-reader");
-          if (!reader) return;
-          const sections = Array.from(reader.querySelectorAll("[data-ch-index]"));
-          const newIO = new IntersectionObserver(
-            (entries) => {
-              entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                  loadChapter(entry.target);
-                  newIO.unobserve(entry.target);
-                }
-              });
-            },
-            { rootMargin: "1500px 0px", threshold: 0 }
-          );
-          sections.forEach((sec) => {
-            if (sec.dataset.loaded !== "true") newIO.observe(sec);
-          });
-          if (window.__lazyBookIO) window.__lazyBookIO.disconnect();
-          window.__lazyBookIO = newIO;
+          init();
         });
       })();
     </script>
