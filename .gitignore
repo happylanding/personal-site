@@ -21,7 +21,7 @@ Thumbs.db
 .idea/
 
 # Agent skill config
-.codebuddy/
+# .codebuddy/  # 移除忽略，使 .codebuddy/skills/ 下的 skill 可随仓库提交，供 @CodeBuddy 及项目内其他 NPC 加载
 
 # Astro
 .astro/
