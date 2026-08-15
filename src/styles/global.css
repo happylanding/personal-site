@@ -3841,3 +3841,79 @@ body.galvin-site ::selection {
   .galvin-footer__nav > div { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .galvin-footer__meta { align-items: flex-start; flex-direction: column; padding: 14px 0 20px; }
 }
+
+/* Visual engineering pass: one measured hierarchy for the About profile and site footer.
+   The display is expressive but no longer overwhelms the lead; body and footer text remain
+   comfortably readable, while utility labels stay genuinely secondary. */
+.galvin-about-page { width: min(100% - 72px, 1160px); padding: 60px 0 68px; }
+.galvin-about-hero { max-width: 900px; padding: 14px 0 56px; }
+.galvin-about-hero__signal-row, .galvin-about-hero__meta dt, .galvin-about-section__head > p, .galvin-about-contact__copy > p, .galvin-about-next > p, .galvin-footer__nav > p, .galvin-footer__contact > p { font-size: 11px; letter-spacing: 0.09em; }
+.galvin-about-hero__eyebrow { margin: 45px 0 10px; font-size: 12px; }
+.galvin-about-hero h1 { max-width: 830px; font-size: clamp(58px, 5.3vw, 76px); letter-spacing: -0.058em; line-height: 1.1; }
+.galvin-about-hero__lead { max-width: 680px; margin-top: 24px; font-size: 19px; line-height: 1.67; }
+.galvin-about-hero__meta { max-width: 690px; gap: 13px; margin-top: 34px; }
+.galvin-about-hero__meta div { padding-top: 12px; }
+.galvin-about-hero__meta dd { margin-top: 7px; font-size: 14px; }
+.galvin-about-section { padding: 60px 0; }
+.galvin-about-section__head { grid-template-columns: 150px minmax(0, 1fr); gap: 28px; margin-bottom: 27px; }
+.galvin-about-section__head h2 { font-size: clamp(32px, 3vw, 38px); line-height: 1.22; }
+.galvin-about-practice__list li { grid-template-columns: 150px minmax(0, 1fr); gap: 28px; padding: 22px 0; }
+.galvin-about-practice__icon { display: none; }
+.galvin-about-practice__list > li > span { font-size: 11px; }
+.galvin-about-practice h3 { font-size: 21px; line-height: 1.38; }
+.galvin-about-practice h3 + p { margin-top: 6px; color: var(--galvin-text-secondary); font-size: 16px; line-height: 1.65; }
+.galvin-about-profile__grid { grid-template-columns: minmax(0, 1fr) minmax(270px, 0.8fr); gap: clamp(42px, 6vw, 82px); }
+.galvin-about-profile__statement { max-width: 590px; font-size: clamp(22px, 2.1vw, 25px); font-weight: 500; letter-spacing: -0.03em; line-height: 1.58; }
+.galvin-about-profile__signals li { padding: 14px 0; }
+.galvin-about-profile__signals strong { font-size: 16px; }
+.galvin-about-profile__signals p { font-size: 14px; }
+.galvin-about-contact { gap: clamp(44px, 7vw, 94px); padding-top: 64px; }
+.galvin-about-contact__copy h2 { font-size: clamp(34px, 3.5vw, 42px); line-height: 1.2; }
+.galvin-about-contact__copy h2 + p { margin-top: 15px; font-size: 16px; line-height: 1.68; }
+.galvin-about-next { padding-top: 22px; }
+.galvin-about-next > div { gap: 10px 18px; }
+.galvin-about-next a { font-size: 14px; }
+.galvin-email-contact { padding: 15px 16px 14px; }
+.galvin-email-contact__address { font-size: 15px; }
+.galvin-contact-action { min-height: 42px; padding: 0 14px; }
+
+.galvin-footer__grid { grid-template-columns: minmax(0, 1.05fr) minmax(250px, 0.8fr) minmax(250px, 0.85fr); gap: clamp(36px, 5vw, 72px); padding: 42px 0 32px; }
+.galvin-footer__identity p { margin: 12px 0 5px; font-size: 16px; }
+.galvin-footer__identity small { font-size: 11px; }
+.galvin-footer__nav > p, .galvin-footer__contact > p { margin-bottom: 10px; }
+.galvin-footer__nav > div { gap: 7px 16px; }
+.galvin-footer__nav a, .galvin-footer__contact > a, .galvin-footer__contact > button { min-height: 30px; font-size: 14px; }
+.galvin-footer__contact > .galvin-footer__email-row > .galvin-footer__email { font-size: 13px; line-height: 1.45; }
+.galvin-footer__contact > .galvin-footer__email-row > button { font-size: 12px; }
+.galvin-footer__meta { padding: 14px 0 17px; font-size: 11px; }
+
+@media (max-width: 720px) {
+  .galvin-about-page { width: min(100% - 40px, 1160px); padding: 40px 0 50px; }
+  .galvin-about-hero { padding-bottom: 42px; }
+  .galvin-about-hero__eyebrow { margin-top: 34px; }
+  .galvin-about-hero h1 { font-size: clamp(43px, 11.3vw, 49px); letter-spacing: -0.065em; line-height: 1.12; }
+  .galvin-about-hero__lead { margin-top: 19px; font-size: 16px; line-height: 1.65; }
+  .galvin-about-hero__meta { margin-top: 28px; }
+  .galvin-about-hero__meta dd { font-size: 14px; }
+  .galvin-about-section { padding: 46px 0; }
+  .galvin-about-section__head { gap: 9px; margin-bottom: 22px; }
+  .galvin-about-section__head h2 { font-size: 29px; line-height: 1.25; }
+  .galvin-about-practice__list li { gap: 8px; padding: 19px 0 21px; }
+  .galvin-about-practice h3 { font-size: 19px; }
+  .galvin-about-practice h3 + p { font-size: 15px; line-height: 1.65; }
+  .galvin-about-profile__grid { gap: 28px; }
+  .galvin-about-profile__statement { font-size: 20px; line-height: 1.62; }
+  .galvin-about-profile__signals strong { font-size: 15px; }
+  .galvin-about-profile__signals p { font-size: 14px; }
+  .galvin-about-contact { gap: 28px; padding-top: 52px; }
+  .galvin-about-contact__copy h2 { font-size: 31px; }
+  .galvin-about-contact__copy h2 + p { font-size: 15px; line-height: 1.65; }
+  .galvin-about-next { gap: 14px; padding-top: 18px; }
+  .galvin-about-next a { font-size: 13px; }
+  .galvin-footer__grid { gap: 28px; padding: 34px 0 26px; }
+  .galvin-footer__wordmark { font-size: 18px; }
+  .galvin-footer__identity p { font-size: 15px; }
+  .galvin-footer__nav a, .galvin-footer__contact > a, .galvin-footer__contact > button { min-height: 32px; font-size: 14px; }
+  .galvin-footer__contact > .galvin-footer__email-row > .galvin-footer__email { font-size: 13px; }
+  .galvin-footer__meta { gap: 11px; font-size: 11px; }
+}
