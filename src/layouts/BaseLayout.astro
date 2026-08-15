@@ -1,12 +1,12 @@
 ---
+/* Galvin design reminder: the global shell is a quiet deep-blue AI editorial workspace.
+   Dark is the default; one local violet/cyan signal may guide, never decorate every surface. */
 import "../styles/global.css";
-import { getLangFromUrl, useTranslations } from "../i18n/utils";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import BackToTop from "../components/BackToTop.astro";
 import ScrollReveal from "../components/ScrollReveal.astro";
 import ReadingProgress from "../components/ReadingProgress.astro";
-import UiEffects from "../components/UiEffects.astro";
 
 interface Props {
   title?: string;
@@ -14,116 +14,60 @@ interface Props {
   ogImage?: string;
 }
 
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
+const defaultTitle = "Galvin — 把好奇心，做成一点有用的东西。";
+const defaultDesc = "Galvin 的个人 AI 学习与创作空间，记录工具、思考、工作方法与生活轨迹。";
 
-const defaultTitle = t("site.title") + " — " + t("site.subtitle");
-const defaultDesc = t("site.description");
-
-const pageTitle = Astro.props.title ? `${Astro.props.title} — ${t("site.title")}` : defaultTitle;
+const pageTitle = Astro.props.title ? `${Astro.props.title} — Galvin` : defaultTitle;
 const pageDesc = Astro.props.description || defaultDesc;
 const ogImg = Astro.props.ogImage || "/favicon.svg";
 const path = Astro.url.pathname;
-const canonical = lang === "en" ? path : path.replace(/^\/en/, "") || "/";
-const alternateEn = lang === "zh" ? `/en${path}` : path;
-const alternateZh = lang === "en" ? path.replace(/^\/en/, "") || "/" : path;
+const canonical = path.replace(/^\/en/, "") || "/";
 ---
 
 <!doctype html>
-<html lang={lang} class="">
+<html lang="zh-CN" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content={pageDesc} />
-
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDesc} />
     <meta property="og:type" content="website" />
     <meta property="og:image" content={ogImg} />
-    <meta property="og:site_name" content={t("site.title")} />
-
+    <meta property="og:site_name" content="Galvin" />
     <link rel="canonical" href={new URL(canonical, Astro.site).href} />
-    <link rel="alternate" hreflang="zh" href={new URL(alternateZh, Astro.site).href} />
-    <link rel="alternate" hreflang="en" href={new URL(alternateEn, Astro.site).href} />
-
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <!-- Fonts: V2 人文温暖（瘦身版：正文 Source Sans/Noto Sans 各 2~3 字重，衬线/手写体非阻塞按需加载） -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- 正文（阻塞首屏）：Source Sans 3 + Noto Sans SC 各 3 个字重 -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <!-- 衬线/手写体（标题、hero、motto）：非阻塞按需加载，不拖首屏 -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=Noto+Serif+SC:wght@400;600;700;900&family=Caveat:wght@500;600&display=swap"
-      rel="stylesheet"
-      media="print"
-      onload="this.media='all'"
-    />
-    <noscript>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=Noto+Serif+SC:wght@400;600;700;900&family=Caveat:wght@500;600&display=swap"
-        rel="stylesheet"
-      />
-    </noscript>
 
-    <!-- FOUC prevention: set dark before render -->
     <script is:inline>
       (function () {
-        const t = localStorage.getItem("theme");
-        if (t === "dark" || (!t && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-          document.documentElement.classList.add("dark");
-        }
-      })();
-    </script>
-
-    <!-- P2-4 字体就绪门控：先标 .js，等 document.fonts 就绪后加 .fonts-ready，
-         启动 hero 遮罩上拉动画；1s 超时兜底避免字体加载过慢导致首屏空白 -->
-    <script is:inline>
-      (function () {
-        var html = document.documentElement;
-        html.classList.add("js");
-        var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        function ready() {
-          html.classList.add("fonts-ready");
-        }
-        if (reduced || !document.fonts || !document.fonts.ready) {
-          ready();
-          return;
-        }
-        var done = false;
-        function finish() {
-          if (done) return;
-          done = true;
-          ready();
-        }
-        document.fonts.ready.then(finish, finish);
-        setTimeout(finish, 1000); // 首屏遮罩超时收紧到 1s，避免字体加载慢时首屏卡在遮罩下
+        var savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "light") document.documentElement.classList.remove("dark");
+        else document.documentElement.classList.add("dark");
       })();
     </script>
 
     <title>{pageTitle}</title>
   </head>
-  <body class="bg-white dark:bg-black text-black dark:text-white font-sans transition-colors duration-300 flex min-h-screen flex-col">
+  <body class="galvin-site flex min-h-screen flex-col">
     <ReadingProgress />
     <Header />
-
-    <!-- 合并后的滚动/进度/视差统一驱动（一次 scroll 回调 + 一次 rAF） -->
     <script src="../scripts/scroll-effects.js"></script>
-    <main class="mx-auto w-full max-w-6xl px-6 pt-12 pb-6 flex-1 2xl:max-w-[1400px]">
+    <main class="galvin-main flex-1">
       <slot />
       <ScrollReveal />
     </main>
     <Footer />
     <BackToTop />
-    <UiEffects />
   </body>
 </html>
 
-<!-- Page transitions (effect C) -->
 <style is:global>
   @view-transition {
     navigation: auto;

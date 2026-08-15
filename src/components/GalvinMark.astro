@@ -1,0 +1,14 @@
+---
+/* Galvin design reminder: a temporary typographic G mark carries identity until the generated logo is ready.
+   Its geometry is functional brand navigation, not a decorative mascot. */
+interface Props {
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+---
+
+<span class:list={["galvin-mark", { "galvin-mark--compact": compact }]} aria-hidden="true">
+  <span class="galvin-mark__glyph">G</span>
+  <span class="galvin-mark__node"></span>
+</span>

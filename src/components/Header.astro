@@ -1,387 +1,104 @@
 ---
-import { getLangFromUrl, useTranslations } from "../i18n/utils";
-import ThemeToggle from "./ThemeToggle.astro";
-import LanguageSwitcher from "./LanguageSwitcher.astro";
-import ColumnIcon from "./ColumnIcon.astro";
+/* Galvin design reminder: navigation is a quiet index for seven Chinese sections.
+   Use low-contrast structure, one violet active signal, and a full-height mobile index without card clutter. */
+import GalvinMark from "./GalvinMark.astro";
 import Icon from "./Icon.astro";
 import SearchDialog from "./SearchDialog.astro";
-import { SECTION_COLORS, SECTION_COLORS_DARK } from "../lib/sections";
+import ThemeToggle from "./ThemeToggle.astro";
+import { GALVIN_NAVIGATION } from "../lib/galvin-navigation";
 
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
-
-const columns = ["insights", "ai", "tips", "books"] as const;
-const isCurrentSection = (s: string) => Astro.url.pathname.includes(`/${s}`);
-const toolsHref = lang === "en" ? "/en/tools/" : "/tools/";
-const isToolsPage = Astro.url.pathname.includes("/tools");
+const pathname = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 ---
 
-<header class="sticky top-0 z-[70] w-full border-b border-black/10 dark:border-white/10 bg-white/95 dark:bg-black/95 transition-colors duration-300">
-  <nav class="mx-auto max-w-6xl flex items-center justify-between px-4 sm:px-6 py-3 2xl:max-w-[1400px]">
-    <!-- Logo / Site title -->
-    <a
-      href={lang === "en" ? "/en/" : "/"}
-      class="text-base sm:text-lg md:text-xl font-bold tracking-tight text-black dark:text-white hover:opacity-70 transition-opacity shrink-0"
-    >
-      {t("site.title")}
+<header class="galvin-header">
+  <nav class="galvin-header__inner" aria-label="主导航">
+    <a class="galvin-brand" href="/" aria-label="Galvin 首页">
+      <GalvinMark />
+      <span class="galvin-brand__wordmark">Galvin</span>
     </a>
 
-    <!-- Right section: desktop links + shared controls + mobile hamburger -->
-    <div class="flex items-center gap-0.5 sm:gap-1.5">
-      <!-- Desktop-only nav links (hidden on mobile) -->
-      <div class="hidden md:flex items-center gap-1">
+    <div class="galvin-nav" aria-label="栏目">
+      {GALVIN_NAVIGATION.map((item) => (
         <a
-          href={lang === "en" ? "/en/" : "/"}
-          class={`px-3 py-2 text-sm rounded-lg transition-colors ${
-            Astro.url.pathname === "/" || Astro.url.pathname === "/en/" || Astro.url.pathname === "/en"
-              ? "bg-black/10 dark:bg-white/10 font-semibold"
-              : "hover:bg-black/5 dark:hover:bg-white/5"
-          }`}
+          class:list={["galvin-nav__link", { "is-active": isActive(item.href) }]}
+          href={item.href}
+          aria-current={isActive(item.href) ? "page" : undefined}
         >
-          {t("nav.home")}
+          <span class="galvin-nav__index">{item.index}</span>
+          <span>{item.label}</span>
         </a>
+      ))}
+    </div>
 
-        <!-- Columns dropdown -->
-        <div class="relative group">
-          <button
-            class={`px-3 py-2 text-sm rounded-lg transition-colors flex items-center gap-1 ${
-              columns.some((c) => isCurrentSection(c))
-                ? "bg-black/10 dark:bg-white/10 font-semibold"
-                : "hover:bg-black/5 dark:hover:bg-white/5"
-            }`}
-            style={(() => {
-              const cur = columns.find((c) => isCurrentSection(c));
-              return cur ? { color: SECTION_COLORS[cur], "--section-color-dark": SECTION_COLORS_DARK[cur] } : undefined;
-            })()}
-          >
-            {t("home.exploreColumns")}
-            <Icon name="chevronDown" class="w-3 h-3 mt-px opacity-50 group-hover:rotate-180 transition-transform" />
-          </button>
-          <!-- Dropdown menu -->
-          <div class="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-            <div class="bg-white dark:bg-neutral-900 border border-black/10 dark:border-white/10 rounded-xl shadow-lg py-2 min-w-[200px]">
-              {columns.map((col) => {
-                const colPath = lang === "en" ? `/en/${col}/` : `/${col}/`;
-                return (
-                  <a
-                    href={colPath}
-                    class={`block px-4 py-2.5 text-sm transition-colors ${
-                      isCurrentSection(col)
-                        ? "bg-black/5 dark:bg-white/5 font-semibold"
-                        : "hover:bg-black/5 dark:hover:bg-white/5"
-                    }`}
-                    style={isCurrentSection(col) ? { color: SECTION_COLORS[col], "--section-color-dark": SECTION_COLORS_DARK[col] } : undefined}
-                  >
-                    <ColumnIcon section={col} class="w-3.5 h-3.5 inline-block mr-1.5 align-middle" />
-                    {t(`columns.${col}.name`)}
-                  </a>
-                );
-              })}
-
-              {/* 工具箱：平级但视觉独立（分隔线 + 专属主题色） */}
-              <div class="mx-4 my-1.5 h-px bg-black/10 dark:bg-white/10"></div>
-              <a
-                href={toolsHref}
-                class={`block px-4 py-2.5 text-sm transition-colors ${
-                  isToolsPage
-                    ? "bg-black/5 dark:bg-white/5 font-semibold"
-                    : "hover:bg-black/5 dark:hover:bg-white/5"
-                }`}
-                style={isToolsPage ? { color: "#B45309" } : undefined}
-              >
-                <svg class="w-3.5 h-3.5 inline-block mr-1.5 align-middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:#B45309">
-                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                </svg>
-                {t("tools.name")}
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <a
-          href={lang === "en" ? "/en/about/" : "/about/"}
-          class={`px-3 py-2 text-sm rounded-lg transition-colors ${isCurrentSection("about") ? "bg-black/10 dark:bg-white/10 font-semibold" : "hover:bg-black/5 dark:hover:bg-white/5"}`}
-        >
-          {t("nav.about")}
-        </a>
-      </div>
-
-      <!-- Divider (desktop only — between nav links and control buttons) -->
-      <div class="hidden md:block mx-2 w-px h-6 bg-black/10 dark:bg-white/10"></div>
-
-      <!-- ──────── Shared controls (rendered ONCE, visible on ALL screen sizes) ──────── -->
+    <div class="galvin-header__controls">
       <SearchDialog />
       <ThemeToggle />
-      <LanguageSwitcher lang={lang} />
-
-      <!-- Hamburger button (mobile only, always last) -->
       <button
-        id="hamburger-btn"
-        class="md:hidden relative w-[42px] h-[42px] flex flex-col items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 dark:active:bg-white/10 gap-[5px] transition-all duration-200 -mr-1"
-        aria-label={t("nav.menu")}
+        id="galvin-menu-toggle"
+        class="galvin-menu-toggle"
+        aria-label="打开栏目导航"
         aria-expanded="false"
-        aria-controls="mobile-overlay"
+        aria-controls="galvin-mobile-menu"
       >
-        <span class="hamburger-line block w-[18px] h-[2px] rounded-full bg-current origin-center transition-all duration-300 ease-out"></span>
-        <span class="hamburger-line block w-[18px] h-[2px] rounded-full bg-current origin-center transition-all duration-300 ease-out"></span>
-        <span class="hamburger-line block w-[18px] h-[2px] rounded-full bg-current origin-center transition-all duration-300 ease-out"></span>
+        <Icon name="menu" class="w-[19px] h-[19px]" />
       </button>
     </div>
   </nav>
 
-  <!-- Mobile: full-screen overlay navigation panel -->
-  <div
-    id="mobile-overlay"
-    class="fixed top-0 left-0 w-screen h-screen z-[60] pointer-events-none md:hidden"
-    aria-hidden="true"
-  >
-    <!-- backdrop -->
-    <div
-      id="mobile-overlay-bg"
-      class="absolute inset-0 bg-white dark:bg-neutral-950 opacity-0 transition-opacity duration-300 ease-out"
-    ></div>
-
-    <!-- nav panel — scrollable for short screens -->
-    <nav
-      id="mobile-nav-panel"
-      class="relative z-10 h-[calc(100vh-3.5rem)] min-h-[calc(100vh-3.5rem)] overflow-y-auto overscroll-contain flex flex-col justify-start pt-4 pb-[max(1.5rem,calc(env(safe-area-inset-bottom,0px)+1rem))] px-5 opacity-0 translate-y-6 transition-all duration-400 ease-out"
-    >
-      <div class="max-w-sm mx-auto w-full space-y-0">
-        <!-- Home -->
-        <a
-          href={lang === "en" ? "/en/" : "/"}
-          class="mobile-nav-item group"
-          style="transition-delay: 0.06s"
-        >
-          <span class="mobile-nav-icon">
-            <Icon name="home" class="w-5 h-5" />
-          </span>
-          <span class="mobile-nav-label">{t("nav.home")}</span>
-          <span class="mobile-nav-arrow opacity-0 group-hover:opacity-30 transition-opacity"><Icon name="chevronRight" class="w-4 h-4" /></span>
-        </a>
-
-        <!-- divider: columns -->
-        <div class="mobile-nav-section-label" style="transition-delay: 0.12s">
-          <span class="text-[10px] uppercase tracking-[0.15em] opacity-40 font-medium">
-            {t("home.exploreColumns")}
-          </span>
-        </div>
-
-        <!-- columns -->
-        {columns.map((col, i) => {
-          const colPath = lang === "en" ? `/en/${col}/` : `/${col}/`;
-          return (
-            <a
-              href={colPath}
-              class="mobile-nav-item group"
-              style={`transition-delay: ${0.18 + i * 0.06}s`}
-            >
-              <span class="mobile-nav-icon">
-                <ColumnIcon section={col} class="w-5 h-5" />
-              </span>
-              <span class="mobile-nav-label" style={isCurrentSection(col) ? { color: SECTION_COLORS[col], "--section-color-dark": SECTION_COLORS_DARK[col] } : undefined}>{t(`columns.${col}.name`)}</span>
-              <span class="mobile-nav-arrow opacity-0 group-hover:opacity-30 transition-opacity"><Icon name="chevronRight" class="w-4 h-4" /></span>
-            </a>
-          );
-        })}
-
-        {/* 工具箱（与栏目平级，专属主题色） */}
-        <a
-          href={toolsHref}
-          class="mobile-nav-item group"
-          style="transition-delay: 0.42s"
-        >
-          <span class="mobile-nav-icon">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:#B45309">
-              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-            </svg>
-          </span>
-          <span class="mobile-nav-label" style={isToolsPage ? { color: "#B45309" } : undefined}>{t("tools.name")}</span>
-          <span class="mobile-nav-arrow opacity-0 group-hover:opacity-30 transition-opacity">→</span>
-        </a>
-
-        <!-- divider: more -->
-
-        <div class="mobile-nav-section-label" style="transition-delay: 0.44s">
-          <span class="text-[10px] uppercase tracking-[0.15em] opacity-40 font-medium">
-            {lang === "en" ? "More" : "更多"}
-          </span>
-        </div>
-
-        <!-- About -->
-        <a
-          href={lang === "en" ? "/en/about/" : "/about/"}
-          class="mobile-nav-item group"
-          style="transition-delay: 0.50s"
-        >
-          <span class="mobile-nav-icon">
-            <Icon name="user" class="w-5 h-5" />
-          </span>
-          <span class="mobile-nav-label">{t("nav.about")}</span>
-          <span class="mobile-nav-arrow opacity-0 group-hover:opacity-30 transition-opacity"><Icon name="chevronRight" class="w-4 h-4" /></span>
-        </a>
-
+  <div id="galvin-mobile-menu" class="galvin-mobile-menu" aria-hidden="true">
+    <div class="galvin-mobile-menu__inner">
+      <p class="galvin-mobile-menu__eyebrow">INDEX / 07</p>
+      <div class="galvin-mobile-menu__links">
+        {GALVIN_NAVIGATION.map((item) => (
+          <a class="galvin-mobile-menu__link" href={item.href}>
+            <span class="galvin-mobile-menu__index">{item.index}</span>
+            <span>{item.label}</span>
+            <Icon name="arrowRight" class="w-4 h-4" />
+          </a>
+        ))}
       </div>
-    </nav>
+      <p class="galvin-mobile-menu__note">把好奇心，做成一点有用的东西。</p>
+    </div>
   </div>
 </header>
 
-<style>
-  /* ── hamburger → X animation ── */
-  #hamburger-btn.active .hamburger-line:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
-  }
-  #hamburger-btn.active .hamburger-line:nth-child(2) {
-    opacity: 0;
-    transform: scaleX(0);
-  }
-  #hamburger-btn.active .hamburger-line:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
-  }
-
-  /* ── overlay open state ── */
-  /* :global() required — class added to <html> outside component scope */
-  :global(.mobile-overlay-open) {
-    overflow: hidden;
-    touch-action: none;
-  }
-  :global(.mobile-overlay-open) #mobile-overlay {
-    pointer-events: auto;
-  }
-  :global(.mobile-overlay-open) #mobile-overlay-bg {
-    opacity: 1;
-  }
-  :global(.mobile-overlay-open) #mobile-nav-panel {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* ── safe-area is now handled inline via pt/pb calc on nav-panel ── */
-
-  /* ── nav items: stagger fade + slide ── */
-  .mobile-nav-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.625rem 1rem;
-    min-height: 44px;
-    border-radius: 12px;
-    opacity: 0;
-    transform: translateY(12px);
-    transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-                transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-                background-color 0.15s ease;
-    transition-delay: 0s, 0s, 0s;
-    -webkit-tap-highlight-color: transparent;
-    text-decoration: none;
-    color: inherit;
-  }
-
-  :global(.mobile-overlay-open) .mobile-nav-item {
-    opacity: 1;
-    transform: translateY(0);
-    transition-duration: 0.4s, 0.4s, 0.15s;
-  }
-
-  .mobile-nav-item:active {
-    background-color: rgba(0, 0, 0, 0.06);
-  }
-  :global(.dark) .mobile-nav-item:active {
-    background-color: rgba(255, 255, 255, 0.06);
-  }
-
-  .mobile-nav-icon {
-    flex-shrink: 0;
-    width: 1.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    opacity: 0.5;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-  }
-
-  .mobile-nav-item:active .mobile-nav-icon {
-    opacity: 0.8;
-    transform: scale(0.95);
-  }
-
-  .mobile-nav-label {
-    font-size: 1rem;
-    font-weight: 500;
-    letter-spacing: 0.01em;
-    line-height: 1.3;
-  }
-
-  .mobile-nav-arrow {
-    margin-left: auto;
-    font-size: 1rem;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-  }
-  .mobile-nav-item:active .mobile-nav-arrow {
-    opacity: 0.4;
-    transform: translateX(2px);
-  }
-
-  .mobile-nav-section-label {
-    padding: 0.75rem 1rem 0.25rem;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-                transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  :global(.mobile-overlay-open) .mobile-nav-section-label {
-    opacity: 1;
-    transform: translateY(0);
-  }
-</style>
-
 <script>
   (function () {
-    var btn = document.getElementById("hamburger-btn");
-    var overlay = document.getElementById("mobile-overlay");
-    var html = document.documentElement;
-    var CLS = "mobile-overlay-open";
-    var isOpen = false;
+    const toggle = document.getElementById("galvin-menu-toggle");
+    const menu = document.getElementById("galvin-mobile-menu");
+    const root = document.documentElement;
+    const openClass = "galvin-menu-open";
 
-    if (!btn || !overlay) return;
+    if (!toggle || !menu) return;
 
-    function open() {
-      if (isOpen) return;
-      isOpen = true;
-      btn.classList.add("active");
-      btn.setAttribute("aria-expanded", "true");
-      overlay.setAttribute("aria-hidden", "false");
-      html.classList.add(CLS);
-    }
+    const close = () => {
+      root.classList.remove(openClass);
+      toggle.setAttribute("aria-expanded", "false");
+      menu.setAttribute("aria-hidden", "true");
+      toggle.setAttribute("aria-label", "打开栏目导航");
+    };
 
-    function close() {
-      if (!isOpen) return;
-      isOpen = false;
-      btn.classList.remove("active");
-      btn.setAttribute("aria-expanded", "false");
-      overlay.setAttribute("aria-hidden", "true");
-      html.classList.remove(CLS);
-    }
+    const open = () => {
+      root.classList.add(openClass);
+      toggle.setAttribute("aria-expanded", "true");
+      menu.setAttribute("aria-hidden", "false");
+      toggle.setAttribute("aria-label", "关闭栏目导航");
+    };
 
-    btn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      isOpen ? close() : open();
+    toggle.addEventListener("click", () => {
+      root.classList.contains(openClass) ? close() : open();
     });
 
-    // close on any click within the overlay
-    // (hamburger btn uses stopPropagation so its clicks won't reach here)
-    overlay.addEventListener("click", function () {
-      close();
+    menu.addEventListener("click", (event) => {
+      if ((event.target as HTMLElement).closest("a")) close();
     });
 
-    // close on Escape
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && isOpen) close();
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") close();
     });
 
-    // reset on Astro view-transition swap
-    document.addEventListener("astro:after-swap", function () {
-      if (isOpen) close();
-    });
+    document.addEventListener("astro:after-swap", close);
   })();
 </script>

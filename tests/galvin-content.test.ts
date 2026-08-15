@@ -5,6 +5,7 @@ import {
   mapLegacyArticleSection,
 } from "../src/lib/galvin-content";
 import { getGalvinRouteFromLegacyPath } from "../src/lib/galvin-routing";
+import { GALVIN_NAVIGATION } from "../src/lib/galvin-navigation";
 
 describe("Galvin 内容分类", () => {
   it("定义了七个稳定的中文内容分类", () => {
@@ -37,5 +38,19 @@ describe("Galvin 内容分类", () => {
     expect(getGalvinRouteFromLegacyPath("/sites")).toBe("/藏页");
     expect(getGalvinRouteFromLegacyPath("/about")).toBe("/关于");
     expect(getGalvinRouteFromLegacyPath("/en/about")).toBe("/关于");
+  });
+
+  it("以中文优先的七栏目导航承接当前迁移期入口", () => {
+    expect(GALVIN_NAVIGATION.map((item) => item.label)).toEqual([
+      "此刻",
+      "造物",
+      "叩问",
+      "行迹",
+      "藏页",
+      "书架",
+      "关于",
+    ]);
+    expect(GALVIN_NAVIGATION.find((item) => item.id === "making")?.href).toBe("/tools");
+    expect(GALVIN_NAVIGATION.find((item) => item.id === "about")?.href).toBe("/about");
   });
 });

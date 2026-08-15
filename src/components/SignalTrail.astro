@@ -1,0 +1,14 @@
+---
+/* Galvin design reminder: the signal trail is the single animated motif.
+   It traces curiosity into useful artifacts, so it stays low-contrast and never competes with text. */
+---
+
+<div class="signal-trail" aria-hidden="true">
+  <svg viewBox="0 0 1200 212" preserveAspectRatio="none" role="presentation">
+    <path class="signal-trail__ghost" d="M0 30 C160 30 168 145 328 145 S500 54 635 86 S848 177 976 118 S1114 38 1200 38" />
+    <path class="signal-trail__active" d="M0 30 C160 30 168 145 328 145 S500 54 635 86 S848 177 976 118 S1114 38 1200 38" />
+    <circle class="signal-trail__node signal-trail__node--one" cx="328" cy="145" r="4" />
+    <circle class="signal-trail__node signal-trail__node--two" cx="635" cy="86" r="4" />
+    <circle class="signal-trail__node signal-trail__node--three" cx="976" cy="118" r="4" />
+  </svg>
+</div>
