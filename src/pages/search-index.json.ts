@@ -32,10 +32,11 @@ function makeSearchItem(input: Omit<SearchItem, "tags" | "tagsArr"> & { tags: st
 
 // 中文搜索索引：构建期生成独立 JSON，由搜索面板在首次打开时按需加载。
 export async function GET() {
-  const [articles, tools, sites] = await Promise.all([
+  const [articles, tools, sites, books] = await Promise.all([
     getCollection("articles", ({ data }) => !data.draft),
     getCollection("tools", ({ data }) => !data.draft),
     getCollection("sites", ({ data }) => !data.draft),
+    getCollection("books", ({ data }) => !data.draft),
   ]);
 
   const articleItems = articles.map((post) => {
@@ -71,7 +72,17 @@ export async function GET() {
     href: `/sites/${site.id}/`,
   }));
 
-  return new Response(JSON.stringify([...articleItems, ...toolItems, ...siteItems]), {
+  const bookItems = books.map((book) => makeSearchItem({
+    title: book.data.title,
+    excerpt: book.data.description || book.data.note || "",
+    tags: book.data.tags,
+    category: getGalvinKindLabel("shelf"),
+    section: "shelf",
+    date: dateLabel(book.data.finishedAt || book.data.startedAt),
+    href: "/books/",
+  }));
+
+  return new Response(JSON.stringify([...articleItems, ...toolItems, ...siteItems, ...bookItems]), {
     headers: { "Content-Type": "application/json; charset=utf-8" },
   });
 }

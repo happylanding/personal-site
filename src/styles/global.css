@@ -3361,3 +3361,76 @@ body.galvin-site ::selection {
   .galvin-tool-card__body h2 { font-size: 28px; }
   .galvin-tool-card__spacer { min-height: 45px; }
 }
+
+/* Galvin shelf reminder: one book should read as a calm, traceable reading record.
+   The cover may be light; all surrounding hierarchy stays in the blue-black workspace. */
+.galvin-shelf-license { margin-top: 30px; }
+
+.galvin-shelf-list {
+  margin-top: 28px;
+  border-top: 1px solid var(--galvin-line-subtle);
+}
+
+.galvin-shelf-card {
+  display: grid;
+  grid-template-columns: 48px minmax(156px, 0.34fr) minmax(0, 1fr) minmax(184px, 0.38fr);
+  gap: clamp(18px, 3vw, 42px);
+  align-items: start;
+  padding: clamp(24px, 4vw, 42px) 0;
+  border-bottom: 1px solid var(--galvin-line-subtle);
+}
+
+.galvin-shelf-card__index {
+  padding-top: 4px;
+  color: var(--galvin-text-tertiary);
+  font: 11px var(--galvin-font-utility);
+}
+
+.galvin-shelf-card__cover {
+  overflow: hidden;
+  aspect-ratio: 1323 / 1871;
+  border: 1px solid rgba(123, 143, 192, 0.52);
+  background: var(--galvin-surface);
+  box-shadow: 14px 16px 26px rgba(0, 0, 0, 0.34);
+}
+
+.galvin-shelf-card__cover img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.galvin-shelf-card__cover svg { display: block; margin: 42% auto 0; color: var(--galvin-text-tertiary); }
+
+.galvin-shelf-card__utility { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--galvin-text-tertiary); font: 10px var(--galvin-font-utility); letter-spacing: 0.06em; }
+.galvin-shelf-card__status { display: inline-flex; align-items: center; gap: 6px; color: var(--galvin-signal-cyan); }
+.galvin-shelf-card__status i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; box-shadow: 0 0 10px rgba(97, 242, 208, 0.65); }
+
+.galvin-shelf-card h2 { max-width: 670px; margin: 16px 0 7px; color: var(--galvin-text-primary); font-size: clamp(27px, 3vw, 40px); font-weight: 600; letter-spacing: -0.065em; line-height: 1.2; }
+.galvin-shelf-card__author { margin: 0; color: var(--galvin-text-tertiary); font-size: 14px; }
+.galvin-shelf-card__description { max-width: 620px; margin: 18px 0 0; color: var(--galvin-text-secondary); font-size: 14px; line-height: 1.8; }
+
+.galvin-shelf-card__note { margin-top: 22px; padding-left: 12px; border-left: 1px solid rgba(155, 140, 255, 0.74); }
+.galvin-shelf-card__note span { color: var(--galvin-signal-violet); font: 10px var(--galvin-font-utility); letter-spacing: 0.08em; }
+.galvin-shelf-card__note p { margin: 6px 0 0; color: var(--galvin-text-secondary); font-size: 13px; line-height: 1.65; }
+.galvin-shelf-card__tags { display: flex; flex-wrap: wrap; gap: 8px 12px; margin-top: 20px; }
+.galvin-shelf-card__tags span { color: var(--galvin-text-tertiary); font: 11px var(--galvin-font-utility); }
+
+.galvin-shelf-card__actions { display: flex; min-height: 100%; flex-direction: column; align-items: stretch; justify-content: end; gap: 15px; }
+.galvin-shelf-card__actions .galvin-button { width: 100%; min-height: 44px; }
+.galvin-shelf-card__actions p { margin: 0; color: var(--galvin-text-tertiary); font: 10px/1.65 var(--galvin-font-utility); }
+
+@media (max-width: 920px) {
+  .galvin-shelf-card { grid-template-columns: 32px 138px minmax(0, 1fr); }
+  .galvin-shelf-card__actions { grid-column: 3; min-height: auto; align-items: start; margin-top: -6px; }
+  .galvin-shelf-card__actions .galvin-button { width: auto; }
+}
+
+@media (max-width: 640px) {
+  .galvin-shelf-card { grid-template-columns: 28px minmax(102px, 0.42fr) minmax(0, 1fr); gap: 12px; padding: 24px 0 30px; }
+  .galvin-shelf-card__cover { box-shadow: 8px 10px 18px rgba(0, 0, 0, 0.34); }
+  .galvin-shelf-card__utility { display: block; }
+  .galvin-shelf-card__utility > span:last-child { display: block; margin-top: 7px; }
+  .galvin-shelf-card h2 { margin-top: 13px; font-size: 23px; line-height: 1.28; }
+  .galvin-shelf-card__author { font-size: 13px; }
+  .galvin-shelf-card__description { margin-top: 14px; font-size: 13px; }
+  .galvin-shelf-card__note { margin-top: 17px; }
+  .galvin-shelf-card__tags { margin-top: 16px; }
+  .galvin-shelf-card__actions { grid-column: 2 / -1; margin: 4px 0 0; }
+  .galvin-shelf-card__actions .galvin-button { width: 100%; }
+}

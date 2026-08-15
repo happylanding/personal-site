@@ -21,9 +21,66 @@ const sectionArticles = allArticles
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
 const isBooksSection = section === "books";
+const shelfBooks = isBooksSection
+  ? await getCollection("books", ({ data }) => !data.draft)
+  : [];
 ---
 
-<BaseLayout title={t(`columns.${section}.name`)} description={t(`columns.${section}.desc`)}>
+<BaseLayout
+  title={isBooksSection ? "书架" : t(`columns.${section}.name`)}
+  description={isBooksSection ? "Galvin 正在阅读的书目、阅读状态与合法开源入口。" : t(`columns.${section}.desc`)}
+>
+  {isBooksSection ? (
+    <section class="galvin-content-page galvin-shelf-page" aria-labelledby="shelf-title">
+      <header class="galvin-content-page__hero">
+        <div class="galvin-content-page__signal" aria-hidden="true"><i></i><span>SHELF / READING LOG</span></div>
+        <div class="galvin-content-page__hero-grid">
+          <div>
+            <p class="galvin-content-page__number">06 / 07</p>
+            <h1 id="shelf-title">书架<span>。</span></h1>
+            <p class="galvin-content-page__lead">不把读过的书堆成清单，只留下一些正在影响我思考方式的内容。每一项都附上真实状态和可追溯的合法入口。</p>
+          </div>
+          <div class="galvin-content-page__meta" aria-label="书架状态">
+            <div><span>READING</span><strong>{String(shelfBooks.length).padStart(2, "0")}</strong><small>本正在记录</small></div>
+            <a class="galvin-content-page__search" href="#shelf-list"><span>查看书目</span><span aria-hidden="true">↓</span></a>
+          </div>
+        </div>
+      </header>
+
+      <aside class="galvin-privacy-note galvin-shelf-license" aria-label="书架内容边界">
+        <span class="galvin-privacy-note__node" aria-hidden="true"></span>
+        <div><strong>书架边界</strong><p>本站只展示书目信息、阅读状态、个人阅读记录与合法外链；不托管或分发未经授权的全文文件。</p></div>
+      </aside>
+
+      <div class="galvin-shelf-list" id="shelf-list">
+        {shelfBooks.map((book, index) => {
+          const statusLabel = book.data.status === "reading" ? "正在阅读" : book.data.status === "finished" ? "已读完" : "待阅读";
+          return (
+            <article class="galvin-shelf-card">
+              <div class="galvin-shelf-card__index">{String(index + 1).padStart(2, "0")}</div>
+              <div class="galvin-shelf-card__cover">
+                {book.data.coverImage ? <img src={book.data.coverImage} alt={`《${book.data.title}》封面`} loading="lazy" /> : <Icon name="bookOpen" class="w-8 h-8" />}
+              </div>
+              <div class="galvin-shelf-card__body">
+                <div class="galvin-shelf-card__utility"><span class="galvin-shelf-card__status"><i></i>{statusLabel}</span><span>BOOK / {String(index + 1).padStart(2, "0")}</span></div>
+                <h2>{book.data.title}</h2>
+                {book.data.author && <p class="galvin-shelf-card__author">{book.data.author} 著</p>}
+                {book.data.description && <p class="galvin-shelf-card__description">{book.data.description}</p>}
+                <div class="galvin-shelf-card__note"><span>READING NOTE</span><p>{book.data.note || "阅读记录将在阅读推进后持续补充。"}</p></div>
+                <div class="galvin-shelf-card__tags">{book.data.tags.map((tag) => <span>#{tag}</span>)}</div>
+              </div>
+              <div class="galvin-shelf-card__actions">
+                {book.data.legalUrl && <a class="galvin-button galvin-button--primary" href={book.data.legalUrl} target="_blank" rel="noopener">访问开源项目<span aria-hidden="true">↗</span></a>}
+                <p>封面与书目来源：作者开源项目<br />Apache License 2.0</p>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      {shelfBooks.length === 0 && <p class="galvin-empty-state">书架正在整理第一本书。</p>}
+    </section>
+  ) : <>
   <Breadcrumb
     crumbs={[
       { label: t(`columns.${section}.name`), href: `/${section}/` },
@@ -200,4 +257,5 @@ const isBooksSection = section === "books";
       <p class="py-12 text-center text-black/30 dark:text-white/30 italic">{t("articles.noArticles")}</p>
     )}
   </section>
+  </>}
 </BaseLayout>

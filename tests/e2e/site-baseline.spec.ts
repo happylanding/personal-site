@@ -61,3 +61,23 @@ test("全站搜索以 Galvin 栏目语义检索真实工具", async ({ page }) =
   await expect(results).toContainText("Excel 空 Sheet 批量清理工具");
   await expect(results).toContainText("造物");
 });
+
+test("书架展示首本开源书目且不提供站内全文下载", async ({ page }) => {
+  await page.goto("/books/");
+
+  await expect(page.getByRole("heading", { level: 1, name: "书架。" })).toBeVisible();
+  await expect(page.getByText("深入理解 AI Agent：设计原理与工程实践")).toBeVisible();
+  await expect(page.getByText("正在阅读")).toBeVisible();
+  await expect(page.getByRole("link", { name: "访问开源项目" })).toHaveAttribute("href", "https://github.com/bojieli/ai-agent-book");
+  await expect(page.getByRole("link", { name: /EPUB|PDF|下载/ })).toHaveCount(0);
+});
+
+test("全站搜索可检索书架中的首本书目", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "打开全站搜索" }).click();
+  await page.locator("#search-input").fill("Agent");
+
+  const results = page.locator("#search-results-list");
+  await expect(results).toContainText("深入理解 AI Agent：设计原理与工程实践");
+  await expect(results).toContainText("书架");
+});
