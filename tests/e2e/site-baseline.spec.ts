@@ -4,10 +4,36 @@ test("首页保留可读的主标题与键盘可达的导航", async ({ page }) 
   await page.goto("/");
 
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(page.getByRole("navigation")).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "主导航" })).toBeVisible();
 
   await page.keyboard.press("Tab");
   await expect(page.locator(":focus-visible")).toBeVisible();
+});
+
+test("关于页以 Galvin 工作档案呈现公开身份边界与可复制邮箱", async ({ page }) => {
+  await page.goto("/about/");
+
+  const pageRoot = page.locator(".galvin-about-page");
+  await expect(pageRoot).toBeVisible();
+  await expect(pageRoot.getByRole("heading", { level: 1, name: /Galvin，/ })).toBeVisible();
+  await expect(pageRoot.getByText("AI 初学者 × 数字政府/数字经济从业者")).toBeVisible();
+  await expect(pageRoot.locator(".galvin-about-hero__meta dd").getByText("南京", { exact: true })).toBeVisible();
+
+  const copyEmail = pageRoot.getByRole("button", { name: "复制邮箱" });
+  await copyEmail.click();
+  await expect(copyEmail).toHaveText("已复制邮箱");
+  await expect(pageRoot.getByRole("link", { name: "在 X 上关注 Galvin" })).toHaveAttribute("href", "https://x.com/galvin0119");
+  await expect(pageRoot.getByText("加个微信")).toHaveCount(0);
+});
+
+test("公共页脚提供可见的栏目导航和公开联系入口", async ({ page }) => {
+  await page.goto("/");
+
+  const footer = page.getByRole("contentinfo");
+  await expect(footer).toBeVisible();
+  await expect(footer.getByRole("navigation", { name: "页脚导航" }).getByRole("link", { name: "叩问" })).toHaveAttribute("href", "/archive/");
+  await expect(footer.getByRole("button", { name: "复制邮箱" })).toBeVisible();
+  await expect(footer.getByRole("link", { name: "在 X 上关注 Galvin" })).toHaveAttribute("href", "https://x.com/galvin0119");
 });
 
 test("手机端栏目索引可打开并通过 Escape 关闭", async ({ page }) => {

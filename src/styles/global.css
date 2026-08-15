@@ -3726,3 +3726,101 @@ body.galvin-site ::selection {
     transition: none;
   }
 }
+
+/* Galvin About + Footer: a composed work profile and useful site ending, built from
+   the shared dark-editor tokens rather than the legacy warm glass-card language. */
+.galvin-about-page { width: min(100% - 64px, 1160px); margin: 0 auto; padding: 74px 0 92px; }
+.galvin-about-hero { max-width: 980px; padding: 18px 0 72px; border-bottom: 1px solid var(--galvin-line); }
+.galvin-about-hero__signal-row, .galvin-about-hero__meta dt, .galvin-about-section__head > p, .galvin-about-contact__copy > p, .galvin-about-next > p, .galvin-footer__nav > p, .galvin-footer__contact > p { color: var(--galvin-text-tertiary); font: 10px var(--galvin-font-utility); letter-spacing: 0.11em; }
+.galvin-about-hero__signal-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.galvin-about-hero__signal { display: inline-flex; align-items: center; gap: 8px; color: var(--galvin-signal-cyan); }
+.galvin-about-hero__signal i { width: 7px; height: 7px; border-radius: 50%; background: var(--galvin-signal-cyan); box-shadow: 0 0 12px rgba(97, 242, 208, 0.62); }
+.galvin-about-hero__eyebrow { margin: 60px 0 12px; color: var(--galvin-signal-violet); font: 12px var(--galvin-font-utility); letter-spacing: 0.08em; }
+.galvin-about-hero h1 { max-width: 900px; margin: 0; color: var(--galvin-text-primary); font-family: "Noto Sans SC", sans-serif; font-size: clamp(44px, 7.2vw, 94px); font-weight: 600; letter-spacing: -0.065em; line-height: 1.1; }
+.galvin-about-hero__lead { max-width: 710px; margin: 30px 0 0; color: var(--galvin-text-secondary); font-size: clamp(17px, 2vw, 21px); line-height: 1.78; }
+.galvin-about-hero__meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; max-width: 760px; margin: 46px 0 0; }
+.galvin-about-hero__meta div { padding-top: 14px; border-top: 1px solid var(--galvin-line-subtle); }
+.galvin-about-hero__meta dt { margin: 0; }
+.galvin-about-hero__meta dd { margin: 8px 0 0; color: var(--galvin-text-primary); font-size: 14px; }
+.galvin-about-section { padding: 76px 0; border-bottom: 1px solid var(--galvin-line); }
+.galvin-about-section__head { display: grid; grid-template-columns: 172px minmax(0, 1fr); gap: 32px; align-items: baseline; margin-bottom: 36px; }
+.galvin-about-section__head > p { margin: 0; color: var(--galvin-signal-cyan); }
+.galvin-about-section__head h2 { margin: 0; color: var(--galvin-text-primary); font-size: clamp(27px, 4vw, 44px); font-weight: 600; letter-spacing: -0.04em; line-height: 1.2; }
+.galvin-about-practice__list { margin: 0; padding: 0; list-style: none; }
+.galvin-about-practice__list li { display: grid; grid-template-columns: 172px minmax(0, 1fr) auto; gap: 32px; align-items: start; padding: 27px 0; border-top: 1px solid var(--galvin-line-subtle); }
+.galvin-about-practice__list li:last-child { border-bottom: 1px solid var(--galvin-line-subtle); }
+.galvin-about-practice__list > li > span { color: var(--galvin-signal-violet); font: 12px var(--galvin-font-utility); }
+.galvin-about-practice h3 { margin: 0; color: var(--galvin-text-primary); font-size: clamp(19px, 2vw, 25px); font-weight: 600; letter-spacing: -0.03em; }
+.galvin-about-practice h3 + p { max-width: 600px; margin: 10px 0 0; color: var(--galvin-text-secondary); font-size: 15px; line-height: 1.72; }
+.galvin-about-practice__icon { width: 18px; height: 18px; color: var(--galvin-signal-cyan); }
+.galvin-about-profile__grid { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(280px, 0.88fr); gap: clamp(36px, 8vw, 120px); }
+.galvin-about-profile__statement { max-width: 580px; margin: 0; color: var(--galvin-text-primary); font-size: clamp(21px, 2.7vw, 31px); font-weight: 500; letter-spacing: -0.035em; line-height: 1.55; }
+.galvin-about-profile__signals { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--galvin-line-subtle); }
+.galvin-about-profile__signals li { display: grid; grid-template-columns: 34px 1fr; column-gap: 13px; padding: 17px 0; border-bottom: 1px solid var(--galvin-line-subtle); }
+.galvin-about-profile__signals span { grid-row: span 2; color: var(--galvin-signal-violet); font: 10px var(--galvin-font-utility); }
+.galvin-about-profile__signals strong { color: var(--galvin-text-primary); font-size: 15px; font-weight: 600; }
+.galvin-about-profile__signals p { margin: 4px 0 0; color: var(--galvin-text-secondary); font-size: 13px; line-height: 1.6; }
+.galvin-about-contact { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(290px, 0.9fr); gap: clamp(36px, 8vw, 130px); padding-top: 84px; }
+.galvin-about-contact__copy > p:first-child { margin: 0 0 16px; color: var(--galvin-signal-cyan); }
+.galvin-about-contact__copy h2 { margin: 0; color: var(--galvin-text-primary); font-size: clamp(30px, 4vw, 48px); font-weight: 600; letter-spacing: -0.045em; line-height: 1.16; }
+.galvin-about-contact__copy h2 + p { max-width: 590px; margin: 20px 0 0; color: var(--galvin-text-secondary); font-size: 15px; line-height: 1.78; }
+.galvin-about-contact__actions { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.galvin-contact-action { display: inline-flex; align-items: center; gap: 9px; min-height: 48px; padding: 0 17px; border: 1px solid var(--galvin-line); background: var(--galvin-surface); color: var(--galvin-text-primary); font: 13px "Noto Sans SC", sans-serif; text-decoration: none; cursor: pointer; transition: transform 160ms var(--galvin-ease-out), border-color 160ms var(--galvin-ease-out), color 160ms var(--galvin-ease-out); }
+.galvin-contact-action:hover, .galvin-contact-action:focus-visible { border-color: var(--galvin-signal-violet); color: var(--galvin-signal-violet); outline: none; }
+.galvin-contact-action:active { transform: scale(0.98); }
+.galvin-contact-action--x { border-color: rgba(97, 242, 208, 0.3); color: var(--galvin-signal-cyan); }
+.galvin-contact-status { min-height: 1.2rem; margin: 4px 0 0; color: var(--galvin-text-tertiary); font: 11px var(--galvin-font-utility); }
+.galvin-about-next { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 30px 0 0; }
+.galvin-about-next > p { margin: 0; }
+.galvin-about-next > div { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px 22px; }
+.galvin-about-next a { display: inline-flex; align-items: center; gap: 5px; color: var(--galvin-text-secondary); font-size: 13px; text-decoration: none; transition: color 160ms var(--galvin-ease-out); }
+.galvin-about-next a:hover { color: var(--galvin-signal-cyan); }
+
+.galvin-footer { margin-top: auto; border-top: 1px solid var(--galvin-line); background: rgba(7, 11, 20, 0.74); }
+.galvin-footer__grid, .galvin-footer__meta { width: min(100% - 64px, 1280px); margin: 0 auto; }
+.galvin-footer__grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr) minmax(220px, 0.7fr); gap: clamp(32px, 6vw, 96px); padding: 54px 0 42px; }
+.galvin-footer__wordmark { display: inline-flex; align-items: center; gap: 8px; color: var(--galvin-text-primary); font: 600 18px "Noto Sans SC", sans-serif; text-decoration: none; }
+.galvin-footer__wordmark span { display: grid; width: 26px; height: 26px; place-items: center; border: 1px solid var(--galvin-signal-violet); color: var(--galvin-signal-violet); font: 12px var(--galvin-font-utility); }
+.galvin-footer__identity p { max-width: 270px; margin: 15px 0 6px; color: var(--galvin-text-secondary); font-size: 15px; line-height: 1.55; }
+.galvin-footer__identity small { color: var(--galvin-text-tertiary); font: 10px var(--galvin-font-utility); letter-spacing: 0.07em; }
+.galvin-footer__nav > p, .galvin-footer__contact > p { margin: 3px 0 14px; color: var(--galvin-signal-violet); }
+.galvin-footer__nav > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 18px; }
+.galvin-footer__nav a, .galvin-footer__contact > a, .galvin-footer__contact > button { display: inline-flex; align-items: center; gap: 7px; width: fit-content; min-height: 34px; color: var(--galvin-text-secondary); font-size: 13px; text-decoration: none; }
+.galvin-footer__nav a:hover, .galvin-footer__contact > a:hover, .galvin-footer__contact > button:hover { color: var(--galvin-signal-cyan); }
+.galvin-footer__contact > button { padding: 0; border: 0; background: transparent; cursor: pointer; }
+.galvin-footer__contact { display: flex; flex-direction: column; align-items: flex-start; }
+.galvin-footer__copy-status { min-height: 1.1rem; color: var(--galvin-signal-cyan); font: 10px var(--galvin-font-utility); }
+.galvin-footer__meta { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 0 22px; border-top: 1px solid var(--galvin-line-subtle); color: var(--galvin-text-tertiary); font: 10px var(--galvin-font-utility); letter-spacing: 0.03em; }
+.galvin-footer__meta p { margin: 0; }
+.galvin-footer__signals { display: flex; gap: 4px; }
+.galvin-footer__signals a { display: inline-grid; width: 30px; height: 30px; place-items: center; color: var(--galvin-text-tertiary); text-decoration: none; transition: color 160ms var(--galvin-ease-out), background 160ms var(--galvin-ease-out); }
+.galvin-footer__signals a:hover, .galvin-footer__signals a:focus-visible { color: var(--galvin-signal-cyan); background: rgba(97, 242, 208, 0.06); outline: none; }
+
+@media (max-width: 720px) {
+  .galvin-about-page { width: min(100% - 32px, 1160px); padding: 40px 0 62px; }
+  .galvin-about-hero { padding-bottom: 48px; }
+  .galvin-about-hero__signal-row { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .galvin-about-hero__eyebrow { margin-top: 42px; }
+  .galvin-about-hero h1 { font-size: clamp(39px, 12.2vw, 58px); letter-spacing: -0.07em; }
+  .galvin-about-hero__lead { margin-top: 22px; font-size: 16px; line-height: 1.75; }
+  .galvin-about-hero__meta { grid-template-columns: 1fr; gap: 10px; margin-top: 34px; }
+  .galvin-about-hero__meta div { display: grid; grid-template-columns: 76px 1fr; align-items: center; }
+  .galvin-about-hero__meta dd { margin: 0; }
+  .galvin-about-section { padding: 54px 0; }
+  .galvin-about-section__head, .galvin-about-practice__list li { grid-template-columns: 1fr; gap: 12px; }
+  .galvin-about-section__head { margin-bottom: 26px; }
+  .galvin-about-section__head h2 { font-size: 29px; }
+  .galvin-about-practice__list li { position: relative; padding: 22px 0 24px; }
+  .galvin-about-practice__list > li > span { margin-bottom: 1px; }
+  .galvin-about-practice h3 { padding-right: 24px; font-size: 20px; }
+  .galvin-about-practice__icon { position: absolute; top: 54px; right: 0; }
+  .galvin-about-profile__grid, .galvin-about-contact { grid-template-columns: 1fr; gap: 34px; }
+  .galvin-about-profile__statement { font-size: 22px; }
+  .galvin-about-contact { padding-top: 60px; }
+  .galvin-about-next { align-items: flex-start; flex-direction: column; padding-top: 25px; }
+  .galvin-about-next > div { justify-content: flex-start; }
+  .galvin-footer__grid, .galvin-footer__meta { width: min(100% - 32px, 1280px); }
+  .galvin-footer__grid { grid-template-columns: 1fr; gap: 34px; padding: 42px 0 28px; }
+  .galvin-footer__nav > div { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .galvin-footer__meta { align-items: flex-start; flex-direction: column; padding: 14px 0 20px; }
+}

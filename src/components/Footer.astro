@@ -1,76 +1,97 @@
 ---
-import { getLangFromUrl } from "../i18n/utils";
+/* Galvin design reminder: the footer is the calm, useful last screen of the dark
+   editorial workspace. It presents clear navigation and contact paths; subtle signals
+   remain secondary and never replace readable links. */
 import Icon from "./Icon.astro";
 
-const lang = getLangFromUrl(Astro.url);
-const isEn = lang === "en";
-const sitesHref = isEn ? "/en/sites/" : "/sites/";
-const toolsHref = isEn ? "/en/tools/" : "/tools/";
+const email = "cgaojiacheng@gmail.com";
+const xLink = "https://x.com/galvin0119";
+const navigation = [
+  { label: "此刻", href: "/" },
+  { label: "造物", href: "/tools/" },
+  { label: "叩问", href: "/archive/" },
+  { label: "行迹", href: "/about/#journey" },
+  { label: "藏页", href: "/sites/" },
+  { label: "书架", href: "/books/" },
+  { label: "关于", href: "/about/" },
+];
 ---
 
-<footer class="border-t border-black/10 dark:border-white/10 mt-8">
-  <div class="mx-auto max-w-6xl px-6 py-8 text-center 2xl:max-w-[1400px]">
-    <!-- 隐藏入口：收藏夹（低调的小书签图标，放在版权说明右侧同一行，仅供站主快速访问） -->
-    <p class="inline-flex items-center justify-center gap-2 text-xs text-black/40 dark:text-white/40">
-      &copy; {new Date().getFullYear()} Galvin
-      <a
-        href={sitesHref}
-        id="sites-hidden-link"
-        class="inline-flex items-center text-black/25 dark:text-white/25 hover:text-black/50 dark:hover:text-white/50 transition-colors"
-        title="收藏夹"
-        aria-label="收藏夹"
-      >
-        <Icon name="bookmark" class="w-3.5 h-3.5" />
-        <span class="hidden">收藏夹</span>
-      </a>
-      <a
-        href={toolsHref}
-        id="tools-hidden-link"
-        class="inline-flex items-center text-black/25 dark:text-white/25 hover:text-black/50 dark:hover:text-white/50 transition-colors"
-        title="工具箱"
-        aria-label="工具箱"
-      >
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-        </svg>
-        <span class="hidden">工具箱</span>
-      </a>
-    </p>
+<footer class="galvin-footer">
+  <div class="galvin-footer__grid">
+    <div class="galvin-footer__identity">
+      <a class="galvin-footer__wordmark" href="/" aria-label="Galvin 首页"><span>G</span> Galvin</a>
+      <p>把好奇心，做成一点有用的东西。</p>
+      <small>个人 AI 学习与创作空间</small>
+    </div>
+
+    <nav class="galvin-footer__nav" aria-label="页脚导航">
+      <p>EXPLORE</p>
+      <div>{navigation.map((link) => <a href={link.href}>{link.label}</a>)}</div>
+    </nav>
+
+    <div class="galvin-footer__contact">
+      <p>CONTACT</p>
+      <button type="button" data-footer-copy-email data-email={email}><Icon name="mail" class="w-3.5 h-3.5" /><span>复制邮箱</span></button>
+      <a href={xLink} target="_blank" rel="noopener" aria-label="在 X 上关注 Galvin"><Icon name="radio" class="w-3.5 h-3.5" /> X · @galvin0119 <Icon name="arrowUpRight" class="w-3 h-3" /></a>
+      <span class="galvin-footer__copy-status" aria-live="polite" data-footer-copy-status></span>
+    </div>
+  </div>
+
+  <div class="galvin-footer__meta">
+    <p>© {new Date().getFullYear()} Galvin · 公开内容均经过必要脱敏</p>
+    <div class="galvin-footer__signals" aria-label="站主快捷入口">
+      <a href="/sites/" id="sites-hidden-link" title="收藏夹" aria-label="收藏夹"><Icon name="bookmark" class="w-3.5 h-3.5" /></a>
+      <a href="/tools/" id="tools-hidden-link" title="工具箱" aria-label="工具箱"><Icon name="toolbox" class="w-3.5 h-3.5" /></a>
+    </div>
   </div>
 </footer>
 
 <script>
-  // 键盘快捷键：按 g 再按 s 跳转收藏夹；按 t 直达工具箱（低调入口，方便站主快速取用）
   (function () {
     var buffer = "";
     var timer = -1;
     var sitesLink = document.getElementById("sites-hidden-link");
     var toolsLink = document.getElementById("tools-hidden-link");
+    var copyButton = document.querySelector("[data-footer-copy-email]");
+    var copyStatus = document.querySelector("[data-footer-copy-status]");
 
-    document.addEventListener("keydown", function (e) {
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-      if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.isContentEditable)) return;
+    function fallbackCopy(text) {
+      var textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      textarea.remove();
+    }
 
-      var k = e.key.toLowerCase();
+    if (copyButton) copyButton.addEventListener("click", function () {
+      var text = copyButton.getAttribute("data-email") || "";
+      var copy = navigator.clipboard?.writeText ? navigator.clipboard.writeText(text) : Promise.reject();
+      copy.catch(function () { fallbackCopy(text); }).finally(function () {
+        var label = copyButton.querySelector("span");
+        if (label) label.textContent = "已复制邮箱";
+        if (copyStatus) copyStatus.textContent = "已复制";
+        window.setTimeout(function () {
+          if (label) label.textContent = "复制邮箱";
+          if (copyStatus) copyStatus.textContent = "";
+        }, 2200);
+      });
+    });
 
-      // 单键 t → 工具箱
-      if (k === "t" && toolsLink) {
-        e.preventDefault();
-        window.location.href = toolsLink.getAttribute("href");
-        return;
-      }
-
-      if (k.length !== 1) return;
-      buffer = (buffer + k).slice(-2);
+    document.addEventListener("keydown", function (event) {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      if (event.target && (event.target.tagName === "INPUT" || event.target.tagName === "TEXTAREA" || event.target.isContentEditable)) return;
+      var key = event.key.toLowerCase();
+      if (key === "t" && toolsLink) { event.preventDefault(); window.location.href = toolsLink.getAttribute("href"); return; }
+      if (key.length !== 1) return;
+      buffer = (buffer + key).slice(-2);
       clearTimeout(timer);
-      timer = setTimeout(function () {
-        buffer = "";
-      }, 800);
-
-      if (buffer === "gs" && sitesLink) {
-        e.preventDefault();
-        window.location.href = sitesLink.getAttribute("href");
-      }
+      timer = window.setTimeout(function () { buffer = ""; }, 800);
+      if (buffer === "gs" && sitesLink) { event.preventDefault(); window.location.href = sitesLink.getAttribute("href"); }
     });
   })();
 </script>

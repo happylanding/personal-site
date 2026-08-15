@@ -1,15 +1,10 @@
 ---
+/* Galvin design reminder: the About route is a restrained dark work profile. It makes
+   identity, working boundaries and contact paths legible without lifestyle ornament. */
 import BaseLayout from "../layouts/BaseLayout.astro";
-import ScrollReveal from "../components/ScrollReveal.astro";
 import AboutPage from "../components/AboutPage.astro";
-import { getLangFromUrl, useTranslations } from "../i18n/utils";
-
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 ---
 
-<BaseLayout title={t("about.title")} description={t("about.description")}>
-  <AboutPage lang={lang} />
-
-  <ScrollReveal />
+<BaseLayout title="关于" description="Galvin 的个人 AI 学习与创作空间：关于正在学习的事、工作边界与公开联系渠道。">
+  <AboutPage />
 </BaseLayout>

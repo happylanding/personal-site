@@ -1,388 +1,141 @@
 ---
-/**
- * AboutPage — 关于页主体（中英文共用）
- *
- * 设计语言：延续全站「星野极光 · 人文温暖」——
- *   - Hero：超大衬线渐变标题 + 遮罩上拉（lmask），与首页 Hero 呼应
- *   - 数据卡：磨砂玻璃（glass-card）+ 聚光 + 3D 倾斜 + 数字滚动（count-up）
- *   - 旅程：竖向时间线，圆点 + 连接线，章节卡片 hover 主题色
- *   - 自我介绍：全宽身份卡（头像 + 姓名 + 角色徽章 + 坐标 + 签名），已移除长篇正文
- *   - 专栏：复用首页 roll-card（玻璃卡 + spotlight + tilt + ghost-num）
- *   - CTA：联系动作卡，俏皮收尾
- *
- * 数据全部动态统计（文章/专栏/工具/公版书数量），随站内内容自动变化。
- */
-import Breadcrumb from "./Breadcrumb.astro";
-import ColumnIcon from "./ColumnIcon.astro";
+/* Galvin design reminder: this page is a focused dark work profile, not a lifestyle
+   collage. Cold-white prose carries the narrative; violet and cyan only mark state,
+   connection and movement. */
 import Icon from "./Icon.astro";
-import { useTranslations } from "../i18n/utils";
-import { getCollection } from "astro:content";
-import { SECTION_ORDER } from "../lib/sections";
 
-interface Props {
-  lang: "zh" | "en";
-}
+const email = "cgaojiacheng@gmail.com";
+const xLink = "https://x.com/galvin0119";
 
-const { lang } = Astro.props;
-const t = useTranslations(lang);
-const prefix = lang === "en" ? "/en" : "";
-
-// ---- 动态统计 ----
-const allArticles = await getCollection("articles", ({ data }) => !data.draft);
-const bookCount = allArticles.filter((a) => a.data.author).length;
-const articleCount = allArticles.length;
-const columnCount = SECTION_ORDER.length;
-const tools = await getCollection("tools", ({ data }) => !data.draft);
-const toolCount = tools.length;
-
-const stats: Array<{ value: number; unit: string; icon: "fileText" | "listTree" | "toolbox" | "bookOpen" }> = [
-  { value: articleCount, unit: t("about.stats.articles"), icon: "fileText" },
-  { value: columnCount, unit: t("about.stats.columns"), icon: "listTree" },
-  { value: toolCount, unit: t("about.stats.tools"), icon: "toolbox" },
-  { value: bookCount, unit: t("about.stats.books"), icon: "bookOpen" },
+const practices = [
+  {
+    index: "01",
+    title: "学习 AI，但不假装无所不知",
+    text: "把踩过的坑、真正有用的路径和可复用的小结留在叩问里。",
+  },
+  {
+    index: "02",
+    title: "把工作里的摩擦，做成小工具",
+    text: "从表格、文本到重复流程，先在不触及单位资料的边界内完成一次小实验。",
+  },
+  {
+    index: "03",
+    title: "把过程公开，而不是只展示结果",
+    text: "这里收录的是仍在生长的阅读、写作、工具与网站实践。",
+  },
 ];
 
-const journeyChapters = t("about.journey.chapters") as string[];
-const roles = (t("about.bio.role") as string)
-  .split("·")
-  .map((s) => s.trim())
-  .filter(Boolean);
-const email = t("contact.emailValue");
-const xLink = t("contact.xLink");
-const xHandle = t("contact.xHandle");
-const wechatName = t("contact.officialAccountName");
-
-// ---- 图片区（单图轮播）----
-// 轮播：精选文章（排除书籍），按发布日期倒序，单图左右自动切换
-const carouselArticles = allArticles
-  .filter((a) => a.data.featured && a.data.section !== "books")
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
-
-const articleCover = (a: (typeof allArticles)[number]) =>
-  (lang === "en" ? a.data.ogImageEn || a.data.ogImage : a.data.ogImage || "").replace(/\.png$/, ".webp");
-const articleTitle = (a: (typeof allArticles)[number]) =>
-  lang === "en" ? a.data.titleEn || a.data.title : a.data.title;
+const navLinks = [
+  { label: "此刻", href: "/" },
+  { label: "造物", href: "/tools/" },
+  { label: "叩问", href: "/archive/" },
+  { label: "书架", href: "/books/" },
+];
 ---
 
-<Breadcrumb crumbs={[{ label: t("about.title"), href: `${prefix}/about/` }]} class="mb-4" />
-
-<section class="max-w-6xl 2xl:max-w-[1400px]">
-
-  <!-- ============ Hero：超大衬线标题 + 遮罩上拉 ============ -->
-  <header class="about-hero" data-reveal>
-    <div class="about-hero-head">
-      <span class="about-kicker" aria-hidden="true">{t("about.hero.kicker")}</span>
-      <span class="about-kicker-bar" aria-hidden="true"></span>
+<article class="galvin-about-page">
+  <header class="galvin-about-hero">
+    <div class="galvin-about-hero__signal-row" aria-label="关于 Galvin">
+      <span>ABOUT / 07</span>
+      <span class="galvin-about-hero__signal"><i aria-hidden="true"></i> PERSONAL WORKSPACE</span>
     </div>
-
-    <h1 class={`about-hero-title lmask${lang === "en" ? " font-hand" : ""}`}>
-      <span class="lmask-inner" style="--lmask-delay:0.08s">{t("about.hero.subtitle")}</span>
-    </h1>
-
-    <p class="about-hero-intro lmask">
-      <span class="lmask-inner" style="--lmask-delay:0.22s">{t("about.hero.intro")}</span>
-    </p>
-
-    <a href="#about-journey" class="about-hero-cta group" aria-label={t("about.hero.cta")}>
-      <span>{t("about.hero.cta")}</span>
-      <Icon name="chevronDown" class="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
-    </a>
+    <p class="galvin-about-hero__eyebrow">你好，我是</p>
+    <h1>Galvin，<br />把好奇心，做成一点有用的东西。</h1>
+    <p class="galvin-about-hero__lead">AI 初学者 × 数字政府/数字经济从业者。常驻南京，正在把 AI 学习、工作方法与日常好奇心，慢慢做成能被再次使用的东西。</p>
+    <dl class="galvin-about-hero__meta">
+      <div><dt>BASE</dt><dd>南京</dd></div>
+      <div><dt>FOCUS</dt><dd>AI 学习与效率实验</dd></div>
+      <div><dt>STATUS</dt><dd>持续更新中</dd></div>
+    </dl>
   </header>
 
-  <!-- ============ 数据卡：磨砂玻璃 + 数字滚动 ============ -->
-  <section class="about-stats" aria-label={t("about.stats.label")} data-reveal>
-    <p class="about-stats-label">{t("about.stats.label")}</p>
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3" data-reveal-stagger>
-      {stats.map((s, i) => (
-        <div
-          class="about-stat-card glass-card"
-          style={`--roll-index:${i}`}
-          data-spotlight
-          data-tilt
-        >
-          <span class="about-stat-icon" aria-hidden="true">
-            <Icon name={s.icon} class="w-5 h-5" />
-          </span>
-          <p class="about-stat-value">
-            <span data-count-up={s.value}>0</span>
-            <span class="about-stat-unit">{s.unit}</span>
-          </p>
-        </div>
-      ))}
+  <section class="galvin-about-section galvin-about-practice" aria-labelledby="about-practice-title">
+    <div class="galvin-about-section__head">
+      <p>WORKING NOTES</p>
+      <h2 id="about-practice-title">我正在做的事</h2>
     </div>
-  </section>
-
-  <!-- ============ 自我介绍：全宽身份卡（左身份 + 右图片区 A+C） ============ -->
-  <section class="about-bio" id="about-me" aria-label={t("about.bio.title")}>
-    <div class="about-person-card glass-card relative overflow-hidden" data-reveal data-spotlight>
-      <span class="about-person-glow" aria-hidden="true"></span>
-
-      <div class="about-person-grid">
-        <!-- 左：身份信息 -->
-        <div class="about-person-main">
-          <div class="about-person-avatar" aria-hidden="true">
-            <Icon name="user" class="w-10 h-10" />
-          </div>
-
-          <div class="about-person-info">
-            <p class="about-person-kicker">{t("about.bio.kicker")}</p>
-            <h2 class="about-person-name">{t("about.bio.title")}</h2>
-
-            <ul class="about-person-roles">
-              {roles.map((r: string) => (
-                <li class="about-person-role">{r}</li>
-              ))}
-            </ul>
-
-            <p class="about-person-location">
-              <span class="about-location-pin" aria-hidden="true">
-                <Icon name="mapPin" class="w-3.5 h-3.5" />
-              </span>
-              {t("about.bio.location")}
-            </p>
-
-            <p class="about-person-signature">{t("about.bio.signature")}</p>
-          </div>
-        </div>
-
-        <!-- 右：图片区（单图轮播） -->
-        <div class="about-person-media">
-          {carouselArticles.length > 0 && (
-            <div class="about-carousel">
-              <p class="about-media-label">{t("about.media.galleryLabel")}</p>
-              <div class="about-carousel-viewport" data-about-carousel>
-                <ul class="about-carousel-track">
-                  {carouselArticles.map((a, i) => (
-                    <li class="about-carousel-slide" aria-hidden={i === 0 ? "false" : "true"}>
-                      <a
-                        href={`${prefix}/${a.data.section}/${a.id}`}
-                        class="about-carousel-item group"
-                        data-spotlight
-                        data-tilt
-                      >
-                        <img
-                          src={articleCover(a)}
-                          alt={articleTitle(a)}
-                          loading={i === 0 ? "eager" : "lazy"}
-                          decoding="async"
-                        />
-                        <span class="about-gallery-overlay">
-                          <span class="about-gallery-section">{t(`columns.${a.data.section}.name`)}</span>
-                          <span class="about-gallery-title">{articleTitle(a)}</span>
-                        </span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-
-                <button class="about-carousel-arrow about-carousel-prev" type="button" data-carousel-prev aria-label="Previous">
-                  <Icon name="arrowLeft" class="w-4 h-4" />
-                </button>
-                <button class="about-carousel-arrow about-carousel-next" type="button" data-carousel-next aria-label="Next">
-                  <Icon name="arrowRight" class="w-4 h-4" />
-                </button>
-
-                {carouselArticles.length > 1 && (
-                  <div class="about-carousel-dots" role="tablist" aria-label="Slides">
-                    {carouselArticles.map((_, i) => (
-                      <button
-                        class="about-carousel-dot"
-                        type="button"
-                        data-carousel-dot={i}
-                        aria-label={`Go to slide ${i + 1}`}
-                        aria-selected={i === 0 ? "true" : "false"}
-                      ></button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ 旅程时间线 ============ -->
-  <section class="about-journey" id="about-journey" aria-label={t("about.journey.title")}>
-    <div class="about-journey-head" data-reveal>
-      <div class="about-journey-kicker">
-        <span class="about-kicker">{t("about.journey.kicker")}</span>
-        <span class="about-kicker-bar" aria-hidden="true"></span>
-      </div>
-      <h2 class="about-journey-title">{t("about.journey.title")}</h2>
-      <p class="about-journey-quote">{t("about.journey.quote")}</p>
-    </div>
-
-    <ol class="about-timeline" data-reveal-stagger>
-      {journeyChapters.map((c: string) => (
-        <li class="about-timeline-item" data-tilt>
-          <span class="about-timeline-node" aria-hidden="true">
-            <span class="about-timeline-dot"></span>
-          </span>
-          <div class="about-timeline-card glass-card">
-            <p>{c}</p>
-          </div>
+    <ol class="galvin-about-practice__list">
+      {practices.map((practice) => (
+        <li>
+          <span>{practice.index}</span>
+          <div><h3>{practice.title}</h3><p>{practice.text}</p></div>
+          <Icon name="arrowUpRight" class="galvin-about-practice__icon" />
         </li>
       ))}
     </ol>
   </section>
 
-  <!-- ============ 专栏导航 ============ -->
-  <section class="about-columns" aria-label={t("home.exploreColumns")} data-reveal>
-    <div class="about-journey-head">
-      <div class="about-journey-kicker">
-        <span class="about-kicker">{t("home.exploreColumns")}</span>
-        <span class="about-kicker-bar" aria-hidden="true"></span>
-      </div>
-      <p class="about-columns-desc">{t("home.columnsDesc")}</p>
+  <section class="galvin-about-section galvin-about-profile" aria-labelledby="about-profile-title">
+    <div class="galvin-about-section__head">
+      <p>OPERATING RHYTHM</p>
+      <h2 id="about-profile-title">工作之外，也在慢慢积累</h2>
     </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-reveal-stagger>
-      {SECTION_ORDER.map((s, i) => (
-        <a
-          href={`${prefix}/${s}/`}
-          class="roll-card group block p-5 rounded-xl border border-black/10 dark:border-white/10 hover-lift transition-all duration-300 hover:border-black/30 dark:hover:border-white/30 relative overflow-hidden"
-          style={`--roll-index:${i}`}
-          data-spotlight
-          data-tilt
-          data-c-accent={s}
-        >
-          <span class="ghost-num text-black/5 dark:text-white/5 select-none pointer-events-none" aria-hidden="true">
-            {String(i + 1).padStart(2, "0")}
-          </span>
-          <span class="mb-3 block opacity-60 relative"><ColumnIcon section={s} class="w-8 h-8" /></span>
-          <h3 class="font-bold text-base mb-1 group-hover:opacity-70 transition-opacity hover-glow relative">
-            {t(`columns.${s}.name`)}
-          </h3>
-          <p class="text-xs text-black/40 dark:text-white/40 mb-3 relative">
-            {t(`columns.${s}.enName`)}
-          </p>
-          <p class="text-sm text-black/50 dark:text-white/50 leading-relaxed mb-3 relative">
-            {t(`columns.${s}.desc`)}
-          </p>
-          <span class="text-[13px] text-black/45 dark:text-white/60 font-mono relative inline-flex items-center gap-1">
-            {lang === "en" ? "Explore" : "去逛逛"}
-            <Icon name="arrowRight" class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
-          </span>
-        </a>
-      ))}
+    <div class="galvin-about-profile__grid">
+      <p class="galvin-about-profile__statement">我没有把这里做成一份简历，也不急着给自己贴上“专家”标签。它更像一份持续更新的工作档案：记录我如何学习、如何试错，也记录那些让我保持节奏的日常。</p>
+      <ul class="galvin-about-profile__signals" aria-label="个人节奏">
+        <li><span>01</span><strong>力量训练</strong><p>把注意力从屏幕带回身体。</p></li>
+        <li><span>02</span><strong>咖啡</strong><p>给思考留一段安静的间隙。</p></li>
+        <li><span>03</span><strong>阅读</strong><p>把零散的兴趣连成更长的线。</p></li>
+      </ul>
     </div>
   </section>
 
-  <!-- ============ CTA：联系 ============ -->
-  <section class="about-cta" aria-label={t("about.cta.title")} data-reveal>
-    <div class="about-cta-card glass-card relative overflow-hidden" data-spotlight>
-      <span class="ghost-num text-black/5 dark:text-white/5" aria-hidden="true">HI</span>
-      <p class="about-person-kicker">{t("about.cta.kicker")}</p>
-      <h2 class="about-cta-title">{t("about.cta.title")}</h2>
-      <p class="about-cta-desc">{t("about.cta.desc")}</p>
-
-      <div class="about-cta-actions">
-        <a href={`mailto:${email}`} class="about-cta-btn" data-tilt>
-          <Icon name="mail" class="w-4 h-4" />
-          {t("about.cta.email")}
-        </a>
-        <a href={`https://x.com/${xHandle.replace(/^@/, "")}`} target="_blank" rel="noopener" class="about-cta-btn" data-tilt>
-          <Icon name="radio" class="w-4 h-4" />
-          {t("about.cta.x")}
-        </a>
-        <span class="about-cta-btn about-cta-btn-static" title={wechatName} data-tilt>
-          <Icon name="link" class="w-4 h-4" />
-          {t("about.cta.wechat")}
-        </span>
-      </div>
-
-      <p class="about-cta-footer">{t("about.cta.footer")}</p>
+  <section class="galvin-about-section galvin-about-contact" aria-labelledby="about-contact-title">
+    <div class="galvin-about-contact__copy">
+      <p>CONTACT PROTOCOL</p>
+      <h2 id="about-contact-title">聊聊正在发生的事。</h2>
+      <p>欢迎交流 AI 学习、效率工具、数字化工作方法或你读到的一篇好文章。这里不讨论单位项目、未公开文件或未经脱敏的数据。</p>
+    </div>
+    <div class="galvin-about-contact__actions">
+      <button class="galvin-contact-action" type="button" data-copy-email data-email={email}>
+        <Icon name="mail" class="w-4 h-4" />
+        <span>复制邮箱</span>
+      </button>
+      <a class="galvin-contact-action galvin-contact-action--x" href={xLink} target="_blank" rel="noopener" aria-label="在 X 上关注 Galvin">
+        <Icon name="radio" class="w-4 h-4" />
+        <span>X · @galvin0119</span>
+        <Icon name="arrowUpRight" class="w-3.5 h-3.5" />
+      </a>
+      <p class="galvin-contact-status" aria-live="polite" data-copy-status>邮箱：{email}</p>
     </div>
   </section>
-</section>
+
+  <nav class="galvin-about-next" aria-label="继续浏览">
+    <p>从内容开始</p>
+    <div>{navLinks.map((link) => <a href={link.href}>{link.label}<Icon name="arrowRight" class="w-3.5 h-3.5" /></a>)}</div>
+  </nav>
+</article>
 
 <script>
-  /**
-   * 精选文章单图轮播：左右自动切换 + 手动切图
-   * - 自动播放：每 4.5s 切到下一张（无缝循环）
-   * - 鼠标悬停暂停自动播放，离开继续
-   * - 左右箭头手动切；底部圆点可直接跳转
-   * - 尊重 prefers-reduced-motion（关闭自动播放，但仍可手动切换）
-   */
   (function () {
-    var viewport = document.querySelector("[data-about-carousel]");
-    if (!viewport) return;
+    var trigger = document.querySelector(".galvin-about-page [data-copy-email]");
+    var status = document.querySelector(".galvin-about-page [data-copy-status]");
+    if (!trigger) return;
 
-    var track = viewport.querySelector(".about-carousel-track");
-    var slides = Array.prototype.slice.call(viewport.querySelectorAll(".about-carousel-slide"));
-    if (!track || slides.length < 2) return;
+    function fallbackCopy(text) {
+      var textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      textarea.remove();
+    }
 
-    var index = 0;
-    var timer = null;
-    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var interval = 4500;
-
-    var dots = Array.prototype.slice.call(viewport.querySelectorAll("[data-carousel-dot]"));
-    var prevBtn = viewport.querySelector("[data-carousel-prev]");
-    var nextBtn = viewport.querySelector("[data-carousel-next]");
-
-    function update(animate) {
-      if (animate === false) {
-        track.style.transition = "none";
-      } else {
-        track.style.transition = "";
-      }
-      track.style.transform = "translateX(-" + index * 100 + "%)";
-      slides.forEach(function (s, i) {
-        s.setAttribute("aria-hidden", i === index ? "false" : "true");
+    trigger.addEventListener("click", function () {
+      var text = trigger.getAttribute("data-email") || "";
+      var copy = navigator.clipboard?.writeText ? navigator.clipboard.writeText(text) : Promise.reject();
+      copy.catch(function () { fallbackCopy(text); }).finally(function () {
+        var label = trigger.querySelector("span");
+        if (label) label.textContent = "已复制邮箱";
+        if (status) status.textContent = "已复制 · " + text;
+        window.setTimeout(function () {
+          if (label) label.textContent = "复制邮箱";
+          if (status) status.textContent = "邮箱：" + text;
+        }, 2200);
       });
-      dots.forEach(function (d, i) {
-        d.setAttribute("aria-selected", i === index ? "true" : "false");
-        d.classList.toggle("is-active", i === index);
-      });
-      // 强制回流，确保 disable-transition 后位置立即生效
-      if (animate === false) void track.offsetWidth;
-    }
-
-    function go(i) {
-      var n = slides.length;
-      index = ((i % n) + n) % n;
-      update(true);
-    }
-
-    function start() {
-      if (reduce) return;
-      stop();
-      timer = setInterval(function () {
-        go(index + 1);
-      }, interval);
-    }
-
-    function stop() {
-      if (timer) {
-        clearInterval(timer);
-        timer = null;
-      }
-    }
-
-    function restart() {
-      stop();
-      start();
-    }
-
-    if (prevBtn) prevBtn.addEventListener("click", function () { go(index - 1); restart(); });
-    if (nextBtn) nextBtn.addEventListener("click", function () { go(index + 1); restart(); });
-    dots.forEach(function (d, i) {
-      d.addEventListener("click", function () { go(i); restart(); });
     });
-
-    // 悬停暂停、离开继续
-    viewport.addEventListener("mouseenter", stop);
-    viewport.addEventListener("mouseleave", start);
-    // 页面可见时才播放，切走标签页暂停
-    document.addEventListener("visibilitychange", function () {
-      if (document.hidden) stop();
-      else start();
-    });
-
-    update(false);
-    start();
   })();
 </script>
