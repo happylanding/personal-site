@@ -110,3 +110,36 @@ test("叩问详情页按正文滚动同步可访问阅读进度", async ({ page 
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight * 0.5));
   await expect.poll(async () => Number(await progress.getAttribute("aria-valuenow"))).toBeGreaterThan(0);
 });
+
+test("叩问详情页的桌面目录在正文滚动时保持停留", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("/ai/easy-vibe-guide/");
+  const rail = page.locator("#article-toc-rail");
+  await expect(rail).toBeVisible();
+
+  const readingStart = await page.evaluate(() => {
+    document.documentElement.style.scrollBehavior = "auto";
+    document.body.style.scrollBehavior = "auto";
+    const content = document.querySelector(".galvin-article-content");
+    return (content?.getBoundingClientRect().top || 0) + window.scrollY + 520;
+  });
+  const firstScroll = await page.evaluate((top) => {
+    window.scrollTo({ top, behavior: "instant" as ScrollBehavior });
+    return window.scrollY;
+  }, readingStart);
+  await page.waitForTimeout(50);
+  const firstBox = await rail.boundingBox();
+  const secondScroll = await page.evaluate((top) => {
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const nextTop = Math.min(maxScroll, top + 700);
+    window.scrollTo({ top: nextTop, behavior: "instant" as ScrollBehavior });
+    return window.scrollY;
+  }, firstScroll);
+  await page.waitForTimeout(50);
+  const secondBox = await rail.boundingBox();
+
+  expect(secondScroll).toBeGreaterThan(firstScroll);
+  expect(firstBox?.y).toBeGreaterThan(80);
+  expect(secondBox?.y).toBeGreaterThan(80);
+  expect(Math.abs((firstBox?.y || 0) - (secondBox?.y || 0))).toBeLessThan(6);
+});

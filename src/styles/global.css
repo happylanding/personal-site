@@ -3490,7 +3490,8 @@ body.galvin-site ::selection {
 .galvin-article-progress__track i { display: block; width: 0; height: 100%; background: var(--galvin-signal-violet); box-shadow: 0 0 12px rgba(155, 140, 255, 0.8); transition: width 120ms linear; }
 .galvin-article-progress__value { color: var(--galvin-signal-violet); }
 
-.galvin-article-grid { align-items: start; }
+/* 桌面 grid 需 stretch 目录列至正文同高；否则 sticky 的包含块仅等于目录自身高度。 */
+.galvin-article-grid { align-items: stretch; }
 .galvin-article-content { max-width: 760px !important; color: var(--galvin-text-primary); font-size: 17px; line-height: 1.92; }
 .galvin-article-content :where(h2, h3) { scroll-margin-top: 104px; color: var(--galvin-text-primary); letter-spacing: -0.045em; }
 .galvin-article-content h2 { margin-top: 4.2rem; padding-top: 1.2rem; border-top: 1px solid var(--galvin-line-subtle); font-size: clamp(27px, 3vw, 38px); }
