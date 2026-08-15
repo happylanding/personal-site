@@ -1,5 +1,8 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
+import { GALVIN_CONTENT_KINDS } from "./lib/galvin-content";
+
+const galvinKindSchema = z.enum(GALVIN_CONTENT_KINDS);
 
 const articlesCollection = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/articles" }),
@@ -12,6 +15,8 @@ const articlesCollection = defineCollection({
     updated: z.date().optional(),
     tags: z.array(z.string()).default([]),
     tagsEn: z.array(z.string()).default([]),
+    /** Galvin 七栏目；旧内容在迁移期间可暂不填写。 */
+    kind: galvinKindSchema.optional(),
     /** 所属专栏 */
     section: z.enum(["insights", "ai", "tips", "books"]).default("tips"),
     draft: z.boolean().default(false),
@@ -59,6 +64,8 @@ const articlesEnCollection = defineCollection({
     updated: z.date().optional(),
     tags: z.array(z.string()).default([]),
     tagsEn: z.array(z.string()).default([]),
+    /** 冻结的英文内容保留原结构，不再新增独立英文内容。 */
+    kind: galvinKindSchema.optional(),
     section: z.enum(["insights", "ai", "tips", "books"]).default("tips"),
     draft: z.boolean().default(false),
     featured: z.boolean().default(false),
@@ -102,6 +109,7 @@ const sitesCollection = defineCollection({
     updated: z.date().optional(),
     tags: z.array(z.string()).default([]),
     tagsEn: z.array(z.string()).default([]),
+    kind: z.literal("archive").default("archive"),
     /** 所属专栏 */
     section: z.enum(["insights", "ai", "tips", "books"]).default("insights"),
     draft: z.boolean().default(false),
@@ -148,6 +156,30 @@ const toolsCollection = defineCollection({
     updated: z.date().optional(),
     tags: z.array(z.string()).default([]),
     tagsEn: z.array(z.string()).default([]),
+    kind: z.literal("making").default("making"),
+    draft: z.boolean().default(false),
+    featured: z.boolean().default(false),
+  }),
+});
+
+/**
+ * 书架只保存书目、阅读状态、个人笔记与合法外链。
+ * 绝不在此集合中提供未经授权的全文下载。
+ */
+const booksCollection = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/books" }),
+  schema: z.object({
+    title: z.string(),
+    author: z.string().optional(),
+    description: z.string().optional(),
+    coverImage: z.string().optional(),
+    status: z.enum(["want", "reading", "finished"]).default("want"),
+    startedAt: z.date().optional(),
+    finishedAt: z.date().optional(),
+    tags: z.array(z.string()).default([]),
+    note: z.string().optional(),
+    legalUrl: z.string().url().optional(),
+    buyUrl: z.string().url().optional(),
     draft: z.boolean().default(false),
     featured: z.boolean().default(false),
   }),
@@ -158,5 +190,6 @@ export const collections = {
   "articles-en": articlesEnCollection,
   sites: sitesCollection,
   tools: toolsCollection,
+  books: booksCollection,
   drafts: draftsCollection,
 };
