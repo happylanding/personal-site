@@ -5,6 +5,7 @@ description: "围绕“Agent = LLM + 上下文 + 工具”展开的开源实践�
 coverImage: "/images/ai-agent-engineering/cover.jpg"
 status: "reading"
 tags: ["AI Agent", "工程实践", "上下文", "工具调用"]
+readUrl: "https://bojieli.github.io/ai-agent-book/"
 legalUrl: "https://github.com/bojieli/ai-agent-book"
 featured: true
 ---

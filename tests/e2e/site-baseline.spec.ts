@@ -81,3 +81,14 @@ test("全站搜索可检索书架中的首本书目", async ({ page }) => {
   await expect(results).toContainText("深入理解 AI Agent：设计原理与工程实践");
   await expect(results).toContainText("书架");
 });
+
+test("书架可进入本站在线预览并保留官方阅读回退", async ({ page }) => {
+  await page.goto("/books/");
+  await expect(page.getByRole("link", { name: "在线预览" })).toHaveAttribute("href", "/books/understanding-ai-agent-engineering/read/");
+
+  await page.goto("/books/understanding-ai-agent-engineering/read/");
+  await expect(page.getByRole("heading", { level: 1, name: "在线预览" })).toBeVisible();
+  await expect(page.locator('iframe[title="《深入理解 AI Agent：设计原理与工程实践》官方在线阅读器"]')).toHaveAttribute("src", "https://bojieli.github.io/ai-agent-book/");
+  await expect(page.getByRole("link", { name: "在官方站点打开" })).toHaveAttribute("href", "https://bojieli.github.io/ai-agent-book/");
+  await expect(page.getByRole("link", { name: "访问开源项目" })).toHaveAttribute("href", "https://github.com/bojieli/ai-agent-book");
+});

@@ -178,6 +178,8 @@ const booksCollection = defineCollection({
     finishedAt: z.date().optional(),
     tags: z.array(z.string()).default([]),
     note: z.string().optional(),
+    /** 作者或出版方提供的官方在线阅读页；本站仅嵌入该公开来源。 */
+    readUrl: z.string().url().optional(),
     legalUrl: z.string().url().optional(),
     buyUrl: z.string().url().optional(),
     draft: z.boolean().default(false),

@@ -3434,3 +3434,34 @@ body.galvin-site ::selection {
   .galvin-shelf-card__actions { grid-column: 2 / -1; margin: 4px 0 0; }
   .galvin-shelf-card__actions .galvin-button { width: 100%; }
 }
+
+/* Galvin reader reminder: the official source owns the reading interface.
+   This frame adds provenance, recovery links, and a stable dark context around it. */
+.galvin-reader-page { width: min(100% - 48px, 1340px); margin: 0 auto; padding: 74px 0 48px; }
+.galvin-reader-page__header { display: flex; align-items: end; justify-content: space-between; gap: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--galvin-line); }
+.galvin-reader-page__back { display: inline-block; margin-bottom: 34px; color: var(--galvin-text-tertiary); font: 11px var(--galvin-font-utility); text-decoration: none; transition: color 160ms var(--galvin-ease-out); }
+.galvin-reader-page__back:hover { color: var(--galvin-signal-violet); }
+.galvin-reader-page__eyebrow { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--galvin-text-tertiary); font: 10px var(--galvin-font-utility); letter-spacing: 0.08em; }
+.galvin-reader-page__eyebrow i { width: 6px; height: 6px; border-radius: 50%; background: var(--galvin-signal-cyan); box-shadow: 0 0 10px rgba(97, 242, 208, 0.55); }
+.galvin-reader-page h1 { margin: 17px 0 10px; color: var(--galvin-text-primary); font-size: clamp(48px, 6vw, 84px); font-weight: 600; letter-spacing: -0.08em; line-height: 0.95; }
+.galvin-reader-page h1 + p { max-width: 650px; margin: 0; color: var(--galvin-text-secondary); font-size: 15px; line-height: 1.7; }
+.galvin-reader-page__actions { display: flex; flex-wrap: wrap; justify-content: end; gap: 10px; }
+.galvin-reader-page__notice { display: flex; gap: 10px; align-items: flex-start; margin: 24px 0; padding: 14px 16px; border: 1px solid rgba(97, 242, 208, 0.35); color: var(--galvin-text-secondary); background: rgba(97, 242, 208, 0.035); }
+.galvin-reader-page__notice span { padding-top: 1px; color: var(--galvin-signal-cyan); font-size: 9px; }
+.galvin-reader-page__notice p { margin: 0; font-size: 12px; line-height: 1.65; }
+.galvin-reader-page__frame-wrap { min-height: 740px; overflow: hidden; border: 1px solid rgba(104, 126, 177, 0.68); background: #f8fafc; box-shadow: 0 26px 80px rgba(0, 0, 0, 0.35); }
+.galvin-reader-page__frame-wrap iframe { display: block; width: 100%; height: min(78vh, 960px); min-height: 720px; border: 0; background: #fff; }
+.galvin-reader-page__source { padding-top: 12px; color: var(--galvin-text-tertiary); font: 10px/1.6 var(--galvin-font-utility); letter-spacing: 0.035em; }
+
+@media (max-width: 720px) {
+  .galvin-reader-page { width: min(100% - 32px, 1340px); padding-top: 42px; }
+  .galvin-reader-page__header { display: block; padding-bottom: 22px; }
+  .galvin-reader-page__back { margin-bottom: 27px; }
+  .galvin-reader-page h1 { font-size: clamp(44px, 16vw, 68px); }
+  .galvin-reader-page h1 + p { font-size: 14px; }
+  .galvin-reader-page__actions { justify-content: stretch; margin-top: 24px; }
+  .galvin-reader-page__actions .galvin-button { flex: 1 1 145px; }
+  .galvin-reader-page__notice { margin: 18px 0; }
+  .galvin-reader-page__frame-wrap { min-height: 620px; margin-inline: -16px; }
+  .galvin-reader-page__frame-wrap iframe { height: 72vh; min-height: 620px; }
+}

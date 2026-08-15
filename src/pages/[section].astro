@@ -70,6 +70,7 @@ const shelfBooks = isBooksSection
                 <div class="galvin-shelf-card__tags">{book.data.tags.map((tag) => <span>#{tag}</span>)}</div>
               </div>
               <div class="galvin-shelf-card__actions">
+                {book.data.readUrl && <a class="galvin-button galvin-button--secondary" href={`/books/${book.id}/read/`}>在线预览<span aria-hidden="true">↗</span></a>}
                 {book.data.legalUrl && <a class="galvin-button galvin-button--primary" href={book.data.legalUrl} target="_blank" rel="noopener">访问开源项目<span aria-hidden="true">↗</span></a>}
                 <p>封面与书目来源：作者开源项目<br />Apache License 2.0</p>
               </div>

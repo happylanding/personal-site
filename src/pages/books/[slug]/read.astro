@@ -1,0 +1,47 @@
+---
+/* Galvin design reminder: the reader is a quiet host, not a competing reader app.
+   Frame only the author's official source with provenance and clear exit paths. */
+import { getCollection, type CollectionEntry } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const books = await getCollection("books", ({ data }) => !data.draft && Boolean(data.readUrl));
+  return books.map((book) => ({ params: { slug: book.id }, props: { book } }));
+}
+
+const { book } = Astro.props as { book: CollectionEntry<"books"> };
+const readerUrl = book.data.readUrl!;
+---
+
+<BaseLayout title={`在线预览｜${book.data.title}`} description={`在 Galvin 站内预览《${book.data.title}》的作者官方在线阅读器。`}>
+  <section class="galvin-reader-page" aria-labelledby="reader-title">
+    <header class="galvin-reader-page__header">
+      <div>
+        <a class="galvin-reader-page__back" href="/books/">← 返回书架</a>
+        <p class="galvin-reader-page__eyebrow"><i aria-hidden="true"></i>OFFICIAL READER / EXTERNAL SOURCE</p>
+        <h1 id="reader-title">在线预览</h1>
+        <p>《{book.data.title}》由作者维护的官方在线阅读器提供。本站不存储或分发正文内容。</p>
+      </div>
+      <div class="galvin-reader-page__actions">
+        <a class="galvin-button galvin-button--secondary" href={readerUrl} target="_blank" rel="noopener">在官方站点打开<span aria-hidden="true">↗</span></a>
+        {book.data.legalUrl && <a class="galvin-button galvin-button--primary" href={book.data.legalUrl} target="_blank" rel="noopener">访问开源项目<span aria-hidden="true">↗</span></a>}
+      </div>
+    </header>
+
+    <div class="galvin-reader-page__notice" role="note">
+      <span aria-hidden="true">●</span>
+      <p>预览内容来自作者官方站点；其可用性、更新与阅读器功能由原站维护。若预览无法加载，请使用上方“在官方站点打开”。</p>
+    </div>
+
+    <div class="galvin-reader-page__frame-wrap">
+      <iframe
+        src={readerUrl}
+        title={`《${book.data.title}》官方在线阅读器`}
+        loading="eager"
+        referrerpolicy="strict-origin-when-cross-origin"
+      ></iframe>
+    </div>
+
+    <footer class="galvin-reader-page__source">SOURCE / 作者开源项目 · Apache License 2.0 · 本页不托管 EPUB、PDF 或正文副本</footer>
+  </section>
+</BaseLayout>
