@@ -19,9 +19,11 @@ test("关于页以 Galvin 工作档案呈现公开身份边界与可复制邮箱
   await expect(pageRoot.getByText("AI 初学者 × 数字政府/数字经济从业者")).toBeVisible();
   await expect(pageRoot.locator(".galvin-about-hero__meta dd").getByText("南京", { exact: true })).toBeVisible();
 
+  const emailAddress = pageRoot.getByRole("link", { name: "cgaojiacheng@gmail.com" });
+  await expect(emailAddress).toHaveAttribute("href", "mailto:cgaojiacheng@gmail.com");
   const copyEmail = pageRoot.getByRole("button", { name: "复制邮箱" });
   await copyEmail.click();
-  await expect(copyEmail).toHaveText("已复制邮箱");
+  await expect(pageRoot.locator("[data-copy-status]")).toContainText("邮箱已复制");
   await expect(pageRoot.getByRole("link", { name: "在 X 上关注 Galvin" })).toHaveAttribute("href", "https://x.com/galvin0119");
   await expect(pageRoot.getByText("加个微信")).toHaveCount(0);
 });
@@ -32,6 +34,7 @@ test("公共页脚提供可见的栏目导航和公开联系入口", async ({ pa
   const footer = page.getByRole("contentinfo");
   await expect(footer).toBeVisible();
   await expect(footer.getByRole("navigation", { name: "页脚导航" }).getByRole("link", { name: "叩问" })).toHaveAttribute("href", "/archive/");
+  await expect(footer.getByRole("link", { name: "cgaojiacheng@gmail.com" })).toHaveAttribute("href", "mailto:cgaojiacheng@gmail.com");
   await expect(footer.getByRole("button", { name: "复制邮箱" })).toBeVisible();
   await expect(footer.getByRole("link", { name: "在 X 上关注 Galvin" })).toHaveAttribute("href", "https://x.com/galvin0119");
 });

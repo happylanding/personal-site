@@ -87,16 +87,22 @@ const navLinks = [
       <p>欢迎交流 AI 学习、效率工具、数字化工作方法或你读到的一篇好文章。这里不讨论单位项目、未公开文件或未经脱敏的数据。</p>
     </div>
     <div class="galvin-about-contact__actions">
-      <button class="galvin-contact-action" type="button" data-copy-email data-email={email}>
-        <Icon name="mail" class="w-4 h-4" />
-        <span>复制邮箱</span>
-      </button>
+      <div class="galvin-email-contact">
+        <span class="galvin-email-contact__label">EMAIL</span>
+        <a class="galvin-email-contact__address" href={`mailto:${email}`}><Icon name="mail" class="w-4 h-4" />{email}</a>
+        <div class="galvin-email-contact__actions">
+          <button class="galvin-contact-action" type="button" data-copy-email data-email={email} aria-label="复制邮箱">
+            <Icon name="link" class="w-3.5 h-3.5" />
+            <span>复制</span>
+          </button>
+        </div>
+      </div>
       <a class="galvin-contact-action galvin-contact-action--x" href={xLink} target="_blank" rel="noopener" aria-label="在 X 上关注 Galvin">
         <Icon name="radio" class="w-4 h-4" />
         <span>X · @galvin0119</span>
         <Icon name="arrowUpRight" class="w-3.5 h-3.5" />
       </a>
-      <p class="galvin-contact-status" aria-live="polite" data-copy-status>邮箱：{email}</p>
+      <p class="galvin-contact-status" aria-live="polite" data-copy-status></p>
     </div>
   </section>
 
@@ -129,11 +135,11 @@ const navLinks = [
       var copy = navigator.clipboard?.writeText ? navigator.clipboard.writeText(text) : Promise.reject();
       copy.catch(function () { fallbackCopy(text); }).finally(function () {
         var label = trigger.querySelector("span");
-        if (label) label.textContent = "已复制邮箱";
-        if (status) status.textContent = "已复制 · " + text;
+        if (label) label.textContent = "已复制";
+        if (status) status.textContent = "邮箱已复制 · " + text;
         window.setTimeout(function () {
-          if (label) label.textContent = "复制邮箱";
-          if (status) status.textContent = "邮箱：" + text;
+          if (label) label.textContent = "复制";
+          if (status) status.textContent = "";
         }, 2200);
       });
     });

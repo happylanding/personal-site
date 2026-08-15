@@ -3796,6 +3796,21 @@ body.galvin-site ::selection {
 .galvin-footer__signals a { display: inline-grid; width: 30px; height: 30px; place-items: center; color: var(--galvin-text-tertiary); text-decoration: none; transition: color 160ms var(--galvin-ease-out), background 160ms var(--galvin-ease-out); }
 .galvin-footer__signals a:hover, .galvin-footer__signals a:focus-visible { color: var(--galvin-signal-cyan); background: rgba(97, 242, 208, 0.06); outline: none; }
 
+/* Address-first email pattern: the readable mailto address carries the primary affordance;
+   copy is a compact secondary utility with separate status feedback. */
+.galvin-email-contact { width: min(100%, 370px); padding: 17px 18px 15px; border: 1px solid rgba(155, 140, 255, 0.42); background: rgba(17, 25, 43, 0.78); }
+.galvin-email-contact__label { display: block; margin-bottom: 8px; color: var(--galvin-signal-violet); font: 10px var(--galvin-font-utility); letter-spacing: 0.1em; }
+.galvin-email-contact__address { display: inline-flex; align-items: baseline; gap: 8px; max-width: 100%; color: var(--galvin-text-primary); font: 500 16px var(--galvin-font-utility); letter-spacing: -0.025em; line-height: 1.45; overflow-wrap: anywhere; text-decoration-color: rgba(97, 242, 208, 0.5); text-underline-offset: 4px; }
+.galvin-email-contact__address:hover, .galvin-email-contact__address:focus-visible { color: var(--galvin-signal-cyan); outline: none; }
+.galvin-email-contact__address svg { flex: 0 0 auto; color: var(--galvin-signal-cyan); }
+.galvin-email-contact__actions { display: flex; gap: 8px; margin-top: 13px; }
+.galvin-email-contact__actions .galvin-contact-action { min-height: 38px; padding: 0 12px; color: var(--galvin-text-secondary); font-size: 12px; }
+.galvin-footer__email-row { display: flex; align-items: center; gap: 7px; max-width: 100%; margin-bottom: 2px; }
+.galvin-footer__contact > .galvin-footer__email-row > .galvin-footer__email { min-width: 0; color: var(--galvin-text-primary); font: 11px var(--galvin-font-utility); letter-spacing: -0.025em; overflow-wrap: anywhere; text-decoration: underline; text-decoration-color: rgba(155, 140, 255, 0.45); text-underline-offset: 3px; }
+.galvin-footer__contact > .galvin-footer__email-row > .galvin-footer__email:hover { color: var(--galvin-signal-cyan); }
+.galvin-footer__contact > .galvin-footer__email-row > button { flex: 0 0 auto; min-height: 30px; padding: 0 5px; color: var(--galvin-text-tertiary); font-size: 11px; }
+.galvin-footer__contact > .galvin-footer__email-row > button:hover { color: var(--galvin-signal-cyan); }
+
 @media (max-width: 720px) {
   .galvin-about-page { width: min(100% - 32px, 1160px); padding: 40px 0 62px; }
   .galvin-about-hero { padding-bottom: 48px; }
@@ -3817,6 +3832,8 @@ body.galvin-site ::selection {
   .galvin-about-profile__grid, .galvin-about-contact { grid-template-columns: 1fr; gap: 34px; }
   .galvin-about-profile__statement { font-size: 22px; }
   .galvin-about-contact { padding-top: 60px; }
+  .galvin-email-contact { width: 100%; }
+  .galvin-email-contact__address { font-size: 14px; }
   .galvin-about-next { align-items: flex-start; flex-direction: column; padding-top: 25px; }
   .galvin-about-next > div { justify-content: flex-start; }
   .galvin-footer__grid, .galvin-footer__meta { width: min(100% - 32px, 1280px); }
