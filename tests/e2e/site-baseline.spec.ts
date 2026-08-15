@@ -163,3 +163,41 @@ test("长文章当前章节会同步滚入桌面目录可视区域", async ({ pa
   await expect(active).toContainText("六、Appendix");
   await expect.poll(async () => Number(await rail.evaluate((el) => el.scrollTop))).toBeGreaterThan(0);
 });
+
+test("移动端离开文章首屏后显示当前章节定位条", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/ai/easy-vibe-guide/");
+  const dock = page.getByRole("button", { name: "打开章节目录" });
+  await expect(dock).toBeHidden();
+
+  await page.evaluate(() => {
+    document.documentElement.style.scrollBehavior = "auto";
+    const heading = Array.from(document.querySelectorAll(".galvin-article-content h2"))
+      .find((el) => el.textContent?.includes("二、整张学习地图"));
+    if (heading) window.scrollTo({ top: window.scrollY + heading.getBoundingClientRect().top - 160, behavior: "instant" as ScrollBehavior });
+  });
+
+  await expect(dock).toBeVisible();
+  await expect(dock).toContainText("二、整张学习地图");
+});
+
+test("移动端章节抽屉可通过 Escape 关闭并将焦点返回定位条", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/ai/easy-vibe-guide/");
+  const dock = page.getByRole("button", { name: "打开章节目录" });
+
+  await page.evaluate(() => {
+    document.documentElement.style.scrollBehavior = "auto";
+    const heading = Array.from(document.querySelectorAll(".galvin-article-content h2"))
+      .find((el) => el.textContent?.includes("二、整张学习地图"));
+    if (heading) window.scrollTo({ top: window.scrollY + heading.getBoundingClientRect().top - 160, behavior: "instant" as ScrollBehavior });
+  });
+  await expect(dock).toBeVisible();
+  await dock.click();
+
+  const panel = page.getByRole("dialog", { name: "目录" });
+  await expect(panel).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(panel).not.toBeVisible();
+  await expect(dock).toBeFocused();
+});

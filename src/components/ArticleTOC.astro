@@ -1,170 +1,175 @@
 ---
-// ArticleTOC v4 — 文章目录
-// 单个组件根节点内同时包含：
-//   - 桌面（≥lg）：右侧 sticky 侧栏，随滚动高亮当前章节
-//   - 移动端 / 平板：右下角可拖拽目录悬浮球，点击弹出章节选择面板
-// 两个变体通过 responsive class 切换显隐，页面只需渲染一份，避免重复 DOM id。
-//
-// 样式全部放在全局作用域（src/styles/global.css）：
-// 目录项由 JS 动态创建，Astro 的 data-astro-cid 作用域属性不会打到动态节点，
-// 放在组件 scoped <style> 里会导致样式失效（旧版 bug）。
-//
-// Props:
-//   @param {string} [label] - 目录标题文案（默认「目录」），中英文由页面传入
+/* Galvin design reminder: desktop uses a quiet sticky index; compact screens use a
+   reading-location dock that reveals a short-lived, accessible chapter chooser. */
+import Icon from "./Icon.astro";
 
 interface Props {
   label?: string;
-  /** 计数格式，{count} 会被替换为标题数，如 "{count} 节" / "{count} items" */
   countFormat?: string;
 }
 
-import Icon from "./Icon.astro";
 const { label = "目录", countFormat = "{count} 节" } = Astro.props;
 ---
 
 <div class="article-toc-root">
-  <!-- 桌面端：右侧 sticky 目录栏（lg+ 显示；标题数 >= 2 时显示，JS 控制 .toc-hide） -->
   <nav id="article-toc-rail" class="article-toc-rail" aria-label={label}>
-    <p class="article-toc-rail-label">
-      <Icon name="list" class="article-toc-list-icon" />
-      {label}
-    </p>
+    <p class="article-toc-rail-label"><Icon name="list" class="article-toc-list-icon" />{label}</p>
     <ul id="article-toc-rail-list" class="article-toc-list"></ul>
   </nav>
 
-  <!-- 移动端 / 平板：章节选择弹出面板（<lg 显示；JS 在标题数不足 2 时加 hidden 隐藏） -->
-  <div id="article-toc-overlay" class="article-toc-overlay hidden"></div>
-  <div id="article-toc-mobile" class="article-toc-panel hidden" role="dialog" aria-modal="true" aria-label={label}>
+  <div id="article-toc-overlay" class="article-toc-overlay hidden" aria-hidden="true"></div>
+  <section id="article-toc-mobile" class="article-toc-panel hidden" role="dialog" aria-modal="true" aria-labelledby="article-toc-mobile-title">
     <div class="article-toc-panel-head">
       <Icon name="listTree" class="article-toc-panel-icon" />
-      <span class="article-toc-label">{label}</span>
+      <div class="article-toc-panel-title-group">
+        <span id="article-toc-mobile-title" class="article-toc-label">{label}</span>
+        <span id="article-toc-current" class="article-toc-current" aria-live="polite"></span>
+      </div>
       <span id="article-toc-count" class="article-toc-count hidden" data-count-format={countFormat}></span>
-      <button id="article-toc-close" class="article-toc-close" type="button" aria-label="关闭目录">
-        <Icon name="close" class="article-toc-close-icon" />
-      </button>
+      <button id="article-toc-close" class="article-toc-close" type="button" aria-label="关闭目录"><Icon name="close" class="article-toc-close-icon" /></button>
     </div>
     <ul id="article-toc-mobile-list" class="article-toc-list"></ul>
-  </div>
+  </section>
 
-  <!-- 移动端 / 平板：目录悬浮球（<lg 显示；可拖拽，点击弹出章节面板） -->
-  <button id="article-toc-fab" class="article-toc-fab" type="button" aria-label={label} aria-haspopup="dialog" aria-controls="article-toc-mobile">
-    <Icon name="listTree" class="article-toc-fab-icon" />
-    <span id="article-toc-fab-count" class="article-toc-fab-count hidden"></span>
+  <button id="article-toc-dock" class="article-toc-dock hidden" type="button" aria-label="打开章节目录" aria-haspopup="dialog" aria-controls="article-toc-mobile" aria-expanded="false" aria-hidden="true">
+    <span class="article-toc-dock__signal" aria-hidden="true"></span>
+    <span class="article-toc-dock__copy"><span class="article-toc-dock__eyebrow">READING</span><span id="article-toc-dock-current" class="article-toc-dock__current">章节目录</span></span>
+    <span id="article-toc-dock-index" class="article-toc-dock__index">章节</span>
+    <Icon name="arrowUp" class="article-toc-dock__icon" />
   </button>
 </div>
 
 <script>
   (function () {
-    // 收集桌面 + 移动端所有目录链接，供 setActive 统一高亮
     var allLinks = [];
+    var itemById = {};
     var desktopRail = null;
+    var mobilePanel = null;
+    var mobileList = null;
+    var dock = null;
+    var overlay = null;
+    var closeMobilePanel = null;
+    var lastTrigger = null;
+
+    function reducedMotion() {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
 
     function keepActiveRailLinkVisible(link) {
       if (!desktopRail || !link || window.innerWidth < 1024) return;
-
       var railRect = desktopRail.getBoundingClientRect();
       var linkRect = link.getBoundingClientRect();
       var inset = 22;
-      var isAbove = linkRect.top < railRect.top + inset;
-      var isBelow = linkRect.bottom > railRect.bottom - inset;
-
-      if (!isAbove && !isBelow) return;
-
-      var nextTop = desktopRail.scrollTop + (linkRect.top - railRect.top) - desktopRail.clientHeight / 2 + linkRect.height / 2;
+      if (linkRect.top >= railRect.top + inset && linkRect.bottom <= railRect.bottom - inset) return;
       desktopRail.scrollTo({
-        top: Math.max(0, nextTop),
-        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        top: Math.max(0, desktopRail.scrollTop + linkRect.top - railRect.top - desktopRail.clientHeight / 2 + linkRect.height / 2),
+        behavior: reducedMotion() ? "auto" : "smooth",
       });
+    }
+
+    function keepActiveMobileLinkVisible() {
+      if (!mobilePanel || !mobilePanel.classList.contains("open")) return;
+      var active = mobilePanel.querySelector(".article-toc-link.active");
+      if (active) active.scrollIntoView({ block: "nearest", behavior: reducedMotion() ? "auto" : "smooth" });
+    }
+
+    function syncDockCopy(activeId) {
+      if (!dock) return;
+      var item = itemById[activeId];
+      if (!item) return;
+      var current = document.getElementById("article-toc-dock-current");
+      var currentInPanel = document.getElementById("article-toc-current");
+      var index = document.getElementById("article-toc-dock-index");
+      if (current) current.textContent = item.text;
+      if (currentInPanel) currentInPanel.textContent = item.text;
+      if (index) index.textContent = "章节 " + (item.index + 1) + "/" + Object.keys(itemById).length;
     }
 
     function setActive(activeId) {
       var activeRailLink = null;
-      allLinks.forEach(function (l) {
-        var isActive = l.dataset.tocId === activeId;
-        l.classList.toggle("active", isActive);
-        if (isActive && l.closest("#article-toc-rail")) activeRailLink = l;
+      allLinks.forEach(function (link) {
+        var active = link.dataset.tocId === activeId;
+        link.classList.toggle("active", active);
+        if (active && link.closest("#article-toc-rail")) activeRailLink = link;
       });
+      syncDockCopy(activeId);
       keepActiveRailLinkVisible(activeRailLink);
+      keepActiveMobileLinkVisible();
     }
 
-    // 目标标题闪烁提示（点击目录后的明确反馈）
+    function updateDockVisibility() {
+      if (!dock) return;
+      var article = document.querySelector(".galvin-article-content");
+      var start = article ? window.scrollY + article.getBoundingClientRect().top - 160 : 560;
+      var visible = window.innerWidth < 1024 && window.scrollY > start;
+      dock.classList.toggle("is-visible", visible);
+      dock.setAttribute("aria-hidden", String(!visible));
+      if (!visible && closeMobilePanel && mobilePanel?.classList.contains("open")) closeMobilePanel(false);
+    }
+
     function flashHeading(el) {
       if (!el) return;
       el.classList.remove("toc-flash");
-      void el.offsetWidth; // 强制 reflow，保证动画可重播
+      void el.offsetWidth;
       el.classList.add("toc-flash");
-      setTimeout(function () {
-        el.classList.remove("toc-flash");
-      }, 1600);
+      setTimeout(function () { el.classList.remove("toc-flash"); }, 1600);
+    }
+
+    function getFocusable(container) {
+      return Array.prototype.slice.call(container.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'));
     }
 
     function initArticleTOC() {
       var rail = document.getElementById("article-toc-rail");
       var railList = document.getElementById("article-toc-rail-list");
-      var mobile = document.getElementById("article-toc-mobile");
-      var mobileList = document.getElementById("article-toc-mobile-list");
+      var panel = document.getElementById("article-toc-mobile");
+      var panelList = document.getElementById("article-toc-mobile-list");
       var countEl = document.getElementById("article-toc-count");
-      var fab = document.getElementById("article-toc-fab");
-      var fabCount = document.getElementById("article-toc-fab-count");
-      var closeBtn = document.getElementById("article-toc-close");
-
+      var closeButton = document.getElementById("article-toc-close");
+      var dockButton = document.getElementById("article-toc-dock");
+      var panelOverlay = document.getElementById("article-toc-overlay");
       var article = document.querySelector(".article-content");
-      if (!article || !rail || !railList || !mobile || !mobileList || !fab) return;
+      if (!article || !rail || !railList || !panel || !panelList || !dockButton || !panelOverlay) return;
+
       desktopRail = rail;
+      mobilePanel = panel;
+      mobileList = panelList;
+      dock = dockButton;
+      overlay = panelOverlay;
 
-      // 修复：把 fixed 定位的悬浮球 / 弹出面板 / 遮罩移到 body 下，
-      // 避免被 data-reveal 等祖先的 transform 属性破坏 position:fixed 的视口定位
-      // （transform 非 none 时会创建 containing block，使 fixed 相对该祖先而非视口，
-      //   表现为悬浮球跟着文章滚动、固定在文章的某一处）。移到 body 后恢复正确的视口固定。
       function mountToBody(el) {
-        if (el && el.parentNode && el.parentNode !== document.body) {
-          document.body.appendChild(el);
-        }
+        if (el && el.parentNode && el.parentNode !== document.body) document.body.appendChild(el);
       }
-      mountToBody(fab);
-      mountToBody(mobile);
-      mountToBody(document.getElementById("article-toc-overlay"));
+      mountToBody(dock);
+      mountToBody(panel);
+      mountToBody(overlay);
 
-      // 无目录时把外层 .article-grid 退回单栏，避免右侧空出一列
       var grid = document.getElementById("article-grid");
-
       var headings = Array.prototype.slice.call(article.querySelectorAll("h2, h3"));
-
-      // 目录项太少时不展示
       if (headings.length < 2) {
         rail.classList.add("toc-hide");
-        mobile.classList.add("hidden");
-        fab.classList.add("hidden");
+        panel.classList.add("hidden");
+        dock.classList.add("hidden");
         if (grid) grid.classList.add("no-toc");
-        // 上一篇/下一篇导航同步退回整行（无目录时右侧不留空白列）
         var prevnext = document.querySelector(".article-prevnext");
         if (prevnext) prevnext.classList.add("no-toc");
         return;
-      } else if (grid) {
-        grid.classList.remove("no-toc");
-        var prevnext2 = document.querySelector(".article-prevnext");
-        if (prevnext2) prevnext2.classList.remove("no-toc");
       }
 
-      // 为标题生成稳定锚点 id
-      var slugify = function (text) {
-        return (
-          text
-            .toLowerCase()
-            .replace(/[^\w\u4e00-\u9fa5]+/g, "-")
-            .replace(/^-+|-+$/g, "") || "section"
-        );
-      };
+      if (grid) grid.classList.remove("no-toc");
+      var prevnext2 = document.querySelector(".article-prevnext");
+      if (prevnext2) prevnext2.classList.remove("no-toc");
 
-      var items = [];
-      headings.forEach(function (h, i) {
-        var id = h.id || slugify(h.textContent || "") + "-" + i;
-        h.id = id;
-        items.push({
-          id: id,
-          text: (h.textContent || "").trim(),
-          level: h.tagName === "H2" ? 2 : 3,
-        });
+      function slugify(text) {
+        return text.toLowerCase().replace(/[^\w\u4e00-\u9fa5]+/g, "-").replace(/^-+|-+$/g, "") || "section";
+      }
+
+      var items = headings.map(function (heading, index) {
+        var id = heading.id || slugify(heading.textContent || "") + "-" + index;
+        heading.id = id;
+        var item = { id: id, text: (heading.textContent || "").trim(), level: heading.tagName === "H2" ? 2 : 3, index: index };
+        itemById[id] = item;
+        return item;
       });
 
       function buildList(container) {
@@ -172,217 +177,105 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
         items.forEach(function (item) {
           var li = document.createElement("li");
           li.className = "article-toc-item level-" + item.level;
-          var a = document.createElement("a");
-          a.href = "#" + item.id;
-          a.textContent = item.text;
-          a.className = "article-toc-link";
-          a.dataset.tocId = item.id;
-          li.appendChild(a);
+          var link = document.createElement("a");
+          link.href = "#" + item.id;
+          link.textContent = item.text;
+          link.className = "article-toc-link";
+          link.dataset.tocId = item.id;
+          li.appendChild(link);
           container.appendChild(li);
         });
       }
-
       buildList(railList);
-      buildList(mobileList);
-
-      allLinks = Array.prototype.slice.call(railList.querySelectorAll(".article-toc-link")).concat(
-        Array.prototype.slice.call(mobileList.querySelectorAll(".article-toc-link"))
-      );
+      buildList(panelList);
+      allLinks = Array.prototype.slice.call(railList.querySelectorAll(".article-toc-link")).concat(Array.prototype.slice.call(panelList.querySelectorAll(".article-toc-link")));
 
       rail.classList.remove("hidden");
-      fab.classList.remove("hidden");
-      // 弹出面板/遮罩初始为“关闭态”：不加 .open，translateY(100%) 且 visibility:hidden，位于屏幕外待命
-      mobile.classList.remove("hidden");
-      if (overlay) overlay.classList.remove("hidden");
+      panel.classList.remove("hidden");
+      dock.classList.remove("hidden");
+      overlay.classList.remove("hidden");
+      overlay.setAttribute("aria-hidden", "true");
 
-      // 移动端：显示标题计数（面板头部 + 悬浮球角标）
       if (countEl) {
-        var fmt = countEl.getAttribute("data-count-format") || "{count}";
-        countEl.textContent = fmt.replace("{count}", String(items.length));
+        countEl.textContent = (countEl.getAttribute("data-count-format") || "{count}").replace("{count}", String(items.length));
         countEl.classList.remove("hidden");
       }
-      if (fabCount) {
-        fabCount.textContent = String(items.length);
-        fabCount.classList.remove("hidden");
-      }
-
-      // ---- 移动端：悬浮球交互 ----
-      var dragging = false; // 拖拽中不触发点击
-      var justDragged = false; // 标记“刚刚完成过一次真实拖拽”，用于抑制紧随其后的 click 误触面板开关
-      var overlay = document.getElementById("article-toc-overlay");
 
       function openPanel() {
-        mobile.classList.add("open");
-        fab.classList.add("open");
-        if (overlay) overlay.classList.add("open");
-      }
-      function closePanel() {
-        mobile.classList.remove("open");
-        fab.classList.remove("open");
-        if (overlay) overlay.classList.remove("open");
+        if (!dock.classList.contains("is-visible")) return;
+        lastTrigger = document.activeElement;
+        panel.classList.add("open");
+        overlay.classList.add("open");
+        overlay.setAttribute("aria-hidden", "false");
+        dock.setAttribute("aria-expanded", "true");
+        document.body.classList.add("article-toc-open");
+        requestAnimationFrame(function () {
+          keepActiveMobileLinkVisible();
+          if (closeButton) closeButton.focus();
+        });
       }
 
-      // 点击悬浮球开关面板（直接赋值避免重复绑定）
-      fab.onclick = function () {
-        // 若刚刚完成真实拖拽，抑制本次 click，避免松手误触开关面板
-        if (justDragged) {
-          justDragged = false;
-          return;
-        }
-        if (!mobile.classList.contains("open")) {
-          openPanel();
-        } else {
-          closePanel();
-        }
+      closeMobilePanel = function (returnFocus) {
+        if (!panel.classList.contains("open")) return;
+        panel.classList.remove("open");
+        overlay.classList.remove("open");
+        overlay.setAttribute("aria-hidden", "true");
+        dock.setAttribute("aria-expanded", "false");
+        document.body.classList.remove("article-toc-open");
+        if (returnFocus !== false) requestAnimationFrame(function () { (lastTrigger || dock).focus(); });
       };
-      if (closeBtn) {
-        closeBtn.onclick = closePanel;
-      }
-      // 点击面板背景 / 遮罩关闭
-      if (overlay) overlay.onclick = closePanel;
 
-      // 悬浮球拖拽（pointer 事件，兼容触屏 / 鼠标）
-      var startX = 0, startY = 0, originX = 0, originY = 0;
-      var left, top;
-      var fabDragMargin = 8; // 悬浮球距屏幕边缘的最小边距
+      dock.onclick = function () { panel.classList.contains("open") ? closeMobilePanel(true) : openPanel(); };
+      overlay.onclick = function () { closeMobilePanel(true); };
+      if (closeButton) closeButton.onclick = function () { closeMobilePanel(true); };
 
-      function getPos() {
-        var rect = fab.getBoundingClientRect();
-        return { left: rect.left, top: rect.top };
-      }
-
-      fab.addEventListener("pointerdown", function (e) {
-        if (e.pointerType === "mouse" && e.button !== 0) return;
-        // 用户开始操作后停止首次加载的引导动画，避免动画干扰拖拽/点击
-        fab.style.animation = "none";
-        dragging = false;
-        startX = e.clientX;
-        startY = e.clientY;
-        var p = getPos();
-        originX = p.left;
-        originY = p.top;
-        fab.setPointerCapture(e.pointerId);
-        justDragged = false;
-        // 按压反馈：先进入“按压态”，进入真正拖拽时再切换为拖拽态
-        fab.classList.add("dragging");
-        fab.classList.add("pressed");
-      });
-
-      fab.addEventListener("pointermove", function (e) {
-        if (!fab.classList.contains("dragging")) return;
-        var dx = e.clientX - startX;
-        var dy = e.clientY - startY;
-        if (!dragging && Math.abs(dx) + Math.abs(dy) < 8) return; // 小于阈值为点击
-        if (!dragging) fab.classList.remove("pressed"); // 进入拖拽，去掉按压缩放
-        dragging = true;
-        left = originX + dx;
-        top = originY + dy;
-        // 限制在视口内
-        var vw = document.documentElement.clientWidth;
-        var vh = document.documentElement.clientHeight;
-        var fw = fab.offsetWidth;
-        var fh = fab.offsetHeight;
-        var m = fabDragMargin;
-        left = Math.max(m, Math.min(vw - fw - m, left));
-        top = Math.max(m, Math.min(vh - fh - m, top));
-        fab.style.left = left + "px";
-        fab.style.top = top + "px";
-        fab.style.right = "auto";
-        fab.style.bottom = "auto";
-      });
-
-      function endDrag(e) {
-        var wasDragging = fab.classList.contains("dragging");
-        if (!wasDragging) return;
-        fab.classList.remove("dragging");
-        fab.classList.remove("pressed");
-        // 手指抬起时如果有指针捕获需释放
-        try { fab.releasePointerCapture(e.pointerId); } catch (err) {}
-        // 磁性吸附：松手后自动滑靠最近的左/右边缘，避免停在半空
-        if (dragging) {
-          var vw = document.documentElement.clientWidth;
-          var fw = fab.offsetWidth;
-          var m = fabDragMargin;
-          var currentLeft = parseFloat(fab.style.left) || 0;
-          // 取当前悬浮球中心相对视口的水平位置，决定吸附到左还是右
-          var centerX = currentLeft + fw / 2;
-          var snapLeft = centerX < vw / 2 ? m : vw - fw - m;
-          if (Math.abs(snapLeft - currentLeft) > 1) {
-            fab.style.left = snapLeft + "px"; // 通过 left transition 平滑归位
-          }
-          justDragged = true; // 标记本次为真实拖拽，抑制随后的 click 误触
-        }
-        dragging = false; // 复位拖拽态，保证后续点击可正常开关面板
-      }
-      fab.addEventListener("pointerup", endDrag);
-      fab.addEventListener("pointercancel", endDrag);
-
-      // 滚动高亮当前章节（桌面 + 移动端共用）
-      var observer = new IntersectionObserver(
-        function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-              setActive(entry.target.id);
-            }
-          });
-        },
-        { rootMargin: "-80px 0px -70% 0px", threshold: 0 }
-      );
-      headings.forEach(function (h) {
-        observer.observe(h);
-      });
-
-      // 清理旧 observer（view transition 时旧 DOM 被替换，但以防万一）
-      if (initArticleTOC._observer) {
-        initArticleTOC._observer.disconnect();
-      }
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) { if (entry.isIntersecting) setActive(entry.target.id); });
+      }, { rootMargin: "-80px 0px -70% 0px", threshold: 0 });
+      headings.forEach(function (heading) { observer.observe(heading); });
+      if (initArticleTOC._observer) initArticleTOC._observer.disconnect();
       initArticleTOC._observer = observer;
+
+      if (!dock.__galvinDockBound) {
+        dock.__galvinDockBound = true;
+        window.addEventListener("scroll", updateDockVisibility, { passive: true });
+        window.addEventListener("resize", updateDockVisibility, { passive: true });
+      }
+      setActive(items[0].id);
+      updateDockVisibility();
     }
 
-    // 事件委托：点击目录链接平滑滚动到目标（兼容动态创建的节点）
-    // 立即高亮 + 目标标题闪烁，保证短章节也有明确反馈；移动端点击后自动关闭面板
-    document.addEventListener("click", function (e) {
-      var t = e.target;
-      if (!t || !t.classList || !t.classList.contains("article-toc-link")) return;
-      var id = t.dataset.tocId;
-      if (!id) return;
-      var target = document.getElementById(id);
-      if (target) {
-        e.preventDefault();
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-        history.replaceState(null, "", "#" + id);
-        // 立即高亮，不等 IntersectionObserver（短章节可能不会触发交叉回调）
-        setActive(id);
-        // 目标标题闪烁，明确"跳到了这里"
-        flashHeading(target);
-        // 移动端：点击后关闭弹出面板
-        var mobile = document.getElementById("article-toc-mobile");
-        if (mobile) mobile.classList.remove("open");
-        var fab = document.getElementById("article-toc-fab");
-        if (fab) fab.classList.remove("open");
-        var overlay = document.getElementById("article-toc-overlay");
-        if (overlay) overlay.classList.remove("open");
+    document.addEventListener("click", function (event) {
+      var targetLink = event.target?.closest?.(".article-toc-link");
+      if (!targetLink) return;
+      var id = targetLink.dataset.tocId;
+      var target = id && document.getElementById(id);
+      if (!target) return;
+      event.preventDefault();
+      target.scrollIntoView({ behavior: reducedMotion() ? "auto" : "smooth", block: "start" });
+      history.replaceState(null, "", "#" + id);
+      setActive(id);
+      flashHeading(target);
+      if (targetLink.closest("#article-toc-mobile") && closeMobilePanel) {
+        closeMobilePanel(false);
+        target.setAttribute("tabindex", "-1");
+        requestAnimationFrame(function () { target.focus({ preventScroll: true }); });
       }
     });
 
-    // 按 Esc 关闭移动端弹出面板
-    document.addEventListener("keydown", function (e) {
-      if (e.key !== "Escape") return;
-      var mobile = document.getElementById("article-toc-mobile");
-      var fab = document.getElementById("article-toc-fab");
-      if (mobile && mobile.classList.contains("open")) {
-        mobile.classList.remove("open");
-        if (fab) fab.classList.remove("open");
-        var overlay = document.getElementById("article-toc-overlay");
-        if (overlay) overlay.classList.remove("open");
-      }
+    document.addEventListener("keydown", function (event) {
+      if (!mobilePanel?.classList.contains("open")) return;
+      if (event.key === "Escape") { event.preventDefault(); closeMobilePanel?.(true); return; }
+      if (event.key !== "Tab") return;
+      var focusable = getFocusable(mobilePanel);
+      if (!focusable.length) return;
+      var first = focusable[0];
+      var last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     });
 
     initArticleTOC();
-
-    // Astro View Transition 导航后重新初始化（旧 DOM 被替换）
-    document.addEventListener("astro:page-load", function () {
-      setTimeout(initArticleTOC, 0);
-    });
+    document.addEventListener("astro:page-load", function () { setTimeout(initArticleTOC, 0); });
   })();
 </script>
