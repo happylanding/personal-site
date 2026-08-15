@@ -92,3 +92,21 @@ test("书架可进入本站在线预览并保留官方阅读回退", async ({ pa
   await expect(page.getByRole("link", { name: "在官方站点打开" })).toHaveAttribute("href", "https://bojieli.github.io/ai-agent-book/");
   await expect(page.getByRole("link", { name: "访问开源项目" })).toHaveAttribute("href", "https://github.com/bojieli/ai-agent-book");
 });
+
+test("叩问详情页提供 Galvin 阅读工作区与原始资源入口", async ({ page }) => {
+  await page.goto("/ai/easy-vibe-guide/");
+
+  await expect(page.locator("article.galvin-article-page")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Easy-Vibe 宝藏指南：把 Datawhale 这套 AI 编程教程里真正的好东西一次讲清楚" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "返回叩问" })).toHaveAttribute("href", "/archive/");
+  await expect(page.getByRole("link", { name: "原始资源" })).toHaveAttribute("href", "https://datawhalechina.github.io/easy-vibe/zh-cn/");
+});
+
+test("叩问详情页按正文滚动同步可访问阅读进度", async ({ page }) => {
+  await page.goto("/ai/easy-vibe-guide/");
+  const progress = page.getByRole("progressbar", { name: "文章阅读进度" });
+
+  await expect(progress).toHaveAttribute("aria-valuenow", "0");
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight * 0.5));
+  await expect.poll(async () => Number(await progress.getAttribute("aria-valuenow"))).toBeGreaterThan(0);
+});

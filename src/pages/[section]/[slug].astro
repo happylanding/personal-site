@@ -1,11 +1,13 @@
 ---
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import Breadcrumb from "../../components/Breadcrumb.astro";
 import ColumnIcon from "../../components/ColumnIcon.astro";
 import Icon from "../../components/Icon.astro";
 import ArticleTOC from "../../components/ArticleTOC.astro";
+import ArticleReadingProgress from "../../components/ArticleReadingProgress.astro";
 import { getLangFromUrl, useTranslations } from "../../i18n/utils";
+import { getGalvinKindLabel } from "../../lib/galvin-content";
+import { resolveArticleSearchKind } from "../../lib/galvin-content-view";
 
 export async function getStaticPaths() {
   const articles = await getCollection("articles", ({ data }) => !data.draft);
@@ -34,6 +36,8 @@ const dateStr = article.data.date.toLocaleDateString(lang === "en" ? "en-US" : "
 });
 const isBook = section === "books";
 const ogImage = article.data.ogImage || "/favicon.svg";
+const galvinKind = resolveArticleSearchKind(article.data.kind, article.data.section);
+const galvinKindLabel = getGalvinKindLabel(galvinKind);
 
 // 同栏目内按时间排序，用于上一篇 / 下一篇
 const sectionArticles = allArticles
@@ -45,20 +49,14 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
 ---
 
 <BaseLayout title={displayTitle} description={displayDesc} ogImage={ogImage}>
-  <Breadcrumb
-    crumbs={[
-      { label: t(`columns.${section}.name`), href: lang === "en" ? `/en/${section}/` : `/${section}/` },
-      { label: displayTitle, href: "#" },
-    ]}
-  />
-
-  <article data-reveal>
-    <header class="mb-10">
+  <article class="galvin-article-page" data-reveal>
+    <header class="galvin-article-page__hero">
+      <a class="galvin-article-page__back" href="/archive/">← 返回叩问</a>
       {article.data.ogImage && (
         <img
           src={article.data.ogImage.replace(/\.png$/, ".webp")}
           alt={displayTitle}
-          class="w-full rounded-xl border border-black/10 dark:border-white/10 shadow-sm mb-6"
+          class="galvin-article-page__cover"
           width="1200"
           height="630"
           loading="eager"
@@ -66,38 +64,36 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
         />
       )}
 
-      <div class="flex items-center gap-3 mb-4">
-        <span class="text-[13px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/75 inline-flex items-center gap-1">
-          <ColumnIcon section={section as import("../lib/sections").SectionKey} class="w-3 h-3" /> {t(`columns.${section}.name`)}
+      <div class="galvin-article-page__signal-row">
+        <span class="galvin-article-page__kind">
+          <ColumnIcon section={section as import("../lib/sections").SectionKey} class="w-3 h-3" /> {galvinKindLabel}
         </span>
+        <span>ARTICLE / {article.id.toUpperCase()}</span>
         {article.data.featured && (
-          <span class="text-xs px-2 py-0.5 rounded-full bg-black dark:bg-white text-white dark:text-black inline-flex items-center gap-1">
+          <span class="galvin-article-page__featured">
             <Icon name="star" class="w-3 h-3" /> {t("articles.featured")}
           </span>
         )}
       </div>
 
-      <h1 class="text-3xl md:text-4xl font-serif font-bold leading-tight mb-4 lmask">
-        <span class="lmask-inner" style="--lmask-delay:0.1s"><span>{displayTitle}</span></span>
-      </h1>
+      <h1>{displayTitle}</h1>
 
       {displayDesc && (
-        <p class="text-base text-black/50 dark:text-white/50 mb-4 leading-relaxed max-w-3xl">{displayDesc}</p>
+        <p class="galvin-article-page__lead">{displayDesc}</p>
       )}
 
-      <div class="flex flex-wrap items-center gap-4 text-sm text-black/45 dark:text-white/60 font-mono">
-        <time datetime={article.data.date.toISOString()}>
-          {t("articles.publishedOn")} {dateStr}
-        </time>
+      <div class="galvin-article-page__meta">
+        <time datetime={article.data.date.toISOString()}><span>PUBLISHED</span>{dateStr}</time>
+        <span><span>SECTION</span>{galvinKindLabel}</span>
         {article.data.author && (
-          <span>{t("articles.author")}: {article.data.author}</span>
+          <span><span>AUTHOR</span>{article.data.author}</span>
         )}
       </div>
 
       {displayTags.length > 0 && (
-        <div class="flex flex-wrap gap-2 mt-4">
+        <div class="galvin-article-page__tags">
           {displayTags.map((tag: string) => (
-            <span class="text-[13px] px-2 py-1 rounded-md bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/75">
+            <span>
               #{tag}
             </span>
           ))}
@@ -105,16 +101,18 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
       )}
 
       {isBook && article.data.coverImage && (
-        <div class="mt-6">
-          <img src={article.data.coverImage} alt={displayTitle} class="w-32 rounded-lg shadow-md" loading="lazy" decoding="async" />
+        <div class="galvin-article-page__book-cover">
+          <img src={article.data.coverImage} alt={displayTitle} loading="lazy" decoding="async" />
         </div>
       )}
     </header>
 
-    <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14">
+    <ArticleReadingProgress />
+
+    <div id="article-grid" class="article-grid galvin-article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14">
       <!-- 正文 -->
       <div class="min-w-0 order-1">
-        <div class="prose dark:prose-invert article-content max-w-none">
+        <div class="prose dark:prose-invert article-content galvin-article-content max-w-none">
           <Content />
         </div>
       </div>
@@ -124,6 +122,14 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
         <ArticleTOC label={t("articles.toc")} countFormat={t("articles.tocCount")} />
       </div>
     </div>
+
+    {article.data.sourceUrl && (
+      <aside class="galvin-article-resource" aria-label="文章资源">
+        <span class="galvin-article-resource__node" aria-hidden="true"></span>
+        <div><span>PRIMARY SOURCE</span><p>本文引用的公开课程、项目或资料入口。</p></div>
+        <a href={article.data.sourceUrl} target="_blank" rel="noopener">原始资源 <span aria-hidden="true">↗</span></a>
+      </aside>
+    )}
 
     <!-- Book-specific: format download section -->
     {isBook && (

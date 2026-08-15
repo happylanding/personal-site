@@ -3465,3 +3465,60 @@ body.galvin-site ::selection {
   .galvin-reader-page__frame-wrap { min-height: 620px; margin-inline: -16px; }
   .galvin-reader-page__frame-wrap iframe { height: 72vh; min-height: 620px; }
 }
+
+/* Galvin article reader reminder: editorial contrast, breathing room, and one readable signal.
+   The reading canvas should focus attention on the article—not turn the prose into an app dashboard. */
+.galvin-article-page { width: min(100% - 48px, 1160px); margin: 0 auto; padding: 70px 0 58px; }
+.galvin-article-page__hero { position: relative; max-width: 1000px; padding: 0 0 38px; border-bottom: 1px solid var(--galvin-line); }
+.galvin-article-page__back { display: inline-block; margin-bottom: 37px; color: var(--galvin-text-tertiary); font: 11px var(--galvin-font-utility); text-decoration: none; transition: color 160ms var(--galvin-ease-out); }
+.galvin-article-page__back:hover { color: var(--galvin-signal-violet); }
+.galvin-article-page__cover { display: block; width: min(100%, 860px); max-height: 420px; margin: 0 0 30px; object-fit: cover; border: 1px solid var(--galvin-line); }
+.galvin-article-page__signal-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; color: var(--galvin-text-tertiary); font: 10px var(--galvin-font-utility); letter-spacing: 0.06em; }
+.galvin-article-page__kind, .galvin-article-page__featured { display: inline-flex; align-items: center; gap: 5px; color: var(--galvin-signal-cyan); }
+.galvin-article-page__featured { color: var(--galvin-signal-violet); }
+.galvin-article-page h1 { max-width: 960px; margin: 20px 0; color: var(--galvin-text-primary); font-size: clamp(42px, 5.2vw, 76px); font-weight: 600; letter-spacing: -0.075em; line-height: 1.12; }
+.galvin-article-page__lead { max-width: 790px; margin: 0; color: var(--galvin-text-secondary); font-size: clamp(16px, 1.5vw, 20px); line-height: 1.8; }
+.galvin-article-page__meta { display: flex; flex-wrap: wrap; gap: 20px 38px; margin-top: 27px; color: var(--galvin-text-secondary); font-size: 13px; }
+.galvin-article-page__meta > * { display: grid; gap: 5px; }
+.galvin-article-page__meta > * > span { color: var(--galvin-text-tertiary); font: 10px var(--galvin-font-utility); letter-spacing: 0.06em; }
+.galvin-article-page__tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.galvin-article-page__tags span { padding: 7px 9px; border: 1px solid var(--galvin-line-subtle); color: var(--galvin-text-secondary); font: 11px var(--galvin-font-utility); }
+.galvin-article-page__book-cover img { width: 132px; margin-top: 25px; border: 1px solid var(--galvin-line); box-shadow: 10px 12px 23px rgba(0, 0, 0, 0.32); }
+
+.galvin-article-progress { display: grid; grid-template-columns: auto minmax(110px, 250px) auto; align-items: center; gap: 11px; max-width: 440px; margin: 24px 0 36px; color: var(--galvin-text-tertiary); font: 10px var(--galvin-font-utility); letter-spacing: 0.065em; }
+.galvin-article-progress__track { display: block; height: 1px; overflow: hidden; background: var(--galvin-line); }
+.galvin-article-progress__track i { display: block; width: 0; height: 100%; background: var(--galvin-signal-violet); box-shadow: 0 0 12px rgba(155, 140, 255, 0.8); transition: width 120ms linear; }
+.galvin-article-progress__value { color: var(--galvin-signal-violet); }
+
+.galvin-article-grid { align-items: start; }
+.galvin-article-content { max-width: 760px !important; color: var(--galvin-text-primary); font-size: 17px; line-height: 1.92; }
+.galvin-article-content :where(h2, h3) { scroll-margin-top: 104px; color: var(--galvin-text-primary); letter-spacing: -0.045em; }
+.galvin-article-content h2 { margin-top: 4.2rem; padding-top: 1.2rem; border-top: 1px solid var(--galvin-line-subtle); font-size: clamp(27px, 3vw, 38px); }
+.galvin-article-content h3 { margin-top: 2.8rem; font-size: clamp(21px, 2.4vw, 28px); }
+.galvin-article-content p, .galvin-article-content li { color: var(--galvin-text-secondary); }
+.galvin-article-content a { color: var(--galvin-signal-cyan); text-decoration-color: rgba(97, 242, 208, 0.38); text-underline-offset: 3px; }
+.galvin-article-content blockquote { border-left-color: var(--galvin-signal-violet); background: rgba(155, 140, 255, 0.055); color: var(--galvin-text-secondary); }
+.galvin-article-content :where(code, pre) { border-color: var(--galvin-line); background: var(--galvin-surface); }
+.galvin-article-content table { border-color: var(--galvin-line); }
+.galvin-article-content :where(th, td) { border-color: var(--galvin-line-subtle); }
+
+.galvin-article-resource { display: grid; grid-template-columns: auto 1fr auto; gap: 13px; align-items: center; max-width: 900px; margin: 52px 0 0; padding: 18px; border: 1px solid rgba(97, 242, 208, 0.34); background: rgba(97, 242, 208, 0.035); }
+.galvin-article-resource__node { width: 7px; height: 7px; border-radius: 50%; background: var(--galvin-signal-cyan); box-shadow: 0 0 10px rgba(97, 242, 208, 0.62); }
+.galvin-article-resource div > span { color: var(--galvin-signal-cyan); font: 10px var(--galvin-font-utility); letter-spacing: 0.08em; }
+.galvin-article-resource p { margin: 4px 0 0; color: var(--galvin-text-secondary); font-size: 12px; }
+.galvin-article-resource a { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border: 1px solid var(--galvin-line); color: var(--galvin-text-primary); font-size: 13px; text-decoration: none; transition: border-color 160ms var(--galvin-ease-out), color 160ms var(--galvin-ease-out); }
+.galvin-article-resource a:hover { border-color: var(--galvin-signal-violet); color: var(--galvin-signal-violet); }
+
+@media (max-width: 720px) {
+  .galvin-article-page { width: min(100% - 32px, 1160px); padding-top: 42px; }
+  .galvin-article-page__back { margin-bottom: 29px; }
+  .galvin-article-page__cover { margin-bottom: 22px; }
+  .galvin-article-page h1 { font-size: clamp(37px, 12vw, 55px); }
+  .galvin-article-page__lead { font-size: 16px; }
+  .galvin-article-page__meta { gap: 16px 28px; }
+  .galvin-article-progress { grid-template-columns: auto minmax(84px, 1fr) auto; max-width: none; margin: 21px 0 30px; }
+  .galvin-article-content { font-size: 16px; line-height: 1.86; }
+  .galvin-article-content h2 { margin-top: 3.3rem; }
+  .galvin-article-resource { grid-template-columns: auto 1fr; margin-top: 38px; }
+  .galvin-article-resource a { grid-column: 2; width: fit-content; }
+}

@@ -27,6 +27,8 @@ const articlesCollection = defineCollection({
     ogImage: z.string().optional(),
     /** 英文版封面 / 社交分享图（可选，英文页优先使用） */
     ogImageEn: z.string().optional(),
+    /** 原始课程、项目或公开资料入口；文章详情页仅在存在时展示。 */
+    sourceUrl: z.string().url().optional(),
     /** 阅读思考专属字段 */
     coverImage: z.string().optional(),
     author: z.string().optional(),
@@ -72,6 +74,7 @@ const articlesEnCollection = defineCollection({
     bodyEn: z.string().optional(),
     ogImage: z.string().optional(),
     ogImageEn: z.string().optional(),
+    sourceUrl: z.string().url().optional(),
     coverImage: z.string().optional(),
     author: z.string().optional(),
     authorEn: z.string().optional(),
