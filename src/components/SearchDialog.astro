@@ -1,933 +1,293 @@
 ---
-import { getLangFromUrl, useTranslations } from "../i18n/utils";
+/* Galvin design reminder: search is an operational deep-blue command panel.
+   Keep the panel sober and useful: violet for the active result, cyan for load status, no decorative gradients. */
 import Icon from "./Icon.astro";
-
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
-const langPrefix = lang === "en" ? "/en/" : "/";
-
-// 搜索索引已抽取为独立 JSON（/search-index.json、/en/search-index.json），
-// 由前端在搜索框首次打开时才 fetch，页面不再内联全站文章数据（每页少 23~26KB 解析）。
-
-// 搜索 UI 文案（直接传给前端 JS，避免运行时再判断语言）
-const searchUI = {
-  placeholder: t("search.placeholder"),
-  noResults: t("search.noResults"),
-  idleHint: t("search.idleHint"),
-  shortcut: t("search.shortcut"),
-  hintClose: t("search.hintClose"),
-  hintNav: t("search.hintNav"),
-  hintOpen: t("search.hintOpen"),
-  hintAll: t("search.hintAll"),
-  popTags: t("search.popTags"),
-  totalPosts: t("search.totalPosts"),
-  matched: t("search.matched"),
-  of: t("search.of"),
-  groupBy: t("search.groupBy"),
-  tryKeywords: t("search.tryKeywords"),
-  clear: t("search.clear"),
-};
-
-// 栏目名称（用于空态导航）
-const sectionNames = {
-  insights: t("columns.insights.name"),
-  ai: t("columns.ai.name"),
-  tips: t("columns.tips.name"),
-  books: t("columns.books.name"),
-};
 ---
 
-<!-- ================= Trigger: 桌面搜索框 + 移动端图标 ================= -->
-<!-- 桌面端（lg+）：可见搜索框，更直观的搜索入口 -->
-<button
-  id="search-trigger-desktop"
-  type="button"
-  class="hidden lg:flex items-center w-[200px] h-[42px] px-3 rounded-xl border border-black/10 dark:border-white/10 bg-black/[0.06] dark:bg-white/10 hover:bg-black/[0.09] dark:hover:bg-white/[0.14] active:bg-black/10 dark:active:bg-white/20 transition-all duration-200 text-left"
-  aria-label={t("search.trigger")}
->
-  <Icon name="search" class="shrink-0 w-[15px] h-[15px] opacity-40 mr-2" />
-  <span class="flex-1 truncate text-[13px] text-black/40 dark:text-white/40">{t("search.placeholder")}</span>
-  <kbd class="shrink-0 ml-2 px-1.5 py-0.5 rounded bg-white/70 dark:bg-white/20 border border-black/5 dark:border-white/10 text-[10px] font-mono text-black/40 dark:text-white/40">
-    ⌘K
-  </kbd>
+<button id="search-trigger-desktop" class="galvin-search-trigger galvin-search-trigger--desktop" type="button" aria-label="打开全站搜索">
+  <Icon name="search" class="w-4 h-4" />
+  <span>搜索内容</span><kbd>⌘ K</kbd>
+</button>
+<button id="search-trigger-mobile" class="galvin-search-trigger galvin-search-trigger--mobile" type="button" aria-label="打开全站搜索">
+  <Icon name="search" class="w-[18px] h-[18px]" />
 </button>
 
-<!-- 中等屏（md–lg）：图标按钮 -->
-<button
-  id="search-trigger-md"
-  type="button"
-  class="hidden md:flex lg:hidden w-[42px] h-[42px] items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 dark:active:bg-white/10 transition-all duration-200"
-  aria-label={t("search.trigger")}
-  title={t("search.placeholder")}
->
-  <Icon name="search" class="w-[18px] h-[18px] opacity-60" />
-</button>
-
-<!-- 移动端：图标按钮 -->
-<button
-  id="search-trigger-mobile"
-  type="button"
-  class="md:hidden w-[42px] h-[42px] flex items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 dark:active:bg-white/10 transition-all duration-200"
-  aria-label={t("search.trigger")}
-  title={t("search.placeholder")}
->
-  <Icon name="search" class="w-[18px] h-[18px] opacity-60" />
-</button>
-
-<!-- ================= 命令面板 Overlay ================= -->
-<div
-  id="search-overlay"
-  class="fixed inset-0 z-[100] flex items-start justify-center pt-[max(3rem,calc(env(safe-area-inset-top,0px)+2rem))] sm:pt-[max(12vh,env(safe-area-inset-top,0px)+2rem)] opacity-0 pointer-events-none transition-opacity duration-200"
-  aria-hidden="true"
->
-  <!-- Backdrop -->
-  <div id="search-backdrop" class="absolute inset-0 bg-black/30 dark:bg-black/60"></div>
-
-  <!-- Panel：Spotlight 风格，居中更宽 -->
-  <div
-    id="search-panel"
-    class="relative w-full max-w-6xl mx-3 sm:mx-4 md:mx-6 lg:mx-8 rounded-2xl shadow-2xl transform scale-95 transition-transform duration-200 overflow-hidden 2xl:max-w-[1400px]"
-  >
-    <!-- Input bar -->
-    <form autocomplete="off" class="flex items-center px-4 sm:px-5 py-3.5 border-b border-black/5 dark:border-white/5">
-      <Icon name="search" class="shrink-0 w-[18px] h-[18px] mr-3 opacity-40" />
-      <input
-        id="search-input"
-        type="text"
-        class="flex-1 bg-transparent border-none outline-none text-[15px] sm:text-base placeholder:text-black/30 dark:placeholder:text-white/30"
-        placeholder={searchUI.placeholder}
-        autocomplete="off"
-        enterkeyhint="search"
-      />
-      <span id="search-esc-hint" class="hidden sm:inline-block shrink-0 mr-2 px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-[10px] font-mono text-black/40 dark:text-white/40">
-        ESC
-      </span>
-      <!-- close / clear button -->
-      <button
-        id="search-close-btn"
-        type="button"
-        class="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 dark:active:bg-white/10 ml-1"
-        aria-label={searchUI.clear}
-        title={searchUI.clear}
-      >
-        <Icon name="close" class="w-4 h-4 opacity-40" />
-      </button>
-    </form>
-
-    <!-- Results area：静态容器与动态结果列表分离，避免 innerHTML 清空互相覆盖 -->
-    <div id="search-results" class="max-h-[55dvh] sm:max-h-[60vh] overflow-y-auto overscroll-contain">
-      <!-- Loading -->
-      <div id="search-loading" class="hidden px-4 py-8 text-center text-sm opacity-50">
-        ...
-      </div>
-      <!-- No results -->
-      <div id="search-empty" class="hidden px-4 py-8 text-center text-sm opacity-50">
-        {searchUI.noResults}
-      </div>
-      <!-- Default explore state：栏目导航 + 热门标签（JS 动态生成） -->
-      <div id="search-idle" class="px-4 py-4"></div>
-      <!-- Group tabs（JS 动态生成，有结果时显示） -->
-      <div id="search-tabs" class="hidden px-3 pt-3 pb-1 flex items-center gap-1.5 flex-wrap border-b border-black/5 dark:border-white/5"></div>
-      <!-- 动态结果列表：仅存放搜索结果项 -->
-      <div id="search-results-list"></div>
+<div id="search-overlay" class="galvin-search-overlay" aria-hidden="true">
+  <button id="search-backdrop" class="galvin-search-overlay__backdrop" type="button" tabindex="-1" aria-label="关闭搜索"></button>
+  <section id="search-panel" class="galvin-search-panel" role="dialog" aria-modal="true" aria-label="全站搜索">
+    <div class="galvin-search-panel__input-wrap">
+      <Icon name="search" class="w-[18px] h-[18px]" />
+      <input id="search-input" type="search" autocomplete="off" placeholder="搜索文章、工具、藏页与书架" enterkeyhint="search" />
+      <kbd class="galvin-search-panel__esc">ESC</kbd>
+      <button id="search-close-btn" type="button" aria-label="关闭搜索"><Icon name="close" class="w-4 h-4" /></button>
     </div>
-
-    <!-- Footer -->
-    <div id="search-footer" class="px-4 sm:px-5 py-2 border-t border-black/5 dark:border-white/5 text-[10px] opacity-40 flex items-center justify-between gap-3">
-      <span id="search-count-wrap" class="flex items-center gap-1.5 font-mono">
-        <span id="search-count"></span><span id="search-count-suffix"></span>
-      </span>
-      <span class="hidden sm:flex items-center gap-2.5">
-        <span class="flex items-center gap-1"><kbd class="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-[10px]">↑↓</kbd> {searchUI.hintNav}</span>
-        <span class="flex items-center gap-1"><kbd class="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-[10px]">↵</kbd> {searchUI.hintOpen}</span>
-      </span>
+    <div id="search-results" class="galvin-search-results">
+      <div id="search-loading" class="galvin-search-state" hidden>正在加载内容索引…</div>
+      <div id="search-idle" class="galvin-search-idle"></div>
+      <div id="search-tabs" class="galvin-search-tabs" hidden></div>
+      <div id="search-results-list" class="galvin-search-results__list"></div>
+      <div id="search-empty" class="galvin-search-state" hidden>没有找到相关内容，换一个词试试。</div>
     </div>
-  </div>
+    <footer class="galvin-search-panel__footer">
+      <span id="search-count">等待检索</span>
+      <span><kbd>↑↓</kbd> 选择 <kbd>↵</kbd> 打开</span>
+    </footer>
+  </section>
 </div>
 
 <style is:global>
-  /* "search-overlay-open" is added to <html> via JS, outside component scope */
-  .search-overlay-open {
-    overflow: hidden;
-  }
-
-  /* overlay visible state */
-  #search-overlay.search-overlay-visible {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  #search-overlay.search-overlay-visible #search-panel {
-    transform: scale(1);
-  }
-
-  /* 搜索面板：实底卡片 */
-  #search-panel {
-    background: #ffffff;
-  }
-  :global(.dark) #search-panel {
-    background: #161b2e;
-  }
-
-  /* ===== 结果项：精致卡片风格 ===== */
-  .search-result-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-    text-decoration: none;
-    color: inherit;
-    padding: 0.7rem 1rem 0.7rem 1.25rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-    cursor: pointer;
-    transition: background-color 0.12s ease, transform 0.12s ease;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .dark .search-result-item {
-    border-color: rgba(255, 255, 255, 0.04);
-  }
-  .search-result-item:hover,
-  .search-result-item.active {
-    background-color: rgba(0, 0, 0, 0.04);
-  }
-  .dark .search-result-item:hover,
-  .dark .search-result-item.active {
-    background-color: rgba(255, 255, 255, 0.04);
-  }
-
-  /* 栏目图标徽章 */
-  .search-item-badge {
-    flex-shrink: 0;
-    width: 34px;
-    height: 34px;
-    margin-top: 1px;
-    display: flex;
+  .galvin-search-trigger {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 9px;
-    background: rgba(0, 0, 0, 0.05);
-    color: rgba(0, 0, 0, 0.55);
+    gap: 8px;
+    min-height: 38px;
+    border: 1px solid var(--galvin-line);
+    color: var(--galvin-text-secondary);
+    background: rgba(17, 25, 43, 0.58);
+    font: 11px var(--galvin-font-utility);
+    transition: color 180ms var(--galvin-ease-out), border-color 180ms var(--galvin-ease-out), background-color 180ms var(--galvin-ease-out), transform 120ms var(--galvin-ease-out);
   }
-  .dark .search-item-badge {
-    background: rgba(255, 255, 255, 0.07);
-    color: rgba(255, 255, 255, 0.6);
-  }
-  .search-item-badge svg {
-    width: 17px;
-    height: 17px;
-  }
+  .galvin-search-trigger:hover { border-color: rgba(155, 140, 255, 0.7); color: var(--galvin-text-primary); background: rgba(155, 140, 255, 0.09); }
+  .galvin-search-trigger:active { transform: scale(0.97); }
+  .galvin-search-trigger--desktop { min-width: 146px; padding: 0 9px 0 12px; }
+  .galvin-search-trigger--desktop kbd { margin-left: auto; padding: 3px 5px; border: 1px solid var(--galvin-line-subtle); color: var(--galvin-text-tertiary); background: var(--galvin-canvas-elevated); font: inherit; }
+  .galvin-search-trigger--mobile { display: none; width: 38px; }
 
-  .search-item-body {
-    min-width: 0;
-    flex: 1;
-  }
-  .search-result-title {
-    font-weight: 600;
-    font-size: 0.9375rem;
-    line-height: 1.4;
-    margin-bottom: 0.15rem;
-  }
-  .search-result-title mark {
-    background-color: rgba(250, 204, 21, 0.35);
-    color: inherit;
-    border-radius: 2px;
-    padding: 0 1px;
-  }
-  .dark .search-result-title mark {
-    background-color: rgba(250, 204, 21, 0.3);
-  }
-
-  .search-result-excerpt {
-    font-size: 0.8125rem;
-    opacity: 0.55;
-    line-height: 1.45;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .search-result-excerpt mark {
-    background-color: rgba(250, 204, 21, 0.35);
-    color: inherit;
-    border-radius: 2px;
-    padding: 0 1px;
-  }
-  .dark .search-result-excerpt mark {
-    background-color: rgba(250, 204, 21, 0.3);
-  }
-
-  .search-result-meta {
-    font-size: 0.8125rem;
-    opacity: 0.6;
-    margin-top: 0.35rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: var(--font-mono);
-  }
-
-  /* ===== 分组 Tab ===== */
-  .search-tab {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.3rem 0.7rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    color: rgba(0, 0, 0, 0.55);
-    border: 1px solid transparent;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    white-space: nowrap;
-  }
-  .dark .search-tab {
-    color: rgba(255, 255, 255, 0.55);
-  }
-  .search-tab:hover {
-    background: rgba(0, 0, 0, 0.05);
-  }
-  .dark .search-tab:hover {
-    background: rgba(255, 255, 255, 0.06);
-  }
-  .search-tab.active {
-    background: rgba(0, 0, 0, 0.85);
-    color: #fff;
-  }
-  .dark .search-tab.active {
-    background: rgba(255, 255, 255, 0.9);
-    color: #000;
-  }
-  .search-tab .tab-count {
-    font-size: 0.625rem;
-    opacity: 0.7;
-    font-family: var(--font-mono);
-  }
-
-  /* ===== 空态（idle）导航区 ===== */
-  .idle-block {
-    margin-bottom: 1.1rem;
-  }
-  .idle-block:last-child {
-    margin-bottom: 0;
-  }
-  .idle-title {
-    font-size: 0.75rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    opacity: 0.55;
-    font-family: var(--font-mono);
-    margin-bottom: 0.55rem;
-  }
-  .idle-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
-  }
-  .idle-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.35rem 0.8rem;
-    border-radius: 999px;
-    font-size: 0.875rem;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    color: rgba(0, 0, 0, 0.68);
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.15s ease;
-  }
-  .dark .idle-chip {
-    border-color: rgba(255, 255, 255, 0.12);
-    color: rgba(255, 255, 255, 0.74);
-  }
-  .idle-chip:hover {
-    border-color: rgba(180, 83, 9, 0.5);
-    color: #b45309;
-    background: rgba(180, 83, 9, 0.05);
-  }
-  .dark .idle-chip:hover {
-    color: #fbbf24;
-    background: rgba(245, 158, 11, 0.08);
-  }
-  .idle-chip .chip-num {
-    font-size: 0.75rem;
-    opacity: 0.65;
-    font-family: var(--font-mono);
-  }
-  .idle-chip svg {
-    width: 13px;
-    height: 13px;
-    opacity: 0.55;
-  }
-  .idle-tip {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.75rem;
-    opacity: 0.55;
-    margin-top: 0.9rem;
-  }
-  .idle-tip kbd {
-    padding: 0.15rem 0.45rem;
-    border-radius: 5px;
-    background: rgba(0, 0, 0, 0.05);
-    font-family: var(--font-mono);
-    font-size: 0.625rem;
-  }
-  .dark .idle-tip kbd {
-    background: rgba(255, 255, 255, 0.08);
-  }
+  .galvin-search-overlay { position: fixed; inset: 0; z-index: 100; display: grid; place-items: start center; padding: max(70px, 11vh) 20px 20px; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 190ms var(--galvin-ease-out), visibility 0s linear 190ms; }
+  .galvin-search-overlay.is-open { opacity: 1; visibility: visible; pointer-events: auto; transition-delay: 0s; }
+  .galvin-search-overlay__backdrop { position: absolute; inset: 0; border: 0; background: rgba(1, 4, 10, 0.72); backdrop-filter: blur(7px); }
+  .galvin-search-panel { position: relative; width: min(760px, 100%); overflow: hidden; border: 1px solid rgba(88, 107, 155, 0.7); background: #0d1424; box-shadow: 0 28px 100px rgba(0, 0, 0, 0.6), inset 0 1px rgba(255, 255, 255, 0.06); transform: translateY(10px) scale(0.98); transition: transform 220ms var(--galvin-ease-out); }
+  .galvin-search-overlay.is-open .galvin-search-panel { transform: translateY(0) scale(1); }
+  .galvin-search-panel__input-wrap { display: flex; align-items: center; gap: 12px; min-height: 66px; padding: 0 16px; border-bottom: 1px solid var(--galvin-line); color: var(--galvin-signal-violet); }
+  .galvin-search-panel__input-wrap input { min-width: 0; flex: 1; border: 0; outline: 0; color: var(--galvin-text-primary); background: transparent; font: 16px var(--galvin-font-body); }
+  .galvin-search-panel__input-wrap input::placeholder { color: var(--galvin-text-tertiary); }
+  .galvin-search-panel__input-wrap button { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid transparent; color: var(--galvin-text-tertiary); background: transparent; transition: color 180ms var(--galvin-ease-out), border-color 180ms var(--galvin-ease-out); }
+  .galvin-search-panel__input-wrap button:hover { border-color: var(--galvin-line); color: var(--galvin-text-primary); }
+  .galvin-search-panel__esc, .galvin-search-panel__footer kbd { color: var(--galvin-text-tertiary); font: 10px var(--galvin-font-utility); }
+  .galvin-search-panel__esc { padding: 4px 5px; border: 1px solid var(--galvin-line-subtle); background: var(--galvin-canvas-elevated); }
+  .galvin-search-results { max-height: min(570px, 65dvh); overflow-y: auto; }
+  .galvin-search-state { padding: 48px 20px; color: var(--galvin-text-tertiary); text-align: center; font-size: 13px; }
+  .galvin-search-idle { padding: 18px; }
+  .galvin-search-idle__label { margin: 0 0 10px; color: var(--galvin-text-tertiary); font: 10px var(--galvin-font-utility); letter-spacing: 0.1em; }
+  .galvin-search-idle__chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .galvin-search-idle__chip { display: inline-flex; align-items: center; gap: 8px; min-height: 31px; padding: 0 9px; border: 1px solid var(--galvin-line); color: var(--galvin-text-secondary); background: rgba(17, 25, 43, 0.46); font-size: 12px; text-decoration: none; transition: border-color 180ms var(--galvin-ease-out), color 180ms var(--galvin-ease-out); }
+  .galvin-search-idle__chip:hover { border-color: rgba(155, 140, 255, 0.7); color: var(--galvin-text-primary); }
+  .galvin-search-idle__chip small { color: var(--galvin-signal-cyan); font: 10px var(--galvin-font-utility); }
+  .galvin-search-tabs { display: flex; gap: 7px; overflow-x: auto; padding: 12px 16px; border-bottom: 1px solid var(--galvin-line-subtle); scrollbar-width: none; }
+  .galvin-search-tabs::-webkit-scrollbar { display: none; }
+  .galvin-search-tab { flex: 0 0 auto; min-height: 29px; padding: 0 9px; border: 1px solid var(--galvin-line); color: var(--galvin-text-secondary); background: transparent; font: 11px var(--galvin-font-body); }
+  .galvin-search-tab.is-active { border-color: rgba(155, 140, 255, 0.8); color: #070b14; background: var(--galvin-signal-violet); }
+  .galvin-search-tab small { margin-left: 5px; font: 10px var(--galvin-font-utility); opacity: 0.7; }
+  .galvin-search-result { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; gap: 13px; align-items: start; padding: 15px 18px; border-bottom: 1px solid var(--galvin-line-subtle); color: var(--galvin-text-primary); text-decoration: none; transition: background-color 160ms var(--galvin-ease-out); }
+  .galvin-search-result:hover, .galvin-search-result.is-active { background: rgba(24, 34, 58, 0.82); }
+  .galvin-search-result__kind { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid rgba(155, 140, 255, 0.4); color: var(--galvin-signal-violet); background: rgba(155, 140, 255, 0.08); font: 10px var(--galvin-font-utility); }
+  .galvin-search-result h3 { margin: 0; color: var(--galvin-text-primary); font-size: 15px; font-weight: 600; line-height: 1.45; }
+  .galvin-search-result h3 mark, .galvin-search-result p mark { padding: 0 1px; color: var(--galvin-text-primary); background: rgba(155, 140, 255, 0.35); }
+  .galvin-search-result p { display: -webkit-box; margin: 5px 0 0; overflow: hidden; color: var(--galvin-text-secondary); font-size: 12px; line-height: 1.55; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .galvin-search-result__meta { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 7px; color: var(--galvin-text-tertiary); font: 10px var(--galvin-font-utility); }
+  .galvin-search-result__arrow { padding-top: 8px; color: var(--galvin-signal-violet); font: 16px var(--galvin-font-utility); }
+  .galvin-search-panel__footer { display: flex; justify-content: space-between; gap: 16px; padding: 10px 16px; border-top: 1px solid var(--galvin-line); color: var(--galvin-text-tertiary); font: 10px var(--galvin-font-utility); }
+  .galvin-search-panel__footer span:last-child { display: flex; align-items: center; gap: 5px; }
+  .galvin-search-panel__footer kbd { padding: 2px 3px; border: 1px solid var(--galvin-line-subtle); }
+  .galvin-search-open { overflow: hidden; }
+  @media (max-width: 920px) { .galvin-search-trigger--desktop { display: none; } .galvin-search-trigger--mobile { display: inline-flex; } }
+  @media (max-width: 640px) { .galvin-search-overlay { padding: max(16px, env(safe-area-inset-top)) 12px 12px; align-items: start; } .galvin-search-panel { margin-top: 0; } .galvin-search-results { max-height: calc(100dvh - 112px); } .galvin-search-panel__footer span:last-child { display: none; } .galvin-search-result { grid-template-columns: 32px minmax(0, 1fr); padding: 14px; } .galvin-search-result__kind { width: 30px; height: 30px; } .galvin-search-result__arrow { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .galvin-search-overlay, .galvin-search-panel, .galvin-search-trigger, .galvin-search-result { transition: none; } }
 </style>
 
-<script define:vars={{ __ui: searchUI, __sectionNames: sectionNames, __langPrefix: langPrefix }}>
-  (function () {
-    var ui = __ui;
-    var sectionNames = __sectionNames;
-    var langPrefix = __langPrefix;
-    var index = null; // 搜索索引：首次打开时才从独立 JSON 加载
-    var indexPromise = null;
-    var isOpen = false;
-    var activeIdx = -1;
-    var activeGroup = null; // null = 全部
-    var debounceTimer = -1;
-    var CLS_OPEN = "search-overlay-visible";
-    var BODY_CLS = "search-overlay-open";
+<script>
+  (() => {
+    const triggerDesktop = document.getElementById("search-trigger-desktop");
+    const triggerMobile = document.getElementById("search-trigger-mobile");
+    const overlay = document.getElementById("search-overlay");
+    const backdrop = document.getElementById("search-backdrop");
+    const panel = document.getElementById("search-panel");
+    const input = document.getElementById("search-input") as HTMLInputElement | null;
+    const closeButton = document.getElementById("search-close-btn");
+    const loading = document.getElementById("search-loading");
+    const idle = document.getElementById("search-idle");
+    const tabs = document.getElementById("search-tabs");
+    const results = document.getElementById("search-results-list");
+    const empty = document.getElementById("search-empty");
+    const count = document.getElementById("search-count");
+    if (!triggerDesktop || !triggerMobile || !overlay || !panel || !input || !loading || !idle || !tabs || !results || !empty || !count) return;
 
-    var triggerDesktop = document.getElementById("search-trigger-desktop");
-    var triggerMd = document.getElementById("search-trigger-md");
-    var triggerMobile = document.getElementById("search-trigger-mobile");
-    var overlay = document.getElementById("search-overlay");
-    var backdrop = document.getElementById("search-backdrop");
-    var panel = document.getElementById("search-panel");
-    var input = document.getElementById("search-input");
-    var closeBtn = document.getElementById("search-close-btn");
-    var results = document.getElementById("search-results");
-    var resultsList = document.getElementById("search-results-list");
-    var loadingEl = document.getElementById("search-loading");
-    var emptyEl = document.getElementById("search-empty");
-    var idleEl = document.getElementById("search-idle");
-    var tabsEl = document.getElementById("search-tabs");
-    var countEl = document.getElementById("search-count");
-    var countSuffixEl = document.getElementById("search-count-suffix");
-    var html = document.documentElement;
+    type SearchItem = { title: string; excerpt: string; tags: string; tagsArr: string[]; category: string; section: string; date: string; href: string; };
+    const sectionMeta: Record<string, { label: string; href: string; short: string; order: number }> = {
+      now: { label: "此刻", href: "/", short: "此", order: 0 },
+      making: { label: "造物", href: "/tools/", short: "造", order: 1 },
+      question: { label: "叩问", href: "/archive/", short: "问", order: 2 },
+      journey: { label: "行迹", href: "/", short: "行", order: 3 },
+      archive: { label: "藏页", href: "/sites/", short: "藏", order: 4 },
+      shelf: { label: "书架", href: "/books/", short: "书", order: 5 },
+      about: { label: "关于", href: "/about/", short: "关", order: 6 },
+    };
+    let index: SearchItem[] | null = null;
+    let activeGroup: string | null = null;
+    let activeIndex = -1;
+    let open = false;
+    let timer = 0;
 
-    if (!triggerDesktop || !triggerMobile || !overlay || !input || !closeBtn || !results) return;
+    const escapeHtml = (value: string) => value.replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[char] || char));
+    const normalize = (value: string) => value.toLowerCase().trim();
+    const highlight = (value: string, query: string) => {
+      const safe = escapeHtml(value);
+      const term = query.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return term ? safe.replace(new RegExp(`(${term})`, "gi"), "<mark>$1</mark>") : safe;
+    };
+    const matches = (item: SearchItem, query: string) => {
+      const needle = normalize(query);
+      const haystack = normalize([item.title, item.excerpt, item.tags, item.category].join(" "));
+      return needle.split(/\s+/).filter(Boolean).every((word) => haystack.includes(word));
+    };
+    const sorted = (items: SearchItem[]) => [...items].sort((a, b) => (sectionMeta[a.section]?.order ?? 99) - (sectionMeta[b.section]?.order ?? 99) || a.title.localeCompare(b.title, "zh-CN"));
 
-    // ── 按需加载搜索索引（独立 JSON，搜索框首次打开时才 fetch） ──
-    function loadIndex() {
-      if (index) return Promise.resolve(index);
-      if (indexPromise) return indexPromise;
-      var url = langPrefix + "search-index.json";
-      indexPromise = fetch(url)
-        .then(function (res) {
-          if (!res.ok) throw new Error("search index " + res.status);
-          return res.json();
-        })
-        .then(function (data) {
-          index = Array.isArray(data) ? data : [];
-          return index;
-        })
-        .catch(function (err) {
-          indexPromise = null; // 允许下次重试
-          throw err;
-        });
-      return indexPromise;
-    }
-
-    // ── 栏目图标 SVG（内联，JS 渲染用） ──
-    var SECTION_ICONS = {
-      insights: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2.67 0-5 2.16-5 5 0 1.26.46 2.5 1.18 3.47A8 8 0 0 0 12 22a8 8 0 0 0 3.82-11.53C16.54 9.5 17 8.26 17 7c0-2.84-2.33-5-5-5Z"/><path d="M10 17.5h4"/><path d="M11 15h2"/><line x1="12" y1="8" x2="12" y2="11"/></svg>',
-      ai: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8.5v7"/><path d="M8.5 12h7"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M2 12h2"/><path d="M20 12h2"/></svg>',
-      tips: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="12" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="12" cy="20" r="2"/><circle cx="20" cy="12" r="2"/><circle cx="8.34" cy="6.34" r="2"/><circle cx="15.66" cy="6.34" r="2"/><circle cx="8.34" cy="17.66" r="2"/><circle cx="15.66" cy="17.66" r="2"/></svg>',
-      books: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2Z"/><path d="M8 3v18"/><path d="M16 3v18"/><line x1="10" y1="8" x2="14" y2="8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>',
+    const loadIndex = async () => {
+      if (index) return index;
+      const response = await fetch("/search-index.json");
+      if (!response.ok) throw new Error(`search-index:${response.status}`);
+      const data = await response.json();
+      index = Array.isArray(data) ? data : [];
+      return index;
     };
 
-    // ── highlight match in text ──
-    function highlight(text, q) {
-      if (!q || !text) return text;
-      var re = new RegExp("(" + q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "gi");
-      return text.replace(re, "<mark>$1</mark>");
-    }
+    const renderIdle = () => {
+      if (!index) return;
+      const counts = index.reduce<Record<string, number>>((acc, item) => {
+        acc[item.section] = (acc[item.section] || 0) + 1;
+        return acc;
+      }, {});
+      const chips = Object.entries(sectionMeta)
+        .filter(([section]) => counts[section])
+        .sort(([a], [b]) => sectionMeta[a].order - sectionMeta[b].order)
+        .map(([section, meta]) => `<a class="galvin-search-idle__chip" href="${meta.href}">${meta.label}<small>${String(counts[section]).padStart(2, "0")}</small></a>`)
+        .join("");
+      idle.innerHTML = `<p class="galvin-search-idle__label">浏览内容工作区</p><div class="galvin-search-idle__chips">${chips}</div>`;
+      count.textContent = `已索引 ${index.length} 项内容`;
+    };
 
-    // ── normalized text for comparison ──
-    function norm(s) {
-      return (s || "").toLowerCase().replace(/\s+/g, " ").trim();
-    }
+    const groupResults = (items: SearchItem[]) => items.reduce<Record<string, SearchItem[]>>((acc, item) => {
+      (acc[item.category] ||= []).push(item);
+      return acc;
+    }, {});
 
-    // ── fuzzy match helper（字符跳跃宽松匹配，仅用于长词/长短语） ──
-    function fuzzyMatch(text, word) {
-      if (!word) return false;
-      var t = norm(text);
-      var w = norm(word);
-      if (!w) return false;
-      // 中文词：子串命中即成立；英文词：整词边界命中
-      if (/[\u4e00-\u9fa5]/.test(w)) {
-        if (t.indexOf(w) !== -1) return true;
-      } else {
-        var reWord = new RegExp("(^|[^a-z0-9])" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "($|[^a-z0-9])");
-        if (reWord.test(t)) return true;
-      }
-      // 中文按单字、英文按词拆，避免单字符噪声命中
-      var pieces = /[\u4e00-\u9fa5]/.test(w) ? w.split("") : w.split(/\s+/).filter(Boolean);
-      if (pieces.length < 2) return false;
-      var qi = 0;
-      for (var i = 0; i < t.length && qi < pieces.length; i++) {
-        if (pieces[qi] === t[i]) qi++;
-      }
-      return qi === pieces.length;
-    }
-
-    function hasExact(field, w) {
-      var t = norm(field);
-      var word = norm(w);
-      if (!word) return false;
-      // 中文词：子串匹配（中文无空格边界，直接包含即命中）
-      if (/[\u4e00-\u9fa5]/.test(word)) {
-        return t.indexOf(word) !== -1;
-      }
-      // 英文/数字词：整词边界匹配，避免 "ai" 命中 "tailwind"、"data" 命中 "database"
-      // 前后均需为非字母数字（或字符串首尾）
-      var re = new RegExp("(^|[^a-z0-9])" + word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "($|[^a-z0-9])");
-      return re.test(t);
-    }
-    function hasFuzzy(field, w) {
-      return fuzzyMatch(field, w);
-    }
-
-    // ── 栏目 / 标签统计（空态用） ──
-    function sectionCounts() {
-      var counts = {};
-      for (var i = 0; i < index.length; i++) {
-        var s = index[i].section;
-        counts[s] = (counts[s] || 0) + 1;
-      }
-      return counts;
-    }
-    function popularTags(limit) {
-      var map = {};
-      for (var i = 0; i < index.length; i++) {
-        var arr = index[i].tagsArr;
-        for (var j = 0; j < arr.length; j++) {
-          var tg = arr[j];
-          map[tg] = (map[tg] || 0) + 1;
-        }
-      }
-      var list = [];
-      for (var k in map) list.push({ tag: k, n: map[k] });
-      list.sort(function (a, b) { return b.n - a.n || a.tag.localeCompare(b.tag); });
-      return list.slice(0, limit);
-    }
-
-    // ── 空态渲染：栏目导航 + 热门标签 ──
-    function renderIdle() {
-      var counts = sectionCounts();
-      var order = ["insights", "ai", "tips", "books"];
-      var secHtml = '<div class="idle-block"><div class="idle-title">' + ui.groupBy + "</div><div class='idle-chips'>";
-      for (var i = 0; i < order.length; i++) {
-        var s = order[i];
-        if (!counts[s]) continue;
-        secHtml += '<a href="' + langPrefix + s + '/" class="idle-chip">' +
-          '<span>' + SECTION_ICONS[s] + "</span>" +
-          sectionNames[s] +
-          ' <span class="chip-num">' + counts[s] + "</span></a>";
-      }
-      secHtml += "</div></div>";
-
-      var tags = popularTags(8);
-      var tagHtml = '<div class="idle-block"><div class="idle-title">' + ui.popTags + "</div><div class='idle-chips'>";
-      for (var t = 0; t < tags.length; t++) {
-        // 标签页路径需跟随当前语言前缀（英文站 /en/tags/...）
-        tagHtml += '<a href="' + langPrefix + 'tags/' + encodeURIComponent(tags[t].tag) + '" class="idle-chip">#' +
-          tags[t].tag +
-          ' <span class="chip-num">' + tags[t].n + "</span></a>";
-      }
-      tagHtml += "</div></div>";
-
-      var tipHtml = '<div class="idle-tip">' +
-        "<span>" + ui.idleHint + "</span>" +
-        '<span class="flex items-center gap-1"><kbd>ESC</kbd> ' + ui.hintClose + "</span>" +
-        '<span class="flex items-center gap-1"><kbd>↑↓</kbd> ' + ui.hintNav + "</span>" +
-        '<span class="flex items-center gap-1"><kbd>↵</kbd> ' + ui.hintOpen + "</span>" +
-        "</div>";
-
-      idleEl.innerHTML = secHtml + tagHtml + tipHtml;
-    }
-
-    // ── 搜索（索引未加载完成时先取索引再搜索） ──
-    function doSearch(query) {
-      var q = query.trim();
-      activeGroup = null;
-      if (!q) {
-        resultsList.innerHTML = "";
-        tabsEl && (tabsEl.innerHTML = "", tabsEl.classList.add("hidden"));
-        idleEl && idleEl.classList.remove("hidden");
-        emptyEl && emptyEl.classList.add("hidden");
-        loadingEl && loadingEl.classList.add("hidden");
-        setCount(index ? index.length : 0, index ? index.length : 0, true);
-        activeIdx = -1;
-        return;
-      }
-
-      idleEl && idleEl.classList.add("hidden");
-      tabsEl && tabsEl.classList.add("hidden");
-      loadingEl && loadingEl.classList.remove("hidden");
-      emptyEl && emptyEl.classList.add("hidden");
-
-      // 索引尚未就绪：先加载再执行搜索
-      if (!index) {
-        loadIndex()
-          .then(function () {
-            if (!isOpen) return; // 面板已关闭则丢弃
-            if (input.value.trim() !== q) return; // 输入已变化，由新事件处理
-            runSearch(q);
-          })
-          .catch(function () {
-            loadingEl && loadingEl.classList.add("hidden");
-            emptyEl && (emptyEl.textContent = ui.noResults, emptyEl.classList.remove("hidden"));
-          });
-        return;
-      }
-
-      runSearch(q);
-    }
-
-    function runSearch(query) {
-      var q = query.trim();
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(function () {
-        var words = q.toLowerCase().split(/\s+/).filter(Boolean);
-        var groups = {};
-        var order = [];
-        var total = 0;
-
-        for (var i = 0; i < index.length; i++) {
-          var p = index[i];
-          var score = 0;
-          for (var w = 0; w < words.length; w++) {
-            var word = words[w];
-            if (hasExact(p.title, word)) score += 20;
-            else if (hasFuzzy(p.title, word)) score += 10;
-            if (hasExact(p.tags, word)) score += 8;
-            else if (hasFuzzy(p.tags, word)) score += 3;
-            if (hasExact(p.excerpt, word)) score += 5;
-            else if (hasFuzzy(p.excerpt, word)) score += 2;
-            if (hasExact(p.category, word)) score += 2;
-          }
-          if (score > 0) {
-            total++;
-            if (!groups[p.category]) {
-              groups[p.category] = { section: p.section, items: [] };
-              order.push(p.category);
-            }
-            groups[p.category].items.push({ post: p, score: score });
-          }
-        }
-
-        // 组间按栏目固定顺序
-        var sectionOrder = { insights: 0, ai: 1, tips: 2, books: 3 };
-        order.sort(function (a, b) {
-          var sa = sectionOrder[groups[a].section] ?? 9;
-          var sb = sectionOrder[groups[b].section] ?? 9;
-          return sa - sb || a.localeCompare(b);
-        });
-        for (var g = 0; g < order.length; g++) {
-          groups[order[g]].items.sort(function (a, b) { return b.score - a.score; });
-        }
-
-        activeIdx = -1;
-        renderTabs(groups, order, total);
-        renderResults(groups, order, q);
-        setCount(total, index.length, false);
-        loadingEl && loadingEl.classList.add("hidden");
-      }, 150);
-    }
-
-    // ── 底部计数：idle 显示全站总数；有搜索时显示“命中 / 全站” ──
-    function setCount(matched, total, idle) {
-      if (!countEl || !countSuffixEl) return;
-      if (idle) {
-        countEl.textContent = String(total);
-        countSuffixEl.textContent = " " + ui.totalPosts;
-        return;
-      }
-      if (matched === 0) {
-        // 无命中：显示 0，明确与 idle 总数区分
-        countEl.textContent = "0";
-        countSuffixEl.textContent = " " + ui.totalPosts;
-        return;
-      }
-      var isZh = ui.totalPosts === "篇文章";
-      // zh: “命中 3 / 共 14 篇文章”  en: “3 of 14 articles”
-      var text = isZh
-        ? ui.matched + " " + matched + " / " + ui.of + " " + total
-        : matched + " " + ui.of + " " + total;
-      countEl.textContent = text;
-      countSuffixEl.textContent = " " + ui.totalPosts;
-    }
-
-    // ── 分组 Tab ──
-    function renderTabs(groups, order, total) {
-      if (!tabsEl) return;
-      if (total === 0) {
-        tabsEl.innerHTML = "";
-        tabsEl.classList.add("hidden");
-        return;
-      }
-      var htmlStr = '<button type="button" class="search-tab active" data-group="">' + ui.hintAll +
-        ' <span class="tab-count">' + total + "</span></button>";
-      for (var i = 0; i < order.length; i++) {
-        var cat = order[i];
-        htmlStr += '<button type="button" class="search-tab" data-group="' + cat + '">' + cat +
-          ' <span class="tab-count">' + groups[cat].items.length + "</span></button>";
-      }
-      tabsEl.innerHTML = htmlStr;
-      tabsEl.classList.remove("hidden");
-    }
-
-    // ── 渲染结果 ──
-    function renderResults(groups, order, query) {
-      if (!results) return;
-      var total = 0;
-      for (var g = 0; g < order.length; g++) total += groups[order[g]].items.length;
-      if (total === 0) {
-        emptyEl && emptyEl.classList.remove("hidden");
-        resultsList.innerHTML = "";
-        return;
-      }
-      emptyEl && emptyEl.classList.add("hidden");
-
-      var htmlStr = "";
-      var showAll = activeGroup === null || activeGroup === "";
-      for (var g = 0; g < order.length; g++) {
-        var cat = order[g];
-        if (!showAll && cat !== activeGroup) continue;
-        var items = groups[cat].items;
-        for (var i = 0; i < items.length; i++) {
-          var p = items[i].post;
-          var icon = SECTION_ICONS[p.section] || "";
-          htmlStr += '<a href="' + p.href + '" class="search-result-item">';
-          htmlStr += '<span class="search-item-badge">' + icon + "</span>";
-          htmlStr += '<span class="search-item-body">';
-          htmlStr += '<div class="search-result-title">' + highlight(p.title, query) + "</div>";
-          if (p.excerpt) {
-            htmlStr += '<div class="search-result-excerpt">' + highlight(p.excerpt, query) + "</div>";
-          }
-          htmlStr += '<div class="search-result-meta">';
-          if (p.date) htmlStr += "<span>" + p.date + "</span>";
-          if (p.category) htmlStr += "<span>·</span><span>" + p.category + "</span>";
-          if (p.tags) {
-            htmlStr += "<span>·</span><span>" + p.tags.split(" ").slice(0, 3).map(function (tag) {
-              return "#" + tag;
-            }).join(" ") + "</span>";
-          }
-          htmlStr += "</div>";
-          htmlStr += "</span></a>";
-        }
-      }
-      resultsList.innerHTML = htmlStr;
-    }
-
-    // ── Tab 点击事件（事件委托，兼容文本节点点击） ──
-    tabsEl && tabsEl.addEventListener("click", function (e) {
-      var tgt = e.target;
-      while (tgt && tgt !== tabsEl && !(tgt.classList && tgt.classList.contains("search-tab"))) {
-        tgt = tgt.parentNode;
-      }
-      if (!tgt || tgt === tabsEl) return;
-      var all = tabsEl.querySelectorAll(".search-tab");
-      for (var i = 0; i < all.length; i++) all[i].classList.remove("active");
-      tgt.classList.add("active");
-      activeGroup = tgt.getAttribute("data-group") || null;
-      // 重新用当前输入搜索（结果会按 activeGroup 过滤）
-      var q = input.value.trim();
-      var words = q.toLowerCase().split(/\s+/).filter(Boolean);
-      var groups = {};
-      var order = [];
-      for (var k = 0; k < index.length; k++) {
-        var p = index[k];
-        var score = 0;
-        for (var w = 0; w < words.length; w++) {
-          var word = words[w];
-          if (hasExact(p.title, word)) score += 20;
-          else if (hasFuzzy(p.title, word)) score += 10;
-          if (hasExact(p.tags, word)) score += 8;
-          else if (hasFuzzy(p.tags, word)) score += 3;
-          if (hasExact(p.excerpt, word)) score += 5;
-          else if (hasFuzzy(p.excerpt, word)) score += 2;
-          if (hasExact(p.category, word)) score += 2;
-        }
-        if (score > 0) {
-          if (!groups[p.category]) {
-            groups[p.category] = { section: p.section, items: [] };
-            order.push(p.category);
-          }
-          groups[p.category].items.push({ post: p, score: score });
-        }
-      }
-      var sectionOrder = { insights: 0, ai: 1, tips: 2, books: 3 };
-      order.sort(function (a, b) {
-        var sa = sectionOrder[groups[a].section] ?? 9;
-        var sb = sectionOrder[groups[b].section] ?? 9;
-        return sa - sb || a.localeCompare(b);
+    const renderTabs = (groups: Record<string, SearchItem[]>, total: number) => {
+      const labels = Object.keys(groups).sort((a, b) => {
+        const firstA = groups[a][0]; const firstB = groups[b][0];
+        return (sectionMeta[firstA.section]?.order ?? 99) - (sectionMeta[firstB.section]?.order ?? 99);
       });
-      for (var g = 0; g < order.length; g++) {
-        groups[order[g]].items.sort(function (a, b) { return b.score - a.score; });
-      }
-      activeIdx = -1;
-      renderResults(groups, order, q);
-    });
+      tabs.innerHTML = `<button class="galvin-search-tab ${activeGroup === null ? "is-active" : ""}" type="button" data-search-group="">全部<small>${total}</small></button>` + labels.map((label) => `<button class="galvin-search-tab ${activeGroup === label ? "is-active" : ""}" type="button" data-search-group="${escapeHtml(label)}">${escapeHtml(label)}<small>${groups[label].length}</small></button>`).join("");
+      tabs.hidden = false;
+    };
 
-    // ── 点击结果项：导航前先关闭搜索面板 ──
-    resultsList && resultsList.addEventListener("click", function (e) {
-      var tgt = e.target;
-      while (tgt && tgt !== resultsList && !(tgt.tagName && tgt.tagName.toLowerCase() === "a")) {
-        tgt = tgt.parentNode;
-      }
-      if (tgt && tgt !== resultsList && tgt.tagName.toLowerCase() === "a") {
-        closeSearch();
-      }
-    });
-
-    // ── 键盘导航 ──
-    function navigateResults(e) {
-      var items = resultsList.querySelectorAll(".search-result-item");
-      if (!items.length) return;
-      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-        e.preventDefault();
-        if (e.key === "ArrowDown") {
-          activeIdx = Math.min(activeIdx + 1, items.length - 1);
-        } else {
-          activeIdx = Math.max(activeIdx - 1, -1);
-        }
-        for (var i = 0; i < items.length; i++) {
-          if (i === activeIdx) {
-            items[i].classList.add("active");
-            items[i].scrollIntoView({ block: "nearest" });
-          } else {
-            items[i].classList.remove("active");
-          }
-        }
-      } else if (e.key === "Enter" && activeIdx >= 0 && activeIdx < items.length) {
-        e.preventDefault();
-        items[activeIdx].click();
-      }
-    }
-
-    // ── open / close ──
-    function openSearch() {
-      if (isOpen) return;
-      isOpen = true;
-      activeIdx = -1;
-      activeGroup = null;
-      overlay.classList.add(CLS_OPEN);
-      overlay.setAttribute("aria-hidden", "false");
-      html.classList.add(BODY_CLS);
-      input.value = "";
-      resultsList.innerHTML = "";
-      tabsEl && (tabsEl.innerHTML = "", tabsEl.classList.add("hidden"));
-      idleEl && idleEl.classList.remove("hidden");
-      emptyEl && emptyEl.classList.add("hidden");
-      // 索引按需加载：首次打开 fetch 独立 JSON，加载中显示 loading，就绪后渲染 idle 态与总数
-      if (index) {
-        renderIdle();
-        setCount(index.length, index.length, true);
-      } else {
-        loadingEl && loadingEl.classList.remove("hidden");
-        loadIndex()
-          .then(function () {
-            if (!isOpen) return;
-            loadingEl && loadingEl.classList.add("hidden");
-            renderIdle();
-            setCount(index.length, index.length, true);
-          })
-          .catch(function () {
-            if (!isOpen) return;
-            loadingEl && loadingEl.classList.add("hidden");
-            idleEl && (idleEl.innerHTML = "", idleEl.classList.add("hidden"));
-            emptyEl && (emptyEl.textContent = ui.noResults, emptyEl.classList.remove("hidden"));
-          });
-      }
-      input.focus();
-    }
-
-    function closeSearch() {
-      if (!isOpen) return;
-      isOpen = false;
-      overlay.classList.remove(CLS_OPEN);
-      overlay.setAttribute("aria-hidden", "true");
-      html.classList.remove(BODY_CLS);
-      input.value = "";
-      resultsList.innerHTML = "";
-      tabsEl && (tabsEl.innerHTML = "", tabsEl.classList.add("hidden"));
-      activeIdx = -1;
-      activeGroup = null;
-    }
-
-    // ── events ──
-    [triggerDesktop, triggerMd, triggerMobile].forEach(function (el) {
-      if (el) el.addEventListener("click", openSearch);
-    });
-    closeBtn.addEventListener("click", function () {
-      // 有输入时先清空；无输入时关闭搜索
-      if (input.value) {
-        input.value = "";
-        doSearch("");
-        input.focus();
-      } else {
-        closeSearch();
-      }
-    });
-    backdrop.addEventListener("click", closeSearch);
-
-    overlay.addEventListener("click", function (e) {
-      if (e.target === overlay) closeSearch();
-    });
-
-    document.addEventListener("mousedown", function (e) {
-      if (!isOpen) return;
-      if (overlay.contains(e.target)) return;
-      if (e.target === triggerDesktop || e.target === triggerMd || e.target === triggerMobile) return;
-      closeSearch();
-    });
-
-    input.addEventListener("input", function () {
-      doSearch(input.value);
-    });
-
-    input.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        e.stopPropagation(); // 阻止冒泡到 document 的关闭监听（避免“先清空又立即关闭”）
-        if (input.value) {
-          input.value = "";
-          doSearch("");
-        } else {
-          closeSearch();
-        }
+    const renderResults = (items: SearchItem[], query: string) => {
+      const filtered = activeGroup ? items.filter((item) => item.category === activeGroup) : items;
+      activeIndex = -1;
+      if (!filtered.length) {
+        results.innerHTML = "";
+        empty.hidden = false;
         return;
       }
-      navigateResults(e);
-    });
+      empty.hidden = true;
+      results.innerHTML = sorted(filtered).map((item) => {
+        const meta = sectionMeta[item.section] || { short: "内" };
+        const tags = item.tagsArr.slice(0, 3).map((tag) => `#${escapeHtml(tag)}`).join(" ");
+        return `<a class="galvin-search-result" href="${escapeHtml(item.href)}"><span class="galvin-search-result__kind">${meta.short}</span><span><h3>${highlight(item.title, query)}</h3>${item.excerpt ? `<p>${highlight(item.excerpt, query)}</p>` : ""}<span class="galvin-search-result__meta"><span>${escapeHtml(item.category)}</span>${item.date ? `<span>${escapeHtml(item.date)}</span>` : ""}${tags ? `<span>${tags}</span>` : ""}</span></span><span class="galvin-search-result__arrow">↗</span></a>`;
+      }).join("");
+    };
 
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && isOpen) {
-        closeSearch();
+    const search = () => {
+      if (!index) return;
+      const query = input.value.trim();
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        if (!query) {
+          activeGroup = null;
+          tabs.hidden = true;
+          results.innerHTML = "";
+          empty.hidden = true;
+          idle.hidden = false;
+          renderIdle();
+          return;
+        }
+        idle.hidden = true;
+        const matched = index!.filter((item) => matches(item, query));
+        const groups = groupResults(matched);
+        renderTabs(groups, matched.length);
+        renderResults(matched, query);
+        count.textContent = `命中 ${matched.length} / ${index!.length} 项内容`;
+      }, 80);
+    };
+
+    const openSearch = async () => {
+      if (open) return;
+      open = true;
+      overlay.classList.add("is-open");
+      overlay.setAttribute("aria-hidden", "false");
+      document.documentElement.classList.add("galvin-search-open");
+      input.value = "";
+      results.innerHTML = "";
+      tabs.hidden = true;
+      empty.hidden = true;
+      idle.hidden = true;
+      loading.hidden = false;
+      input.focus();
+      try {
+        await loadIndex();
+        if (!open) return;
+        loading.hidden = true;
+        idle.hidden = false;
+        renderIdle();
+        if (input.value.trim()) search();
+      } catch {
+        loading.hidden = true;
+        empty.textContent = "内容索引暂时不可用，请稍后再试。";
+        empty.hidden = false;
       }
+    };
+
+    const closeSearch = () => {
+      if (!open) return;
+      open = false;
+      overlay.classList.remove("is-open");
+      overlay.setAttribute("aria-hidden", "true");
+      document.documentElement.classList.remove("galvin-search-open");
+      activeGroup = null;
+      activeIndex = -1;
+    };
+
+    triggerDesktop.addEventListener("click", openSearch);
+    triggerMobile.addEventListener("click", openSearch);
+    backdrop?.addEventListener("click", closeSearch);
+    closeButton?.addEventListener("click", closeSearch);
+    input.addEventListener("input", search);
+    tabs.addEventListener("click", (event) => {
+      const target = (event.target as HTMLElement).closest<HTMLButtonElement>("[data-search-group]");
+      if (!target || !index) return;
+      activeGroup = target.dataset.searchGroup || null;
+      search();
     });
-
-    // touch: prevent iOS Safari double-tap zoom
-    overlay.addEventListener("touchstart", function (e) {}, { passive: true });
-
-    // reset on view-transition swap
-    document.addEventListener("astro:after-swap", function () {
-      if (isOpen) closeSearch();
-    });
-
-    // keyboard shortcut: Cmd/Ctrl + K
-    document.addEventListener("keydown", function (e) {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
+    results.addEventListener("click", closeSearch);
+    document.addEventListener("keydown", (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
         openSearch();
+        return;
+      }
+      if (!open) return;
+      if (event.key === "Escape") { event.preventDefault(); closeSearch(); return; }
+      if (event.key !== "ArrowDown" && event.key !== "ArrowUp" && event.key !== "Enter") return;
+      const cards = Array.from(results.querySelectorAll<HTMLAnchorElement>(".galvin-search-result"));
+      if (!cards.length) return;
+      if (event.key === "Enter" && activeIndex >= 0) { event.preventDefault(); cards[activeIndex].click(); return; }
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        activeIndex = event.key === "ArrowDown" ? Math.min(activeIndex + 1, cards.length - 1) : Math.max(activeIndex - 1, 0);
+        cards.forEach((card, cardIndex) => card.classList.toggle("is-active", cardIndex === activeIndex));
+        cards[activeIndex].scrollIntoView({ block: "nearest" });
       }
     });
+    document.addEventListener("astro:after-swap", closeSearch);
   })();
 </script>

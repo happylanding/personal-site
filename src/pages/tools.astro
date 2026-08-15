@@ -1,497 +1,155 @@
 ---
+/* Galvin design reminder: 造物 is a product desk inside the deep-blue editorial system.
+   Prefer structured utility panels and persistent actions; violet denotes intent, cyan denotes local/safe status. */
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Breadcrumb from "../components/Breadcrumb.astro";
-import ToolIcon from "../components/ToolIcon.astro";
-import Icon from "../components/Icon.astro";
 import { getCollection } from "astro:content";
-import { getLangFromUrl, useTranslations } from "../i18n/utils";
-import { TOOL_COLORS, TOOL_TYPE_ORDER, type ToolEntry } from "../content/tools/config";
+import { filterToolsByType } from "../lib/galvin-content-view";
 
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
-const isEn = lang === "en";
+const tools = (await getCollection("tools", ({ data }) => !data.draft))
+  .sort((a, b) => {
+    if (a.data.featured !== b.data.featured) return a.data.featured ? -1 : 1;
+    return (b.data.updated || b.data.date).getTime() - (a.data.updated || a.data.date).getTime();
+  });
 
-// 已入库工具（按置顶 + 更新日期倒序）
-const tools = (await getCollection("tools", ({ data }) => !data.draft)) as unknown as ToolEntry[];
-tools.sort((a, b) => {
-  if (a.data.featured !== b.data.featured) return a.data.featured ? -1 : 1;
-  return (b.data.updated || b.data.date).getTime() - (a.data.updated || a.data.date).getTime();
-});
+const typeMeta = [
+  { id: "all", label: "全部" },
+  { id: "app", label: "浏览器工具" },
+  { id: "script", label: "本地脚本" },
+  { id: "online", label: "外部工具" },
+] as const;
 
-const total = tools.length;
-const appCount = tools.filter((x) => x.data.type === "app").length;
-const scriptCount = tools.filter((x) => x.data.type === "script").length;
+const toolTypeLabel = {
+  app: "浏览器工具",
+  script: "本地脚本",
+  online: "外部工具",
+} as const;
 
-// 扭蛋数据（供 define:vars 注入到客户端脚本）
-const gachaTools = tools.map((x) => ({
-  title: isEn ? x.data.titleEn || x.data.title : x.data.title,
-  desc: (isEn ? x.data.descriptionEn || x.data.description : x.data.description) || "",
-  type: x.data.type,
-  href: x.data.type === "script"
-    ? (x.data.downloadUrl || "#")
-    : (x.data.url || (isEn ? `/en/tools/${x.id}/` : `/tools/${x.id}/`)),
-  external: !!x.data.url && x.data.type === "online",
-}));
+const toolStatusLabel = {
+  online: "可访问",
+  stable: "稳定版",
+  beta: "测试中",
+  dev: "开发中",
+} as const;
+
+function dateLabel(date: Date): string {
+  return new Intl.DateTimeFormat("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" })
+    .format(date)
+    .replaceAll("/", ".");
+}
 ---
 
-<BaseLayout
-  title={t("tools.name")}
-  description={t("tools.desc")}
->
-  <Breadcrumb crumbs={[{ label: t("tools.name"), href: "/tools/" }]} />
-
-  <section data-reveal>
-    <!-- 页头 -->
-    <header class="mb-8">
-      <div class="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: TOOL_COLORS.script }}></div>
-      <h1 class="text-3xl font-serif font-bold mb-2 flex items-center gap-3">
-        <span class="block opacity-70 flex-shrink-0"><Icon name="toolbox" class="w-9 h-9" style="color:#B45309" /></span>
-        <span>{t("tools.name")}</span>
-        <span class="text-sm font-sans font-normal text-black/35 dark:text-white/35 align-middle">{t("tools.enName")}</span>
-      </h1>
-      <p class="text-sm text-black/40 dark:text-white/40">{t("tools.subtitle")}</p>
-      <p class="text-base text-black/50 dark:text-white/50 mt-3 leading-relaxed max-w-2xl">{t("tools.desc")}</p>
-      <p class="text-[13px] font-mono text-black/45 dark:text-white/55 mt-3"
-        set:html={t("tools.stats")
-          .replace("{total}", `<span data-count-up="${total}">0</span>`)
-          .replace("{apps}", `<span data-count-up="${appCount}">0</span>`)
-          .replace("{scripts}", `<span data-count-up="${scriptCount}">0</span>`)}>
-      </p>
+<BaseLayout title="造物" description="Galvin 的实用工具、工作脚本与持续试验。">
+  <section class="galvin-content-page galvin-making-page" aria-labelledby="making-title">
+    <header class="galvin-content-page__hero">
+      <div class="galvin-content-page__signal" aria-hidden="true"><i></i><span>MAKING / UTILITY DESK</span></div>
+      <div class="galvin-content-page__hero-grid">
+        <div>
+          <p class="galvin-content-page__number">02 / 07</p>
+          <h1 id="making-title">造物<span>。</span></h1>
+          <p class="galvin-content-page__lead">从工作里冒出来的小麻烦开始，做一些自己能用、也希望能帮到别人的工具。它们不承诺解决一切，只尽量把一件事做顺。</p>
+        </div>
+        <div class="galvin-content-page__meta" aria-label="造物工作台状态">
+          <div><span>AVAILABLE</span><strong>{String(tools.length).padStart(2, "0")}</strong><small>项可访问工具</small></div>
+          <a class="galvin-content-page__search" href="#making-list"><span>查看工具列表</span><span aria-hidden="true">↓</span></a>
+        </div>
+      </div>
     </header>
 
-    <!-- 随机扭蛋：点击弹出扭蛋卡，可就地再看/直达工具 -->
-    <div class="mb-8">
-      <button
-        id="tool-gacha-btn"
-        class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-black/15 dark:border-white/15 text-sm font-medium hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors"
-      >
-        {t("tools.gacha")}
-      </button>
-      <span id="tool-gacha-result" class="ml-3 text-sm text-black/40 dark:text-white/40"></span>
-    </div>
+    <aside class="galvin-privacy-note" aria-label="工具隐私边界">
+      <span class="galvin-privacy-note__node" aria-hidden="true"></span>
+      <div><strong>使用边界</strong><p>浏览器工具在本地运行；本地脚本在 Windows 电脑上执行。除特别标注的外部链接外，本站不接收你的文本或工作文件。</p></div>
+    </aside>
 
-    <!-- 分类 Tab -->
-    <div class="flex flex-wrap gap-2 mb-8" role="tablist" aria-label={t("tools.name")}>
-      <button
-        class="tool-tab text-sm px-4 py-1.5 rounded-full border transition-colors"
-        data-type="all"
-        data-active="true"
-      >
-        {t("tools.all")}
-      </button>
-      {TOOL_TYPE_ORDER.map((tp) => (
-        <button
-          class="tool-tab text-sm px-4 py-1.5 rounded-full border transition-colors"
-          data-type={tp}
-          data-active="false"
-        >
-          <span class="inline-block w-1.5 h-1.5 rounded-full mr-1.5 align-middle" style={{ backgroundColor: TOOL_COLORS[tp] }}></span>
-          {t(`tools.type.${tp}`)}
-        </button>
-      ))}
-    </div>
-
-    <!-- 工具卡片 -->
-    {tools.length > 0 ? (
-      <div id="tool-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {tools.map((tool, i) => {
-          const title = isEn ? (tool.data.titleEn || tool.data.title) : tool.data.title;
-          const desc = isEn ? (tool.data.descriptionEn || tool.data.description) : tool.data.description;
-          const type = tool.data.type;
-          const color = TOOL_COLORS[type];
-          const statusLabel = t(`tools.status.${tool.data.status}`);
-          const statusColor =
-            tool.data.status === "online" ? "#16A34A"
-            : tool.data.status === "stable" ? "#B45309"
-            : tool.data.status === "beta" ? "#0E96E9"
-            : "#737373";
-          const tags = isEn ? (tool.data.tagsEn?.length ? tool.data.tagsEn : tool.data.tags) : tool.data.tags;
-          const version = tool.data.version;
-          const updated = tool.data.updated || tool.data.date;
-
-          return (
-            <div
-              class="tool-card roll-card group block p-5 rounded-xl border border-black/10 dark:border-white/10 hover-lift transition-all duration-300 hover:border-black/30 dark:hover:border-white/30 relative overflow-hidden"
-              data-type={type}
-              style={`--roll-index:${i}`}
-              data-spotlight
-              data-tilt
-            >
-              <span class="ghost-num text-black/5 dark:text-white/5 select-none pointer-events-none" aria-hidden="true">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-
-              <div class="flex items-center gap-2 mb-3">
-                <span class="block opacity-60"><ToolIcon type={type} class="w-7 h-7" /></span>
-                <span
-                  class="inline-flex items-center gap-1.5 text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5"
-                  style={{ color: statusColor }}
-                >
-                  <span class="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusColor }}></span>
-                  {statusLabel}
-                </span>
-              </div>
-
-              <h3 class="font-bold font-serif text-base mb-1.5 leading-snug">{title}</h3>
-              <p class="text-[13px] font-mono text-black/45 dark:text-white/55 mb-2">
-                {t(`tools.type.${type}`)}
-                {version && <span class="ml-2">v{version}</span>}
-              </p>
-              {desc && <p class="text-sm text-black/40 dark:text-white/40 line-clamp-2 leading-relaxed mb-4">{desc}</p>}
-
-              <!-- 脚本工具：有可执行命令 → 终端框 + 复制；否则 → 使用方法步骤 + 下载 -->
-              {type === "script" ? (
-                <div class="mt-2">
-                  {tool.data.command ? (
-                    <>
-                      <div class="rounded-lg border border-black/15 dark:border-white/15 bg-black/[0.04] dark:bg-white/[0.04] font-mono text-xs overflow-hidden">
-                        <div class="flex items-center gap-1.5 px-3 py-2 border-b border-black/10 dark:border-white/10">
-                          <span class="w-2 h-2 rounded-full bg-red-400/70"></span>
-                          <span class="w-2 h-2 rounded-full bg-amber-400/70"></span>
-                          <span class="w-2 h-2 rounded-full bg-green-400/70"></span>
-                          <span class="ml-2 text-black/40 dark:text-white/40 truncate">~/tools/{title}</span>
-                        </div>
-                        <div class="px-3 py-2.5 break-all leading-relaxed">
-                          {tool.data.command}
-                        </div>
-                      </div>
-                      <div class="flex gap-2 mt-3">
-                        <button
-                          class="tool-copy-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 text-xs font-medium hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors"
-                          data-copy={tool.data.command}
-                        >
-                          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                          <span class="copy-label">{t("tools.copy")}</span>
-                        </button>
-                        {tool.data.downloadUrl && (
-                          <a
-                            href={tool.data.downloadUrl}
-                            download
-                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black dark:bg-white text-white dark:text-black text-xs font-medium hover:opacity-80 transition-opacity"
-                          >
-                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            {t("tools.download")}
-                          </a>
-                        )}
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div class="rounded-lg border border-black/15 dark:border-white/15 bg-black/[0.02] dark:bg-white/[0.02] p-3">
-                        <p class="text-xs font-semibold text-black/50 dark:text-white/50 mb-2">
-                          {t("tools.usage")}
-                          <span class="ml-1 font-normal text-black/30 dark:text-white/30">
-                            {t("tools.usageSteps").replace("{count}", String((tool.data.usage || []).length))}
-                          </span>
-                        </p>
-                        <ol class="space-y-1.5">
-                          {(tool.data.usage || []).map((step, si) => (
-                            <li class="flex items-start gap-2 text-xs text-black/40 dark:text-white/40 leading-relaxed">
-                              <span class="flex-shrink-0 w-4 h-4 rounded-full bg-black/10 dark:bg-white/10 text-[10px] font-semibold flex items-center justify-center mt-px">{si + 1}</span>
-                              <span>{step}</span>
-                            </li>
-                          ))}
-                        </ol>
-                        <p class="text-xs text-black/40 dark:text-white/55 mt-2">{t("tools.usageHint")}</p>
-                      </div>
-                      <div class="flex gap-2 mt-3">
-                        {tool.data.downloadUrl && (
-                          <a
-                            href={tool.data.downloadUrl}
-                            download
-                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black dark:bg-white text-white dark:text-black text-xs font-medium hover:opacity-80 transition-opacity"
-                          >
-                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            {t("tools.download")}
-                          </a>
-                        )}
-                        <a
-                          href={isEn ? `/en/tools/${tool.id}/` : `/tools/${tool.id}/`}
-                          class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-black/15 dark:border-white/15 text-xs font-medium hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors"
-                        >
-                          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>
-                          {t("tools.viewFull")}
-                        </a>
-                      </div>
-                    </>
-                  )}
-                </div>
-              ) : (
-                <div class="flex items-center justify-between mt-4">
-                  {tool.data.url ? (
-                    <a
-                      href={tool.data.url}
-                      target="_blank"
-                      rel="noopener"
-                      class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 text-xs font-medium hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors"
-                    >
-                      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                      {t("tools.open")}
-                    </a>
-                  ) : (
-                    <a
-                      href={isEn ? `/en/tools/${tool.id}/` : `/tools/${tool.id}/`}
-                      class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black dark:bg-white text-white dark:text-black text-xs font-medium hover:opacity-80 transition-opacity"
-                    >
-                      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                      {t("tools.try")}
-                    </a>
-                  )}
-                  <span class="text-[13px] text-black/50 dark:text-white/65">
-                    {tool.data.url ? t("tools.external") : t("tools.internal")}
-                  </span>
-                </div>
-              )}
-
-              <div class="flex items-center justify-between mt-4">
-                <div class="flex gap-2">
-                  {tags.slice(0, 3).map((tag: string) => (
-                    <span class="text-[13px] text-black/50 dark:text-white/65">#{tag}</span>
-                  ))}
-                </div>
-                <time class="text-[13px] text-black/45 dark:text-white/60 font-mono flex-shrink-0 ml-4">
-                  {updated.toLocaleDateString(isEn ? "en-US" : "zh-CN", { year: "numeric", month: "short" })}
-                </time>
-              </div>
-            </div>
-          );
-        })}
+    <div class="galvin-filter-rail galvin-filter-rail--making" aria-label="按类型筛选工具">
+      <p>FILTER / 类型</p>
+      <div class="galvin-filter-rail__track" role="tablist" aria-label="工具类型">
+        {typeMeta.map((type, index) => (
+          <button
+            class:list={["galvin-filter-chip", index === 0 && "is-active"]}
+            type="button"
+            role="tab"
+            aria-selected={index === 0 ? "true" : "false"}
+            data-tool-filter={type.id}
+          >
+            {type.label}<small>{String(filterToolsByType(tools, type.id).length).padStart(2, "0")}</small>
+          </button>
+        ))}
       </div>
-    ) : (
-      <p class="py-12 text-center text-black/30 dark:text-white/30 italic">{t("tools.empty")}</p>
-    )}
+      <p class="galvin-filter-rail__count"><span id="tool-visible-count">{String(tools.length).padStart(2, "0")}</span> / {String(tools.length).padStart(2, "0")}</p>
+    </div>
 
-    <!-- 页脚说明 -->
-    <p class="mt-12 text-center text-sm text-black/40 dark:text-white/40">{t("tools.footer")}</p>
+    <div class="galvin-tool-grid" id="making-list">
+      {tools.map((tool, index) => {
+        const updated = tool.data.updated || tool.data.date;
+        const privacy = tool.data.type === "app"
+          ? "浏览器本地计算 · 不上传输入内容"
+          : tool.data.type === "script"
+            ? "Windows 本机运行 · 文件不上传"
+            : "外部链接 · 请以对方说明为准";
+        const primaryHref = tool.data.downloadUrl || tool.data.url || `/tools/${tool.id}/`;
+        const primaryLabel = tool.data.downloadUrl ? "下载工具" : tool.data.url ? "打开工具" : "进入试用";
+        return (
+          <article class:list={["galvin-tool-card", tool.data.featured && "is-featured"]} data-tool-card data-tool-type={tool.data.type}>
+            <div class="galvin-tool-card__topline">
+              <span>{String(index + 1).padStart(2, "0")} / {toolTypeLabel[tool.data.type]}</span>
+              <span class="galvin-tool-card__status"><i></i>{toolStatusLabel[tool.data.status]}</span>
+            </div>
+            <div class="galvin-tool-card__body">
+              <h2>{tool.data.title}</h2>
+              {tool.data.description && <p>{tool.data.description}</p>}
+              <div class="galvin-tool-card__privacy"><span aria-hidden="true">◌</span>{privacy}</div>
+            </div>
+            {tool.data.usage?.length ? (
+              <ol class="galvin-tool-card__steps">
+                {tool.data.usage.slice(0, 3).map((step, stepIndex) => <li><span>{stepIndex + 1}</span>{step}</li>)}
+              </ol>
+            ) : <div class="galvin-tool-card__spacer"></div>}
+            <div class="galvin-tool-card__footer">
+              <div class="galvin-tool-card__tags">{tool.data.tags.slice(0, 3).map((tag) => <span>#{tag}</span>)}</div>
+              <time datetime={updated.toISOString()}>{dateLabel(updated)}</time>
+            </div>
+            <div class="galvin-tool-card__actions">
+              <a
+                class="galvin-button galvin-button--primary"
+                href={primaryHref}
+                download={tool.data.downloadUrl ? true : undefined}
+                target={tool.data.url ? "_blank" : undefined}
+                rel={tool.data.url ? "noopener" : undefined}
+              >
+                {primaryLabel}<span aria-hidden="true">{tool.data.downloadUrl ? "↓" : "↗"}</span>
+              </a>
+              <a class="galvin-button galvin-button--quiet" href={`/tools/${tool.id}/`}>工具说明</a>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+
+    {tools.length === 0 && <p class="galvin-empty-state">工具工作台正在整理中。</p>}
   </section>
 
-  <!-- 扭蛋弹层：移到 [data-reveal] section 之外（fixed 定位不受父级 transform 干扰，始终相对视口铺满全屏）
-       外层 overflow-y-auto，卡片超高时弹层可整体上下滚动，X 始终可点 -->
-  <div
-    id="tool-gacha-modal"
-    class="fixed inset-0 z-[90] hidden overflow-y-auto"
-    role="dialog"
-    aria-modal="true"
-    aria-label={t("tools.gachaTitle")}
-  >
-    <div id="tool-gacha-backdrop" class="gacha-backdrop fixed inset-0 bg-black/40 dark:bg-black/70"></div>
-    <div class="min-h-full w-full flex items-center justify-center p-4 pointer-events-none">
-      <div
-        class="gacha-modal-card relative w-full max-w-sm rounded-2xl border border-black/10 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-2xl p-6 text-center overflow-hidden my-auto pointer-events-auto"
-      >
-      <span class="ghost-num text-black/5 dark:text-white/5 select-none pointer-events-none" aria-hidden="true">🎲</span>
-      <button
-        id="tool-gacha-close"
-        class="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-black/40 dark:text-white/40 transition-colors"
-        aria-label="关闭"
-      >
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-      </button>
-      <p class="text-xs uppercase tracking-[0.15em] opacity-40 font-medium mb-4 pr-10">{t("tools.gachaTitle")}</p>
-      <div id="tool-gacha-modal-body" class="mb-6"></div>
-      <div class="flex items-center justify-center gap-3">
-        <button
-          id="tool-gacha-again"
-          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-black/15 dark:border-white/15 text-sm font-medium hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors"
-        >
-          🎲 {t("tools.gachaHint")}
-        </button>
-        <a
-          id="tool-gacha-open"
-          href="#"
-          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-black dark:bg-white text-white dark:text-black text-sm font-medium hover:opacity-80 transition-opacity"
-        >
-          🎯 {t("tools.gachaGo")}
-        </a>
-      </div>
-    </div>
-    </div>
-  </div>
+  <script>
+    (() => {
+      const filters = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-tool-filter]"));
+      const cards = Array.from(document.querySelectorAll<HTMLElement>("[data-tool-card]"));
+      const count = document.getElementById("tool-visible-count");
 
-  <script define:vars={{ gachaTools }}>
-    window.__TOOL_GACHA__ = gachaTools || [];
+      const applyFilter = (type: string) => {
+        let visible = 0;
+        cards.forEach((card) => {
+          const matches = type === "all" || card.dataset.toolType === type;
+          card.hidden = !matches;
+          if (matches) visible += 1;
+        });
+        filters.forEach((button) => {
+          const active = button.dataset.toolFilter === type;
+          button.classList.toggle("is-active", active);
+          button.setAttribute("aria-selected", String(active));
+        });
+        if (count) count.textContent = String(visible).padStart(2, "0");
+      };
+
+      filters.forEach((button) => button.addEventListener("click", () => applyFilter(button.dataset.toolFilter || "all")));
+    })();
   </script>
 </BaseLayout>
-
-<style>
-  .tool-tab[data-active="true"] {
-    background-color: rgba(0, 0, 0, 0.08);
-    font-weight: 600;
-  }
-  :global(.dark) .tool-tab[data-active="true"] {
-    background-color: rgba(255, 255, 255, 0.12);
-  }
-  .tool-card[hidden] {
-    display: none;
-  }
-
-  /* ── 扭蛋弹层动画：backdrop 渐显 + 卡片 scale/fade 上浮 ── */
-  .gacha-backdrop {
-    opacity: 0;
-    transition: opacity 0.25s ease;
-  }
-  #tool-gacha-modal.open .gacha-backdrop {
-    opacity: 1;
-  }
-  .gacha-modal-card {
-    opacity: 0;
-    transform: translateY(14px) scale(0.94);
-    transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.26s ease;
-  }
-  #tool-gacha-modal.open .gacha-modal-card {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .gacha-backdrop,
-    .gacha-modal-card {
-      transition: none;
-    }
-  }
-</style>
-
-<script>
-  // 分类 Tab 过滤
-  (function () {
-    const tabs = document.querySelectorAll(".tool-tab");
-    const cards = document.querySelectorAll(".tool-card");
-    if (!tabs.length || !cards.length) return;
-
-    function applyFilter(type) {
-      tabs.forEach((tb) => {
-        tb.dataset.active = tb.dataset.type === type ? "true" : "false";
-      });
-      cards.forEach((c) => {
-        c.hidden = type !== "all" && c.dataset.type !== type;
-      });
-    }
-
-    tabs.forEach((tb) => {
-      tb.addEventListener("click", () => applyFilter(tb.dataset.type));
-    });
-  })();
-
-  // 一键复制命令
-  (function () {
-    const btns = document.querySelectorAll(".tool-copy-btn");
-    if (!btns.length) return;
-
-    btns.forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const text = btn.dataset.copy || "";
-        const label = btn.querySelector(".copy-label");
-        const old = label ? label.textContent : "";
-        try {
-          await navigator.clipboard.writeText(text);
-          if (label) label.textContent = "✓ 已复制";
-        } catch (e) {
-          // 剪贴板不可用时降级：选中文本
-          const ta = document.createElement("textarea");
-          ta.value = text;
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand("copy");
-          document.body.removeChild(ta);
-          if (label) label.textContent = "✓ 已复制";
-        }
-        if (label) {
-          setTimeout(() => {
-            label.textContent = old;
-          }, 1500);
-        }
-      });
-    });
-  })();
-
-  // 随机扭蛋：弹出式扭蛋卡
-  (function () {
-    const btn = document.getElementById("tool-gacha-btn");
-    const result = document.getElementById("tool-gacha-result");
-    const modal = document.getElementById("tool-gacha-modal");
-    const backdrop = document.getElementById("tool-gacha-backdrop");
-    const closeBtn = document.getElementById("tool-gacha-close");
-    const againBtn = document.getElementById("tool-gacha-again");
-    const openLink = document.getElementById("tool-gacha-open");
-    const modalBody = document.getElementById("tool-gacha-modal-body");
-    if (!btn || !result || !modal || !backdrop || !closeBtn || !againBtn || !openLink || !modalBody) return;
-
-    // 读取 SSR 注入的工具列表（含标题/简介/类型/链接）
-    const pool = (window.__TOOL_GACHA__ || []).slice();
-    if (!pool.length) {
-      btn.addEventListener("click", () => {
-        result.textContent = window.__TOOL_EMPTY_MSG__ || "暂无工具可推荐";
-      });
-      return;
-    }
-
-    let closeTimer = null;
-    function openModal() {
-      clearTimeout(closeTimer);
-      modal.classList.remove("hidden");
-      modal.scrollTop = 0;
-      document.documentElement.style.overflow = "hidden";
-      // 先让元素渲染（display 从 none 恢复），下一帧再加 .open 触发过渡
-      void modal.offsetWidth;
-      requestAnimationFrame(function () {
-        modal.classList.add("open");
-      });
-    }
-    function closeModal() {
-      if (modal.classList.contains("hidden")) return;
-      modal.classList.remove("open");
-      document.documentElement.style.overflow = "";
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        modal.classList.add("hidden");
-        return;
-      }
-      clearTimeout(closeTimer);
-      closeTimer = setTimeout(function () {
-        modal.classList.add("hidden");
-      }, 320);
-    }
-
-    function renderPick(pick) {
-      const color =
-        pick.type === "online" ? "#0E96E9"
-        : pick.type === "app" ? "#16A34A"
-        : "#B45309";
-      const typeLabel =
-        pick.type === "online" ? (window.__GACHA_TYPE_ONLINE__ || "在线工具")
-        : pick.type === "app" ? (window.__GACHA_TYPE_APP__ || "自研小工具")
-        : (window.__GACHA_TYPE_SCRIPT__ || "脚本工具");
-      modalBody.innerHTML =
-        '<div class="w-12 h-12 mx-auto rounded-xl flex items-center justify-center mb-4" style="background:' + color + '22;color:' + color + '">' +
-        '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
-        '<path d="M9.5 4.5h5a2 2 0 0 1 2 2v1h3.5a1 1 0 0 1 1 1v9.5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8.5a1 1 0 0 1 1-1h3.5v-1a2 2 0 0 1 2-2z"/><path d="M3 13.5h18"/>' +
-        '</svg></div>' +
-        '<p class="text-[11px] font-mono mb-2" style="color:' + color + '">' + typeLabel + '</p>' +
-        '<h3 class="text-lg font-serif font-bold mb-2">' + pick.title + '</h3>' +
-        (pick.desc ? '<p class="text-sm text-black/40 dark:text-white/40 leading-relaxed line-clamp-3">' + pick.desc + '</p>' : '');
-      openLink.setAttribute("href", pick.href);
-      if (pick.external) {
-        openLink.setAttribute("target", "_blank");
-        openLink.setAttribute("rel", "noopener");
-      } else {
-        openLink.removeAttribute("target");
-        openLink.removeAttribute("rel");
-      }
-    }
-
-    function spin() {
-      const pick = pool[Math.floor(Math.random() * pool.length)];
-      result.textContent = "🔧 " + pick.title;
-      renderPick(pick);
-      openModal();
-    }
-
-    btn.addEventListener("click", spin);
-    againBtn.addEventListener("click", spin);
-    closeBtn.addEventListener("click", closeModal);
-    backdrop.addEventListener("click", closeModal);
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") closeModal();
-    });
-    // Astro view-transition 时关闭
-    document.addEventListener("astro:after-swap", closeModal);
-  })();
-</script>

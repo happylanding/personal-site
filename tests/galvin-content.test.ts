@@ -6,6 +6,12 @@ import {
 } from "../src/lib/galvin-content";
 import { getGalvinRouteFromLegacyPath } from "../src/lib/galvin-routing";
 import { GALVIN_NAVIGATION } from "../src/lib/galvin-navigation";
+import {
+  filterToolsByType,
+  getQuestionFilterOptions,
+  isQuestionArticleMatch,
+  resolveArticleSearchKind,
+} from "../src/lib/galvin-content-view";
 
 describe("Galvin 内容分类", () => {
   it("定义了七个稳定的中文内容分类", () => {
@@ -52,5 +58,41 @@ describe("Galvin 内容分类", () => {
     ]);
     expect(GALVIN_NAVIGATION.find((item) => item.id === "making")?.href).toBe("/tools");
     expect(GALVIN_NAVIGATION.find((item) => item.id === "about")?.href).toBe("/about");
+  });
+
+  it("为叩问归档保留全部筛选并从真实标签中生成去重入口", () => {
+    expect(getQuestionFilterOptions(["AI", "数字政府", "AI", "效率工具"])).toEqual([
+      "全部",
+      "AI",
+      "数字政府",
+      "效率工具",
+    ]);
+  });
+
+  it("只让匹配当前标签的叩问文章通过筛选", () => {
+    expect(isQuestionArticleMatch(["AI", "效率工具"], "全部")).toBe(true);
+    expect(isQuestionArticleMatch(["AI", "效率工具"], "效率工具")).toBe(true);
+    expect(isQuestionArticleMatch(["AI", "效率工具"], "数字政府")).toBe(false);
+  });
+
+  it("按工具类型筛选造物条目，并让“全部”保留原有顺序", () => {
+    const tools = [
+      { id: "detector", type: "app" },
+      { id: "cleaner", type: "script" },
+      { id: "reference", type: "online" },
+    ] as const;
+
+    expect(filterToolsByType(tools, "script").map((tool) => tool.id)).toEqual(["cleaner"]);
+    expect(filterToolsByType(tools, "all").map((tool) => tool.id)).toEqual([
+      "detector",
+      "cleaner",
+      "reference",
+    ]);
+  });
+
+  it("为搜索索引优先采用显式 Galvin 栏目，并兼容旧文章栏目", () => {
+    expect(resolveArticleSearchKind(undefined, "ai")).toBe("question");
+    expect(resolveArticleSearchKind(undefined, "tips")).toBe("making");
+    expect(resolveArticleSearchKind("journey", "tips")).toBe("journey");
   });
 });

@@ -1,59 +1,112 @@
 ---
+/* Galvin design reminder: 叩问 is a deep-blue AI editorial workspace.
+   Use cold-white Chinese type, violet for an active decision, cyan only for live status. */
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Breadcrumb from "../components/Breadcrumb.astro";
-import ScrollReveal from "../components/ScrollReveal.astro";
-import { getLangFromUrl, useTranslations } from "../i18n/utils";
 import { getCollection } from "astro:content";
-import ColumnIcon from "../components/ColumnIcon.astro";
-import type { SectionKey } from "../lib/sections";
+import { getQuestionFilterOptions } from "../lib/galvin-content-view";
 
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
+const articles = (await getCollection("articles", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const filters = getQuestionFilterOptions(articles.flatMap((article) => article.data.tags));
 
-const allArticles = await getCollection("articles", ({ data }) => !data.draft);
-const sorted = allArticles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
-
-type YearGroups = Record<string, typeof sorted>;
-const grouped = sorted.reduce<YearGroups>((acc, article) => {
-  const year = article.data.date.getFullYear().toString();
-  (acc[year] ||= []).push(article);
-  return acc;
-}, {});
+function dateLabel(date: Date): string {
+  return new Intl.DateTimeFormat("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date).replaceAll("/", ".");
+}
 ---
 
-<BaseLayout title={t("archive.title")} description={t("archive.description")}>
-  <Breadcrumb crumbs={[{ label: t("archive.title"), href: "/archive/" }]} />
-
-  <section data-reveal>
-    <h1 class="text-3xl font-serif font-bold mb-12">{t("archive.title")}</h1>
-
-    {Object.entries(grouped).sort(([a], [b]) => +b - +a).map(([year, articles]) => (
-      <div class="mb-10">
-        <h2 class="text-5xl font-serif font-bold text-black/10 dark:text-white/10 mb-4 -ml-1">{year}</h2>
-        <div class="border-l border-black/10 dark:border-white/10 pl-6 space-y-5">
-          {articles.map((article) => {
-            const title = lang === "en" ? (article.data.titleEn || article.data.title) : article.data.title;
-            const dateStr = article.data.date.toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", { month: "long", day: "numeric" });
-            return (
-              <div class="group" data-reveal>
-                <time class="text-[13px] text-black/45 dark:text-white/60 font-mono">{dateStr}</time>
-                <a
-                  href={lang === "en" ? `/en/${article.data.section}/${article.id}` : `/${article.data.section}/${article.id}`}
-                  class="block mt-1"
-                >
-                  <span class="text-[13px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/75 mr-2 inline-flex items-center gap-1">
-                    <ColumnIcon section={article.data.section as SectionKey} class="w-3 h-3" />
-                    {t(`columns.${article.data.section}.name`)}
-                  </span>
-                  <span class="font-serif font-bold group-hover:opacity-70 transition-opacity">{title}</span>
-                </a>
-              </div>
-            );
-          })}
+<BaseLayout title="叩问" description="Galvin 的思考归档：AI 学习、工作方法与持续追问。">
+  <section class="galvin-content-page galvin-question-page" aria-labelledby="question-title">
+    <header class="galvin-content-page__hero">
+      <div class="galvin-content-page__signal" aria-hidden="true"><i></i><span>QUESTION / INDEX</span></div>
+      <div class="galvin-content-page__hero-grid">
+        <div>
+          <p class="galvin-content-page__number">03 / 07</p>
+          <h1 id="question-title">叩问<span>。</span></h1>
+          <p class="galvin-content-page__lead">把遇到的问题摊开，把暂时没有答案的事写下来。这里收录 AI 学习、工作方法和持续修正中的思考。</p>
+        </div>
+        <div class="galvin-content-page__meta" aria-label="叩问归档状态">
+          <div><span>ARCHIVE</span><strong>{String(articles.length).padStart(2, "0")}</strong><small>篇已发布文章</small></div>
+          <button id="question-open-search" class="galvin-content-page__search" type="button">
+            <span>检索全部内容</span><kbd>⌘ K</kbd>
+          </button>
         </div>
       </div>
-    ))}
+    </header>
+
+    <div class="galvin-filter-rail" aria-label="按标签筛选文章">
+      <p>FILTER / 标签</p>
+      <div class="galvin-filter-rail__track" role="tablist" aria-label="文章标签">
+        {filters.map((filter, index) => (
+          <button
+            class:list={["galvin-filter-chip", index === 0 && "is-active"]}
+            type="button"
+            role="tab"
+            aria-selected={index === 0 ? "true" : "false"}
+            data-question-filter={filter}
+          >
+            {filter}
+          </button>
+        ))}
+      </div>
+      <p class="galvin-filter-rail__count"><span id="question-visible-count">{String(articles.length).padStart(2, "0")}</span> / {String(articles.length).padStart(2, "0")}</p>
+    </div>
+
+    <div class="galvin-question-list" id="question-list">
+      {articles.map((article, index) => (
+        <article class="galvin-question-card" data-question-card data-tags={article.data.tags.join("|")}>
+          <a href={`/${article.data.section}/${article.id}/`} class="galvin-question-card__link" aria-label={`阅读：${article.data.title}`}></a>
+          <div class="galvin-question-card__index">{String(index + 1).padStart(2, "0")}</div>
+          <div class="galvin-question-card__main">
+            <div class="galvin-question-card__utility">
+              <time datetime={article.data.date.toISOString()}>{dateLabel(article.data.date)}</time>
+              <span class="galvin-question-card__section">{article.data.section === "ai" ? "AI 学习" : article.data.section === "insights" ? "工作观察" : article.data.section === "tips" ? "方法实践" : "阅读记录"}</span>
+            </div>
+            <h2>{article.data.title}</h2>
+            {article.data.description && <p>{article.data.description}</p>}
+            <div class="galvin-question-card__tags" aria-label="文章标签">
+              {article.data.tags.slice(0, 4).map((tag) => <span>#{tag}</span>)}
+            </div>
+          </div>
+          <span class="galvin-question-card__arrow" aria-hidden="true">↗</span>
+        </article>
+      ))}
+    </div>
+
+    {articles.length === 0 && <p class="galvin-empty-state">暂时还没有可公开的叩问记录。</p>}
   </section>
 
-  <ScrollReveal />
+  <script>
+    (() => {
+      const filters = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-question-filter]"));
+      const cards = Array.from(document.querySelectorAll<HTMLElement>("[data-question-card]"));
+      const count = document.getElementById("question-visible-count");
+      const searchButton = document.getElementById("question-open-search");
+
+      const applyFilter = (filter: string) => {
+        let visible = 0;
+        cards.forEach((card) => {
+          const tags = (card.dataset.tags || "").split("|").filter(Boolean);
+          const matches = filter === "全部" || tags.includes(filter);
+          card.hidden = !matches;
+          if (matches) visible += 1;
+        });
+        filters.forEach((button) => {
+          const active = button.dataset.questionFilter === filter;
+          button.classList.toggle("is-active", active);
+          button.setAttribute("aria-selected", String(active));
+        });
+        if (count) count.textContent = String(visible).padStart(2, "0");
+      };
+
+      filters.forEach((button) => button.addEventListener("click", () => applyFilter(button.dataset.questionFilter || "全部")));
+      searchButton?.addEventListener("click", () => {
+        document.getElementById("search-trigger-desktop")?.click();
+        document.getElementById("search-trigger-mobile")?.click();
+      });
+    })();
+  </script>
 </BaseLayout>
