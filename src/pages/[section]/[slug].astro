@@ -1,4 +1,6 @@
 ---
+/* Galvin design reminder: article pages prioritize continuous reading; compact-screen
+   chapter navigation is placed before the prose as a quiet, in-flow index. */
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ColumnIcon from "../../components/ColumnIcon.astro";
@@ -117,7 +119,7 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
         </div>
       </div>
 
-      <!-- 右侧 sticky 目录（lg+ 显示 rail；移动端/平板显示折叠卡片，均由组件内响应式 class 控制） -->
+      <!-- lg+ 显示右侧 sticky 目录；移动端/平板由 CSS 将内联章节索引排在正文之前。 -->
       <div class="min-w-0 order-2">
         <ArticleTOC label={t("articles.toc")} countFormat={t("articles.tocCount")} />
       </div>

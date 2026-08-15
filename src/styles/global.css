@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* Galvin design reminder: the article reading surface is an uncluttered dark AI editor;
+   mobile chapter navigation remains in the content flow instead of floating over prose. */
 @plugin "@tailwindcss/typography";
 
 /* ===== 钟齐陈伟勋硬笔行楷简（自定义品牌中文字体） =====
@@ -3569,4 +3571,158 @@ body.galvin-site ::selection {
 
 @media (prefers-reduced-motion: reduce) {
   .article-toc-dock { transition: none; }
+}
+
+/* Mobile article index v2: a restrained, in-flow route map replaces the fixed dock and modal drawer. */
+.article-toc-mobile-index {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  #article-grid {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #article-grid > div:nth-child(2) {
+    order: 0;
+  }
+
+  .article-toc-root {
+    margin: 0 0 1.55rem;
+  }
+
+  .article-toc-mobile-index {
+    display: block;
+    border-top: 1px solid var(--galvin-line);
+    border-bottom: 1px solid var(--galvin-line);
+    color: var(--galvin-text-primary);
+  }
+
+  .article-toc-mobile-index.toc-hide {
+    display: none;
+  }
+
+  .article-toc-mobile-index summary {
+    display: grid;
+    grid-template-areas:
+      "label count"
+      "current chevron";
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 0.75rem;
+    row-gap: 0.22rem;
+    min-height: 4.3rem;
+    padding: 0.68rem 0.1rem 0.65rem;
+    cursor: pointer;
+    list-style: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .article-toc-mobile-index summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .article-toc-mobile-index summary:focus-visible {
+    outline: 2px solid var(--galvin-signal-violet);
+    outline-offset: -2px;
+  }
+
+  .article-toc-mobile-index__label {
+    grid-area: label;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--galvin-signal-violet);
+    font: 10px var(--galvin-font-utility);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  .article-toc-mobile-index__icon {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  .article-toc-mobile-index__current {
+    grid-area: current;
+    overflow: hidden;
+    color: var(--galvin-text-primary);
+    font-size: 13px;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .article-toc-mobile-index__count {
+    grid-area: count;
+    color: var(--galvin-text-tertiary);
+    font: 10px var(--galvin-font-utility);
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+
+  .article-toc-mobile-index__chevron {
+    grid-area: chevron;
+    justify-self: end;
+    width: 1rem;
+    height: 1rem;
+    color: var(--galvin-signal-cyan);
+    transition: transform 180ms var(--galvin-ease-out);
+  }
+
+  .article-toc-mobile-index[open] .article-toc-mobile-index__chevron {
+    transform: rotate(180deg);
+  }
+
+  .article-toc-mobile-index__body {
+    padding: 0.2rem 0 0.85rem;
+    border-top: 1px solid var(--galvin-line-subtle);
+  }
+
+  .article-toc-mobile-index__body > p {
+    margin: 0.7rem 0 0.45rem;
+    color: var(--galvin-text-tertiary);
+    font: 10px var(--galvin-font-utility);
+    letter-spacing: 0.08em;
+  }
+
+  .article-toc-mobile-index .article-toc-list {
+    gap: 0.08rem;
+    max-height: min(48vh, 28rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 0.35rem;
+    scrollbar-width: thin;
+  }
+
+  .article-toc-mobile-index .article-toc-link,
+  .dark .article-toc-mobile-index .article-toc-link {
+    min-height: 2.75rem;
+    padding: 0.64rem 0.35rem 0.64rem 0.72rem;
+    border-left-color: transparent;
+    border-radius: 0;
+    color: var(--galvin-text-secondary);
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .article-toc-mobile-index .article-toc-link:hover,
+  .dark .article-toc-mobile-index .article-toc-link:hover {
+    color: var(--galvin-signal-cyan);
+    background: rgba(97, 242, 208, 0.045);
+  }
+
+  .article-toc-mobile-index .article-toc-link.active,
+  .dark .article-toc-mobile-index .article-toc-link.active {
+    border-left-color: var(--galvin-signal-violet);
+    background: rgba(155, 140, 255, 0.08);
+    color: var(--galvin-text-primary);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .article-toc-mobile-index__chevron {
+    transition: none;
+  }
 }

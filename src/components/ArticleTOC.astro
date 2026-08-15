@@ -1,6 +1,7 @@
 ---
-/* Galvin design reminder: desktop uses a quiet sticky index; compact screens use a
-   reading-location dock that reveals a short-lived, accessible chapter chooser. */
+/* Galvin design reminder: the desktop rail is a quiet reading aid; on compact
+   screens, chapter navigation belongs in the reading flow and must never overlay
+   or permanently occupy the reader's viewport. */
 import Icon from "./Icon.astro";
 
 interface Props {
@@ -17,26 +18,18 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
     <ul id="article-toc-rail-list" class="article-toc-list"></ul>
   </nav>
 
-  <div id="article-toc-overlay" class="article-toc-overlay hidden" aria-hidden="true"></div>
-  <section id="article-toc-mobile" class="article-toc-panel hidden" role="dialog" aria-modal="true" aria-labelledby="article-toc-mobile-title">
-    <div class="article-toc-panel-head">
-      <Icon name="listTree" class="article-toc-panel-icon" />
-      <div class="article-toc-panel-title-group">
-        <span id="article-toc-mobile-title" class="article-toc-label">{label}</span>
-        <span id="article-toc-current" class="article-toc-current" aria-live="polite"></span>
-      </div>
-      <span id="article-toc-count" class="article-toc-count hidden" data-count-format={countFormat}></span>
-      <button id="article-toc-close" class="article-toc-close" type="button" aria-label="关闭目录"><Icon name="close" class="article-toc-close-icon" /></button>
+  <details id="article-toc-mobile-index" class="article-toc-mobile-index">
+    <summary>
+      <span class="article-toc-mobile-index__label"><Icon name="listTree" class="article-toc-mobile-index__icon" />章节索引</span>
+      <span id="article-toc-mobile-current" class="article-toc-mobile-index__current" aria-live="polite">阅读路线</span>
+      <span id="article-toc-mobile-count" class="article-toc-mobile-index__count" data-count-format={countFormat}></span>
+      <Icon name="chevronDown" class="article-toc-mobile-index__chevron" />
+    </summary>
+    <div class="article-toc-mobile-index__body">
+      <p>按章节跳转</p>
+      <ul id="article-toc-mobile-list" class="article-toc-list"></ul>
     </div>
-    <ul id="article-toc-mobile-list" class="article-toc-list"></ul>
-  </section>
-
-  <button id="article-toc-dock" class="article-toc-dock hidden" type="button" aria-label="打开章节目录" aria-haspopup="dialog" aria-controls="article-toc-mobile" aria-expanded="false" aria-hidden="true">
-    <span class="article-toc-dock__signal" aria-hidden="true"></span>
-    <span class="article-toc-dock__copy"><span class="article-toc-dock__eyebrow">READING</span><span id="article-toc-dock-current" class="article-toc-dock__current">章节目录</span></span>
-    <span id="article-toc-dock-index" class="article-toc-dock__index">章节</span>
-    <Icon name="arrowUp" class="article-toc-dock__icon" />
-  </button>
+  </details>
 </div>
 
 <script>
@@ -44,12 +37,7 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
     var allLinks = [];
     var itemById = {};
     var desktopRail = null;
-    var mobilePanel = null;
-    var mobileList = null;
-    var dock = null;
-    var overlay = null;
-    var closeMobilePanel = null;
-    var lastTrigger = null;
+    var mobileIndex = null;
 
     function reducedMotion() {
       return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -67,22 +55,10 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
       });
     }
 
-    function keepActiveMobileLinkVisible() {
-      if (!mobilePanel || !mobilePanel.classList.contains("open")) return;
-      var active = mobilePanel.querySelector(".article-toc-link.active");
-      if (active) active.scrollIntoView({ block: "nearest", behavior: reducedMotion() ? "auto" : "smooth" });
-    }
-
-    function syncDockCopy(activeId) {
-      if (!dock) return;
+    function syncMobileIndexCopy(activeId) {
       var item = itemById[activeId];
-      if (!item) return;
-      var current = document.getElementById("article-toc-dock-current");
-      var currentInPanel = document.getElementById("article-toc-current");
-      var index = document.getElementById("article-toc-dock-index");
-      if (current) current.textContent = item.text;
-      if (currentInPanel) currentInPanel.textContent = item.text;
-      if (index) index.textContent = "章节 " + (item.index + 1) + "/" + Object.keys(itemById).length;
+      var current = document.getElementById("article-toc-mobile-current");
+      if (item && current) current.textContent = "第 " + (item.index + 1) + " 节 · " + item.text;
     }
 
     function setActive(activeId) {
@@ -90,21 +66,12 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
       allLinks.forEach(function (link) {
         var active = link.dataset.tocId === activeId;
         link.classList.toggle("active", active);
+        if (active) link.setAttribute("aria-current", "location");
+        else link.removeAttribute("aria-current");
         if (active && link.closest("#article-toc-rail")) activeRailLink = link;
       });
-      syncDockCopy(activeId);
+      syncMobileIndexCopy(activeId);
       keepActiveRailLinkVisible(activeRailLink);
-      keepActiveMobileLinkVisible();
-    }
-
-    function updateDockVisibility() {
-      if (!dock) return;
-      var article = document.querySelector(".galvin-article-content");
-      var start = article ? window.scrollY + article.getBoundingClientRect().top - 160 : 560;
-      var visible = window.innerWidth < 1024 && window.scrollY > start;
-      dock.classList.toggle("is-visible", visible);
-      dock.setAttribute("aria-hidden", String(!visible));
-      if (!visible && closeMobilePanel && mobilePanel?.classList.contains("open")) closeMobilePanel(false);
     }
 
     function flashHeading(el) {
@@ -115,41 +82,25 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
       setTimeout(function () { el.classList.remove("toc-flash"); }, 1600);
     }
 
-    function getFocusable(container) {
-      return Array.prototype.slice.call(container.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'));
-    }
-
     function initArticleTOC() {
       var rail = document.getElementById("article-toc-rail");
       var railList = document.getElementById("article-toc-rail-list");
-      var panel = document.getElementById("article-toc-mobile");
-      var panelList = document.getElementById("article-toc-mobile-list");
-      var countEl = document.getElementById("article-toc-count");
-      var closeButton = document.getElementById("article-toc-close");
-      var dockButton = document.getElementById("article-toc-dock");
-      var panelOverlay = document.getElementById("article-toc-overlay");
+      var index = document.getElementById("article-toc-mobile-index");
+      var indexList = document.getElementById("article-toc-mobile-list");
+      var count = document.getElementById("article-toc-mobile-count");
       var article = document.querySelector(".article-content");
-      if (!article || !rail || !railList || !panel || !panelList || !dockButton || !panelOverlay) return;
+      if (!article || !rail || !railList || !index || !indexList) return;
 
+      allLinks = [];
+      itemById = {};
       desktopRail = rail;
-      mobilePanel = panel;
-      mobileList = panelList;
-      dock = dockButton;
-      overlay = panelOverlay;
-
-      function mountToBody(el) {
-        if (el && el.parentNode && el.parentNode !== document.body) document.body.appendChild(el);
-      }
-      mountToBody(dock);
-      mountToBody(panel);
-      mountToBody(overlay);
+      mobileIndex = index;
 
       var grid = document.getElementById("article-grid");
       var headings = Array.prototype.slice.call(article.querySelectorAll("h2, h3"));
       if (headings.length < 2) {
         rail.classList.add("toc-hide");
-        panel.classList.add("hidden");
-        dock.classList.add("hidden");
+        index.classList.add("toc-hide");
         if (grid) grid.classList.add("no-toc");
         var prevnext = document.querySelector(".article-prevnext");
         if (prevnext) prevnext.classList.add("no-toc");
@@ -164,10 +115,10 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
         return text.toLowerCase().replace(/[^\w\u4e00-\u9fa5]+/g, "-").replace(/^-+|-+$/g, "") || "section";
       }
 
-      var items = headings.map(function (heading, index) {
-        var id = heading.id || slugify(heading.textContent || "") + "-" + index;
+      var items = headings.map(function (heading, indexNumber) {
+        var id = heading.id || slugify(heading.textContent || "") + "-" + indexNumber;
         heading.id = id;
-        var item = { id: id, text: (heading.textContent || "").trim(), level: heading.tagName === "H2" ? 2 : 3, index: index };
+        var item = { id: id, text: (heading.textContent || "").trim(), level: heading.tagName === "H2" ? 2 : 3, index: indexNumber };
         itemById[id] = item;
         return item;
       });
@@ -186,48 +137,14 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
           container.appendChild(li);
         });
       }
+
       buildList(railList);
-      buildList(panelList);
-      allLinks = Array.prototype.slice.call(railList.querySelectorAll(".article-toc-link")).concat(Array.prototype.slice.call(panelList.querySelectorAll(".article-toc-link")));
+      buildList(indexList);
+      allLinks = Array.prototype.slice.call(railList.querySelectorAll(".article-toc-link")).concat(Array.prototype.slice.call(indexList.querySelectorAll(".article-toc-link")));
 
-      rail.classList.remove("hidden");
-      panel.classList.remove("hidden");
-      dock.classList.remove("hidden");
-      overlay.classList.remove("hidden");
-      overlay.setAttribute("aria-hidden", "true");
-
-      if (countEl) {
-        countEl.textContent = (countEl.getAttribute("data-count-format") || "{count}").replace("{count}", String(items.length));
-        countEl.classList.remove("hidden");
-      }
-
-      function openPanel() {
-        if (!dock.classList.contains("is-visible")) return;
-        lastTrigger = document.activeElement;
-        panel.classList.add("open");
-        overlay.classList.add("open");
-        overlay.setAttribute("aria-hidden", "false");
-        dock.setAttribute("aria-expanded", "true");
-        document.body.classList.add("article-toc-open");
-        requestAnimationFrame(function () {
-          keepActiveMobileLinkVisible();
-          if (closeButton) closeButton.focus();
-        });
-      }
-
-      closeMobilePanel = function (returnFocus) {
-        if (!panel.classList.contains("open")) return;
-        panel.classList.remove("open");
-        overlay.classList.remove("open");
-        overlay.setAttribute("aria-hidden", "true");
-        dock.setAttribute("aria-expanded", "false");
-        document.body.classList.remove("article-toc-open");
-        if (returnFocus !== false) requestAnimationFrame(function () { (lastTrigger || dock).focus(); });
-      };
-
-      dock.onclick = function () { panel.classList.contains("open") ? closeMobilePanel(true) : openPanel(); };
-      overlay.onclick = function () { closeMobilePanel(true); };
-      if (closeButton) closeButton.onclick = function () { closeMobilePanel(true); };
+      rail.classList.remove("toc-hide");
+      index.classList.remove("toc-hide");
+      if (count) count.textContent = (count.getAttribute("data-count-format") || "{count}").replace("{count}", String(items.length));
 
       var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) { if (entry.isIntersecting) setActive(entry.target.id); });
@@ -236,13 +153,7 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
       if (initArticleTOC._observer) initArticleTOC._observer.disconnect();
       initArticleTOC._observer = observer;
 
-      if (!dock.__galvinDockBound) {
-        dock.__galvinDockBound = true;
-        window.addEventListener("scroll", updateDockVisibility, { passive: true });
-        window.addEventListener("resize", updateDockVisibility, { passive: true });
-      }
       setActive(items[0].id);
-      updateDockVisibility();
     }
 
     document.addEventListener("click", function (event) {
@@ -256,23 +167,11 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
       history.replaceState(null, "", "#" + id);
       setActive(id);
       flashHeading(target);
-      if (targetLink.closest("#article-toc-mobile") && closeMobilePanel) {
-        closeMobilePanel(false);
+      if (targetLink.closest("#article-toc-mobile-index")) {
+        mobileIndex?.removeAttribute("open");
         target.setAttribute("tabindex", "-1");
         requestAnimationFrame(function () { target.focus({ preventScroll: true }); });
       }
-    });
-
-    document.addEventListener("keydown", function (event) {
-      if (!mobilePanel?.classList.contains("open")) return;
-      if (event.key === "Escape") { event.preventDefault(); closeMobilePanel?.(true); return; }
-      if (event.key !== "Tab") return;
-      var focusable = getFocusable(mobilePanel);
-      if (!focusable.length) return;
-      var first = focusable[0];
-      var last = focusable[focusable.length - 1];
-      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     });
 
     initArticleTOC();

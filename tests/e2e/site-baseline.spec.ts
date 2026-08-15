@@ -164,27 +164,24 @@ test("长文章当前章节会同步滚入桌面目录可视区域", async ({ pa
   await expect.poll(async () => Number(await rail.evaluate((el) => el.scrollTop))).toBeGreaterThan(0);
 });
 
-test("移动端离开文章首屏后显示当前章节定位条", async ({ page }) => {
+test("移动端文章在正文前提供内联章节索引而不显示固定浮层", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/ai/easy-vibe-guide/");
-  const dock = page.getByRole("button", { name: "打开章节目录" });
-  await expect(dock).toBeHidden();
-
-  await page.evaluate(() => {
-    document.documentElement.style.scrollBehavior = "auto";
-    const heading = Array.from(document.querySelectorAll(".galvin-article-content h2"))
-      .find((el) => el.textContent?.includes("二、整张学习地图"));
-    if (heading) window.scrollTo({ top: window.scrollY + heading.getBoundingClientRect().top - 160, behavior: "instant" as ScrollBehavior });
-  });
-
-  await expect(dock).toBeVisible();
-  await expect(dock).toContainText("二、整张学习地图");
+  const index = page.locator("#article-toc-mobile-index");
+  await expect(index).toBeVisible();
+  await expect(index.locator("summary")).toContainText("章节索引");
+  await expect(page.locator("#article-toc-dock")).toHaveCount(0);
+  await expect(page.getByRole("dialog", { name: "目录" })).toHaveCount(0);
 });
 
-test("移动端章节抽屉可通过 Escape 关闭并将焦点返回定位条", async ({ page }) => {
+test("移动端内联章节索引原位展开、同步当前章节并在选章后收起", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/ai/easy-vibe-guide/");
-  const dock = page.getByRole("button", { name: "打开章节目录" });
+  const index = page.locator("#article-toc-mobile-index");
+  const summary = index.locator("summary");
+  await summary.click();
+  await expect(index).toHaveAttribute("open", "");
+  await expect(index.locator(".article-toc-link").first()).toBeVisible();
 
   await page.evaluate(() => {
     document.documentElement.style.scrollBehavior = "auto";
@@ -192,12 +189,10 @@ test("移动端章节抽屉可通过 Escape 关闭并将焦点返回定位条", 
       .find((el) => el.textContent?.includes("二、整张学习地图"));
     if (heading) window.scrollTo({ top: window.scrollY + heading.getBoundingClientRect().top - 160, behavior: "instant" as ScrollBehavior });
   });
-  await expect(dock).toBeVisible();
-  await dock.click();
+  await expect(summary).toContainText("二、整张学习地图");
+  const current = index.locator('.article-toc-link[aria-current="location"]');
+  await expect(current).toContainText("二、整张学习地图");
 
-  const panel = page.getByRole("dialog", { name: "目录" });
-  await expect(panel).toBeVisible();
-  await page.keyboard.press("Escape");
-  await expect(panel).not.toBeVisible();
-  await expect(dock).toBeFocused();
+  await current.click();
+  await expect(index).not.toHaveAttribute("open", "");
 });
