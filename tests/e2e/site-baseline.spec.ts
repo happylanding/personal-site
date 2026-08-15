@@ -143,3 +143,23 @@ test("叩问详情页的桌面目录在正文滚动时保持停留", async ({ pa
   expect(secondBox?.y).toBeGreaterThan(80);
   expect(Math.abs((firstBox?.y || 0) - (secondBox?.y || 0))).toBeLessThan(6);
 });
+
+test("长文章当前章节会同步滚入桌面目录可视区域", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("/ai/easy-vibe-guide/");
+  const rail = page.locator("#article-toc-rail");
+  await expect(rail).toBeVisible();
+  await expect.poll(async () => Number(await rail.evaluate((el) => el.scrollTop))).toBe(0);
+
+  const target = page.locator(".galvin-article-content h2").filter({ hasText: "六、Appendix" });
+  await page.evaluate(() => {
+    document.documentElement.style.scrollBehavior = "auto";
+    const heading = Array.from(document.querySelectorAll(".galvin-article-content h2"))
+      .find((el) => el.textContent?.includes("六、Appendix"));
+    if (!heading) return;
+    window.scrollTo({ top: window.scrollY + heading.getBoundingClientRect().top - 160, behavior: "instant" as ScrollBehavior });
+  });
+  const active = rail.locator(".article-toc-link.active");
+  await expect(active).toContainText("六、Appendix");
+  await expect.poll(async () => Number(await rail.evaluate((el) => el.scrollTop))).toBeGreaterThan(0);
+});

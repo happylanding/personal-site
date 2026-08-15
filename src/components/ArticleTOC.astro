@@ -57,11 +57,34 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
   (function () {
     // 收集桌面 + 移动端所有目录链接，供 setActive 统一高亮
     var allLinks = [];
+    var desktopRail = null;
+
+    function keepActiveRailLinkVisible(link) {
+      if (!desktopRail || !link || window.innerWidth < 1024) return;
+
+      var railRect = desktopRail.getBoundingClientRect();
+      var linkRect = link.getBoundingClientRect();
+      var inset = 22;
+      var isAbove = linkRect.top < railRect.top + inset;
+      var isBelow = linkRect.bottom > railRect.bottom - inset;
+
+      if (!isAbove && !isBelow) return;
+
+      var nextTop = desktopRail.scrollTop + (linkRect.top - railRect.top) - desktopRail.clientHeight / 2 + linkRect.height / 2;
+      desktopRail.scrollTo({
+        top: Math.max(0, nextTop),
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      });
+    }
 
     function setActive(activeId) {
+      var activeRailLink = null;
       allLinks.forEach(function (l) {
-        l.classList.toggle("active", l.dataset.tocId === activeId);
+        var isActive = l.dataset.tocId === activeId;
+        l.classList.toggle("active", isActive);
+        if (isActive && l.closest("#article-toc-rail")) activeRailLink = l;
       });
+      keepActiveRailLinkVisible(activeRailLink);
     }
 
     // 目标标题闪烁提示（点击目录后的明确反馈）
@@ -87,6 +110,7 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
 
       var article = document.querySelector(".article-content");
       if (!article || !rail || !railList || !mobile || !mobileList || !fab) return;
+      desktopRail = rail;
 
       // 修复：把 fixed 定位的悬浮球 / 弹出面板 / 遮罩移到 body 下，
       // 避免被 data-reveal 等祖先的 transform 属性破坏 position:fixed 的视口定位
