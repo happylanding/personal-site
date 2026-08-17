@@ -1,11 +1,11 @@
 ---
-/* Galvin design reminder: this is an asymmetric AI editorial workspace, not a SaaS dashboard.
-   Typography carries the thesis; the right-hand signal panel is the single theatrical visual moment. */
+/* Galvin design reminder: homepage is a quiet reading runway, not a dashboard.
+   The thesis leads; `此刻` is a low-weight annotation and routes expose real content. */
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Icon from "../components/Icon.astro";
 import SignalTrail from "../components/SignalTrail.astro";
 import { getCollection } from "astro:content";
-import { GALVIN_NAVIGATION } from "../lib/galvin-navigation";
+import { GALVIN_NAVIGATION, GALVIN_RESOURCE_NAVIGATION } from "../lib/galvin-navigation";
 
 const articles = await getCollection("articles", ({ data }) => !data.draft);
 const latestArticles = articles
@@ -18,10 +18,10 @@ const displayDate = (date: Date) =>
 
 <BaseLayout>
   <div class="galvin-home">
-    <section class="galvin-hero" aria-labelledby="galvin-hero-title">
+    <section class="galvin-hero galvin-hero--reading-runway" aria-labelledby="galvin-hero-title">
       <div class="galvin-hero__grid">
         <div class="galvin-hero__copy">
-          <p class="galvin-eyebrow"><span class="galvin-eyebrow__dot"></span>GALVIN / 个人 AI 学习与创作空间</p>
+          <p class="galvin-eyebrow"><span class="galvin-eyebrow__dot"></span>Galvin · 个人 AI 学习与创作空间</p>
           <h1 id="galvin-hero-title">把好奇心，<br />做成一点<strong>有用的东西。</strong></h1>
           <p class="galvin-hero__intro">
             一位数字政府与数字经济从业者的 AI 学习现场。这里记录工具、思考、方法和还在发生的生活。
@@ -34,68 +34,58 @@ const displayDate = (date: Date) =>
           </div>
         </div>
 
-        <aside class="galvin-signal-panel" aria-label="当前信号">
-          <div class="galvin-signal-panel__topline">
-            <span>CURRENT SIGNAL</span>
-            <span class="galvin-signal-panel__live"><i></i> 更新中</span>
-          </div>
-          <div class="galvin-signal-panel__body">
-            <span class="galvin-signal-panel__number">001</span>
-            <div>
-              <p class="galvin-signal-panel__label">正在搭建</p>
-              <h2>Galvin V1<br />个人 AI 工作空间</h2>
-            </div>
-          </div>
-          <div class="galvin-signal-panel__detail">
-            <span class="galvin-status-chip">STRUCTURE</span>
-            <p>先让内容有秩序，再让每一次探索留下轨迹。</p>
-          </div>
-          <div class="galvin-signal-panel__meter" aria-hidden="true"><span></span></div>
+        <aside class="galvin-current-note" aria-label="此刻正在推进">
+          <div><span aria-hidden="true"></span><p>此刻</p></div>
+          <strong>正在搭建 Galvin V1</strong>
+          <p>先让内容有秩序，再让每一次探索留下轨迹。</p>
         </aside>
       </div>
       <SignalTrail />
     </section>
 
-    <section class="galvin-index-section" aria-labelledby="galvin-index-title">
-      <div class="galvin-section-heading">
+    <section class="galvin-path-section" aria-labelledby="galvin-index-title">
+      <header class="galvin-path-section__head">
         <div>
-          <p class="galvin-section-heading__eyebrow">CONTENT INDEX</p>
-          <h2 id="galvin-index-title">七个入口，<span>一条持续展开的轨迹。</span></h2>
+          <p>可以从这里开始</p>
+          <h2 id="galvin-index-title">四条主线，<span>一条继续展开的轨道。</span></h2>
         </div>
-        <p>不急着把内容填满。每个栏目都留给正在成为的部分。</p>
-      </div>
-      <div class="galvin-index-grid">
+        <p>不急着把内容填满。每条路径都通往正在发生的学习与创作。</p>
+      </header>
+      <nav id="home-path-track" class="galvin-path-track" aria-label="Galvin 内容路径">
         {GALVIN_NAVIGATION.map((item) => (
-          <a class="galvin-index-card" href={item.href}>
-            <span class="galvin-index-card__number">{item.index}</span>
-            <span class="galvin-index-card__label">{item.label}</span>
-            <Icon name="arrowUpRight" class="galvin-index-card__icon w-4 h-4" />
+          <a class="galvin-path-track__route" href={item.href}>
+            <span>{item.label}</span><Icon name="arrowRight" class="w-4 h-4" />
           </a>
         ))}
-      </div>
+        <div class="galvin-path-track__resources" aria-label="藏页资源">
+          <p>藏页</p>
+          {GALVIN_RESOURCE_NAVIGATION.map((item) => <a href={item.href}>{item.label}<Icon name="arrowRight" class="w-3.5 h-3.5" /></a>)}
+        </div>
+      </nav>
     </section>
 
     <section class="galvin-latest" aria-labelledby="galvin-latest-title">
-      <div class="galvin-section-heading galvin-section-heading--compact">
+      <div class="galvin-latest__heading">
         <div>
-          <p class="galvin-section-heading__eyebrow">RECENT NOTES</p>
+          <p>最近叩问</p>
           <h2 id="galvin-latest-title">最近留下的<span>问题和做法。</span></h2>
         </div>
         <a class="galvin-text-link" href="/archive">全部文章 <Icon name="arrowRight" class="w-4 h-4" /></a>
       </div>
       <div class="galvin-latest__list">
         {latestArticles.map((article, index) => (
-          <a class="galvin-article-row" href={`/${article.data.section}/${article.id}`}>
-            <span class="galvin-article-row__index">0{index + 1}</span>
+          <a class:list={["galvin-article-row", { "galvin-article-row--lead": index === 0 }]} href={`/${article.data.section}/${article.id}`}>
             <div>
               <p>{article.data.tags[0] || "记录"} · {displayDate(article.data.date)}</p>
               <h3>{article.data.title}</h3>
+              {index === 0 && article.data.description && <span>{article.data.description}</span>}
             </div>
             <Icon name="arrowUpRight" class="w-4 h-4" />
           </a>
         ))}
         {!recentArticle && <p class="galvin-empty-state">第一条正在路上。</p>}
       </div>
+      <a class="galvin-latest__next" href="/archive">下一步，从一篇问题开始 <Icon name="arrowRight" class="w-4 h-4" /></a>
     </section>
   </div>
 </BaseLayout>

@@ -10,6 +10,18 @@ test("首页保留可读的主标题与键盘可达的导航", async ({ page }) 
   await expect(page.locator(":focus-visible")).toBeVisible();
 });
 
+test("首页将四条主线与藏页资源作为连续阅读轨道呈现", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(page.getByText("七个入口", { exact: false })).toHaveCount(0);
+  const track = page.locator("#home-path-track");
+  await expect(track).toBeVisible();
+  await expect(track.getByRole("link", { name: "造物" })).toHaveAttribute("href", "/tools/");
+  await expect(track.getByRole("link", { name: "叩问" })).toHaveAttribute("href", "/archive/");
+  await expect(track.getByRole("link", { name: "网站与资源" })).toHaveAttribute("href", "/sites/");
+  await expect(track.getByRole("link", { name: "书架" })).toHaveAttribute("href", "/books/");
+});
+
 test("桌面主导航压缩为内容主线，并以点击式藏页菜单公开资源与书架", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto("/");
@@ -112,6 +124,26 @@ test("叩问归档可按标签筛选已发布文章", async ({ page }) => {
   const visibleCards = page.locator("[data-question-card]:not([hidden])");
   await expect(visibleCards.first()).toBeVisible();
   expect(await visibleCards.evaluateAll((cards) => cards.every((card) => (card as HTMLElement).dataset.tags?.split("|").includes("AI")))).toBe(true);
+});
+
+test("叩问归档以连续问题目录承载阅读信息而非编号卡片", async ({ page }) => {
+  await page.goto("/archive/");
+
+  const directory = page.locator("#question-directory");
+  await expect(directory).toBeVisible();
+  await expect(directory.locator("[data-question-card]").first()).toBeVisible();
+  await expect(directory.locator(".galvin-question-card__index")).toHaveCount(0);
+  await expect(page.getByText("篇已发布文章", { exact: false })).toHaveCount(0);
+});
+
+test("叩问标签在单行可横向访问的轨道中保持完整", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("/archive/");
+
+  const track = page.locator(".galvin-question-filter__track");
+  await expect(track).toBeVisible();
+  await expect(track).toHaveCSS("flex-wrap", "nowrap");
+  await expect(track).toHaveCSS("overflow-x", "auto");
 });
 
 test("造物页保留本地工具的隐私说明与下载入口", async ({ page }) => {

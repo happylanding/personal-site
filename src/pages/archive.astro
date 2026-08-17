@@ -1,6 +1,6 @@
 ---
-/* Galvin design reminder: 叩问 is a deep-blue AI editorial workspace.
-   Use cold-white Chinese type, violet for an active decision, cyan only for live status. */
+/* Galvin design reminder: 叩问 is a continuous question directory, not a dashboard.
+   Let titles and reading metadata lead; violet marks a chosen filter, cyan marks live state. */
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 import { getQuestionFilterOptions } from "../lib/galvin-content-view";
@@ -20,58 +20,54 @@ function dateLabel(date: Date): string {
 
 <BaseLayout title="叩问" description="Galvin 的思考归档：AI 学习、工作方法与持续追问。">
   <section class="galvin-content-page galvin-question-page" aria-labelledby="question-title">
-    <header class="galvin-content-page__hero">
-      <div class="galvin-content-page__signal" aria-hidden="true"><i></i><span>QUESTION / INDEX</span></div>
-      <div class="galvin-content-page__hero-grid">
-        <div>
-          <p class="galvin-content-page__number">03 / 07</p>
-          <h1 id="question-title">叩问<span>。</span></h1>
-          <p class="galvin-content-page__lead">把遇到的问题摊开，把暂时没有答案的事写下来。这里收录 AI 学习、工作方法和持续修正中的思考。</p>
-        </div>
-        <div class="galvin-content-page__meta" aria-label="叩问归档状态">
-          <div><span>ARCHIVE</span><strong>{String(articles.length).padStart(2, "0")}</strong><small>篇已发布文章</small></div>
-          <button id="question-open-search" class="galvin-content-page__search" type="button">
-            <span>检索全部内容</span><kbd>⌘ K</kbd>
-          </button>
-        </div>
+    <header class="galvin-question-directory__header">
+      <p><span aria-hidden="true"></span>问题目录</p>
+      <div>
+        <h1 id="question-title">叩问<span>。</span></h1>
+        <span class="galvin-question-directory__count">{articles.length} 篇</span>
+      </div>
+      <div class="galvin-question-directory__summary">
+        <p>把遇到的问题摊开，把暂时没有答案的事写下来。这里收录 AI 学习、工作方法和持续修正中的思考。</p>
+        <button id="question-open-search" class="galvin-question-directory__search" type="button">检索全部内容 <kbd>⌘ K</kbd></button>
       </div>
     </header>
 
-    <div class="galvin-filter-rail" aria-label="按标签筛选文章">
-      <p>FILTER / 标签</p>
-      <div class="galvin-filter-rail__track" role="tablist" aria-label="文章标签">
+    <div class="galvin-question-filter" aria-label="按标签筛选文章">
+      <p>筛选标签</p>
+      <div class="galvin-question-filter__track" role="tablist" aria-label="文章标签">
         {filters.map((filter, index) => (
           <button
-            class:list={["galvin-filter-chip", index === 0 && "is-active"]}
+            class:list={["galvin-question-filter__tab", index === 0 && "is-active"]}
             type="button"
             role="tab"
             aria-selected={index === 0 ? "true" : "false"}
+            aria-controls="question-directory"
             data-question-filter={filter}
           >
             {filter}
           </button>
         ))}
       </div>
-      <p class="galvin-filter-rail__count"><span id="question-visible-count">{String(articles.length).padStart(2, "0")}</span> / {String(articles.length).padStart(2, "0")}</p>
+      <p class="galvin-question-filter__count" aria-live="polite"><span id="question-visible-count">{String(articles.length).padStart(2, "0")}</span> 篇</p>
     </div>
 
-    <div class="galvin-question-list" id="question-list">
+    <div class="galvin-question-directory__list" id="question-directory">
       {articles.map((article, index) => (
-        <article class="galvin-question-card" data-question-card data-tags={article.data.tags.join("|")}>
-          <a href={`/${article.data.section}/${article.id}/`} class="galvin-question-card__link" aria-label={`阅读：${article.data.title}`}></a>
-          <div class="galvin-question-card__index">{String(index + 1).padStart(2, "0")}</div>
-          <div class="galvin-question-card__main">
-            <div class="galvin-question-card__utility">
+        <article class:list={["galvin-question-row", { "galvin-question-row--lead": index === 0 }]} data-question-card data-tags={article.data.tags.join("|")}>
+          <a href={`/${article.data.section}/${article.id}/`} class="galvin-question-row__link" aria-label={`阅读：${article.data.title}`}></a>
+          <span class="galvin-question-row__mark" aria-hidden="true"></span>
+          <div class="galvin-question-row__main">
+            <div class="galvin-question-row__utility">
               <time datetime={article.data.date.toISOString()}>{dateLabel(article.data.date)}</time>
-              <span class="galvin-question-card__section">{article.data.section === "ai" ? "AI 学习" : article.data.section === "insights" ? "工作观察" : article.data.section === "tips" ? "方法实践" : "阅读记录"}</span>
+              <span class="galvin-question-row__section">{article.data.section === "ai" ? "AI 学习" : article.data.section === "insights" ? "工作观察" : article.data.section === "tips" ? "方法实践" : "阅读记录"}</span>
             </div>
             <h2>{article.data.title}</h2>
             {article.data.description && <p>{article.data.description}</p>}
-            <div class="galvin-question-card__tags" aria-label="文章标签">
+            <div class="galvin-question-row__tags" aria-label="文章标签">
               {article.data.tags.slice(0, 4).map((tag) => <span>#{tag}</span>)}
             </div>
           </div>
-          <span class="galvin-question-card__arrow" aria-hidden="true">↗</span>
+          <span class="galvin-question-row__arrow" aria-hidden="true">↗</span>
         </article>
       ))}
     </div>
