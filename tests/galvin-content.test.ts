@@ -5,7 +5,7 @@ import {
   mapLegacyArticleSection,
 } from "../src/lib/galvin-content";
 import { getGalvinRouteFromLegacyPath } from "../src/lib/galvin-routing";
-import { GALVIN_NAVIGATION } from "../src/lib/galvin-navigation";
+import { GALVIN_NAVIGATION, GALVIN_RESOURCE_NAVIGATION } from "../src/lib/galvin-navigation";
 import {
   filterToolsByType,
   getQuestionFilterOptions,
@@ -46,18 +46,17 @@ describe("Galvin 内容分类", () => {
     expect(getGalvinRouteFromLegacyPath("/en/about")).toBe("/关于");
   });
 
-  it("以中文优先的七栏目导航承接当前迁移期入口", () => {
+  it("以四条内容主线和一个藏页资源组承接迁移期入口", () => {
     expect(GALVIN_NAVIGATION.map((item) => item.label)).toEqual([
-      "此刻",
       "造物",
       "叩问",
       "行迹",
-      "藏页",
-      "书架",
       "关于",
     ]);
-    expect(GALVIN_NAVIGATION.find((item) => item.id === "making")?.href).toBe("/tools");
-    expect(GALVIN_NAVIGATION.find((item) => item.id === "about")?.href).toBe("/about");
+    expect(GALVIN_NAVIGATION.find((item) => item.id === "making")?.href).toBe("/tools/");
+    expect(GALVIN_NAVIGATION.find((item) => item.id === "about")?.href).toBe("/about/");
+    expect(GALVIN_RESOURCE_NAVIGATION.map((item) => item.label)).toEqual(["网站与资源", "书架"]);
+    expect(GALVIN_RESOURCE_NAVIGATION.map((item) => item.href)).toEqual(["/sites/", "/books/"]);
   });
 
   it("为叩问归档保留全部筛选并从真实标签中生成去重入口", () => {

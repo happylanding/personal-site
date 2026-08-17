@@ -1,5 +1,5 @@
 import { getCollection } from "astro:content";
-import { getGalvinKindLabel } from "../lib/galvin-content";
+import { getGalvinDiscoveryKind, getGalvinKindLabel } from "../lib/galvin-content";
 import { resolveArticleSearchKind } from "../lib/galvin-content-view";
 
 type SearchItem = {
@@ -72,15 +72,18 @@ export async function GET() {
     href: `/sites/${site.id}/`,
   }));
 
-  const bookItems = books.map((book) => makeSearchItem({
-    title: book.data.title,
-    excerpt: book.data.description || book.data.note || "",
-    tags: book.data.tags,
-    category: getGalvinKindLabel("shelf"),
-    section: "shelf",
-    date: dateLabel(book.data.finishedAt || book.data.startedAt),
-    href: "/books/",
-  }));
+  const bookItems = books.map((book) => {
+    const discoveryKind = getGalvinDiscoveryKind("shelf");
+    return makeSearchItem({
+      title: book.data.title,
+      excerpt: book.data.description || book.data.note || "",
+      tags: book.data.tags,
+      category: getGalvinKindLabel(discoveryKind),
+      section: discoveryKind,
+      date: dateLabel(book.data.finishedAt || book.data.startedAt),
+      href: "/books/",
+    });
+  });
 
   return new Response(JSON.stringify([...articleItems, ...toolItems, ...siteItems, ...bookItems]), {
     headers: { "Content-Type": "application/json; charset=utf-8" },

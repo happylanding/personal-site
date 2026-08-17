@@ -1,0 +1,32 @@
+---
+/* Galvin design reminder: traces is a quiet living index, not a lifestyle feed.
+   Use spacious Chinese reading type and one restrained cyan status signal. */
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const moments = [
+  { label: "南京", title: "把日常留在可继续回看的坐标里", text: "城市不是背景板。它是工作、学习和慢慢理解生活的共同刻度。" },
+  { label: "训练", title: "力量训练，练习把注意力放回身体", text: "不追逐短期数字，只记录愿意持续投入的一点时间。" },
+  { label: "阅读", title: "读到有用的内容，再把它带回问题里", text: "书架与叩问会继续收纳这些正在发生的连接。" },
+];
+---
+
+<BaseLayout title="行迹" description="Galvin 的南京、咖啡、力量训练与阅读片段。">
+  <section class="galvin-traces-page">
+    <header class="galvin-traces-page__hero">
+      <p>慢速记录</p>
+      <h1>行迹。</h1>
+      <div>
+        <span aria-hidden="true"></span>
+        <p>南京、咖啡、力量训练与阅读，留在同一条慢速轨迹里。</p>
+      </div>
+    </header>
+    <div class="galvin-traces-page__list">
+      {moments.map((moment, index) => (
+        <article>
+          <p>{String(index + 1).padStart(2, "0")} / {moment.label}</p>
+          <div><h2>{moment.title}</h2><p>{moment.text}</p></div>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

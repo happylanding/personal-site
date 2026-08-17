@@ -1,15 +1,15 @@
 ---
-/* Galvin design reminder: navigation is a quiet index for seven Chinese sections.
-   Use low-contrast structure, one violet active signal, and a full-height mobile index without card clutter. */
+/* Galvin design reminder: navigation is a visible, quiet hierarchy. `此刻` lives on
+   the homepage; resource discovery has one click-activated layer, never hover-only. */
 import GalvinMark from "./GalvinMark.astro";
 import Icon from "./Icon.astro";
 import SearchDialog from "./SearchDialog.astro";
 import ThemeToggle from "./ThemeToggle.astro";
-import { GALVIN_NAVIGATION } from "../lib/galvin-navigation";
+import { GALVIN_NAVIGATION, GALVIN_RESOURCE_NAVIGATION } from "../lib/galvin-navigation";
 
 const pathname = Astro.url.pathname;
-const isActive = (href: string) =>
-  href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+const isActive = (href: string) => href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href);
+const resourceActive = GALVIN_RESOURCE_NAVIGATION.some((item) => isActive(item.href));
 ---
 
 <header class="galvin-header">
@@ -19,29 +19,31 @@ const isActive = (href: string) =>
       <span class="galvin-brand__wordmark">Galvin</span>
     </a>
 
-    <div class="galvin-nav" aria-label="栏目">
-      {GALVIN_NAVIGATION.map((item) => (
-        <a
-          class:list={["galvin-nav__link", { "is-active": isActive(item.href) }]}
-          href={item.href}
-          aria-current={isActive(item.href) ? "page" : undefined}
-        >
-          <span class="galvin-nav__index">{item.index}</span>
-          <span>{item.label}</span>
-        </a>
+    <div class="galvin-nav" aria-label="内容栏目">
+      {GALVIN_NAVIGATION.filter((item) => item.id !== "about").map((item) => (
+        <a class:list={["galvin-nav__link", { "is-active": isActive(item.href) }]} href={item.href} aria-current={isActive(item.href) ? "page" : undefined}>{item.label}</a>
+      ))}
+      <div class="galvin-nav__resource">
+        <button id="galvin-resource-toggle" class:list={["galvin-nav__trigger", { "is-active": resourceActive }]} type="button" aria-label="打开藏页资源菜单" aria-expanded="false" aria-controls="galvin-resource-menu">
+          <span>藏页</span><span class="galvin-nav__caret" aria-hidden="true">⌄</span>
+        </button>
+        <div id="galvin-resource-menu" class="galvin-resource-menu" role="menu" aria-label="藏页资源" hidden>
+          {GALVIN_RESOURCE_NAVIGATION.map((item) => (
+            <a href={item.href}>
+              <span>{item.label}</span><small>{item.summary}</small>
+            </a>
+          ))}
+        </div>
+      </div>
+      {GALVIN_NAVIGATION.filter((item) => item.id === "about").map((item) => (
+        <a class:list={["galvin-nav__link", "galvin-nav__link--utility", { "is-active": isActive(item.href) }]} href={item.href} aria-current={isActive(item.href) ? "page" : undefined}>{item.label}</a>
       ))}
     </div>
 
     <div class="galvin-header__controls">
       <SearchDialog />
       <ThemeToggle />
-      <button
-        id="galvin-menu-toggle"
-        class="galvin-menu-toggle"
-        aria-label="打开栏目导航"
-        aria-expanded="false"
-        aria-controls="galvin-mobile-menu"
-      >
+      <button id="galvin-menu-toggle" class="galvin-menu-toggle" aria-label="打开栏目导航" aria-expanded="false" aria-controls="galvin-mobile-menu">
         <Icon name="menu" class="w-[19px] h-[19px]" />
       </button>
     </div>
@@ -49,14 +51,19 @@ const isActive = (href: string) =>
 
   <div id="galvin-mobile-menu" class="galvin-mobile-menu" aria-hidden="true">
     <div class="galvin-mobile-menu__inner">
-      <p class="galvin-mobile-menu__eyebrow">INDEX / 07</p>
+      <p class="galvin-mobile-menu__eyebrow">GALVIN / INDEX</p>
       <div class="galvin-mobile-menu__links">
-        {GALVIN_NAVIGATION.map((item) => (
-          <a class="galvin-mobile-menu__link" href={item.href}>
-            <span class="galvin-mobile-menu__index">{item.index}</span>
-            <span>{item.label}</span>
-            <Icon name="arrowRight" class="w-4 h-4" />
-          </a>
+        {GALVIN_NAVIGATION.filter((item) => item.id !== "about").map((item) => (
+          <a class="galvin-mobile-menu__link" href={item.href}><span>{item.label}</span><Icon name="arrowRight" class="w-4 h-4" /></a>
+        ))}
+        <section class="galvin-mobile-menu__group" aria-label="藏页">
+          <p><span>藏页</span><span>资源索引</span></p>
+          {GALVIN_RESOURCE_NAVIGATION.map((item) => (
+            <a href={item.href}><span>{item.label}</span><Icon name="arrowRight" class="w-4 h-4" /></a>
+          ))}
+        </section>
+        {GALVIN_NAVIGATION.filter((item) => item.id === "about").map((item) => (
+          <a class="galvin-mobile-menu__link galvin-mobile-menu__link--utility" href={item.href}><span>{item.label}</span><Icon name="arrowRight" class="w-4 h-4" /></a>
         ))}
       </div>
       <p class="galvin-mobile-menu__note">把好奇心，做成一点有用的东西。</p>
@@ -65,40 +72,52 @@ const isActive = (href: string) =>
 </header>
 
 <script>
-  (function () {
-    const toggle = document.getElementById("galvin-menu-toggle");
-    const menu = document.getElementById("galvin-mobile-menu");
+  (() => {
     const root = document.documentElement;
-    const openClass = "galvin-menu-open";
+    const mobileToggle = document.getElementById("galvin-menu-toggle");
+    const mobileMenu = document.getElementById("galvin-mobile-menu");
+    const resourceToggle = document.getElementById("galvin-resource-toggle");
+    const resourceMenu = document.getElementById("galvin-resource-menu");
+    const mobileOpenClass = "galvin-menu-open";
 
-    if (!toggle || !menu) return;
+    if (!mobileToggle || !mobileMenu || !resourceToggle || !resourceMenu) return;
 
-    const close = () => {
-      root.classList.remove(openClass);
-      toggle.setAttribute("aria-expanded", "false");
-      menu.setAttribute("aria-hidden", "true");
-      toggle.setAttribute("aria-label", "打开栏目导航");
+    const closeMobile = () => {
+      root.classList.remove(mobileOpenClass);
+      mobileToggle.setAttribute("aria-expanded", "false");
+      mobileMenu.setAttribute("aria-hidden", "true");
+      mobileToggle.setAttribute("aria-label", "打开栏目导航");
+    };
+    const closeResources = (restoreFocus = false) => {
+      resourceMenu.setAttribute("hidden", "");
+      resourceToggle.setAttribute("aria-expanded", "false");
+      if (restoreFocus) resourceToggle.focus();
+    };
+    const openResources = () => {
+      resourceMenu.removeAttribute("hidden");
+      resourceToggle.setAttribute("aria-expanded", "true");
     };
 
-    const open = () => {
-      root.classList.add(openClass);
-      toggle.setAttribute("aria-expanded", "true");
-      menu.setAttribute("aria-hidden", "false");
-      toggle.setAttribute("aria-label", "关闭栏目导航");
-    };
-
-    toggle.addEventListener("click", () => {
-      root.classList.contains(openClass) ? close() : open();
+    mobileToggle.addEventListener("click", () => {
+      if (root.classList.contains(mobileOpenClass)) closeMobile();
+      else {
+        root.classList.add(mobileOpenClass);
+        mobileToggle.setAttribute("aria-expanded", "true");
+        mobileMenu.setAttribute("aria-hidden", "false");
+        mobileToggle.setAttribute("aria-label", "关闭栏目导航");
+      }
     });
-
-    menu.addEventListener("click", (event) => {
-      if ((event.target as HTMLElement).closest("a")) close();
+    resourceToggle.addEventListener("click", () => resourceMenu.hasAttribute("hidden") ? openResources() : closeResources());
+    mobileMenu.addEventListener("click", (event) => { if ((event.target as HTMLElement).closest("a")) closeMobile(); });
+    document.addEventListener("click", (event) => {
+      const target = event.target as Node;
+      if (!resourceMenu.hasAttribute("hidden") && !resourceMenu.contains(target) && !resourceToggle.contains(target)) closeResources();
     });
-
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") close();
+      if (event.key !== "Escape") return;
+      if (!resourceMenu.hasAttribute("hidden")) { event.preventDefault(); closeResources(true); return; }
+      closeMobile();
     });
-
-    document.addEventListener("astro:after-swap", close);
+    document.addEventListener("astro:after-swap", () => { closeMobile(); closeResources(); });
   })();
 </script>

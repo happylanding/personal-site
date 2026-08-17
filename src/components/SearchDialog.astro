@@ -1,6 +1,6 @@
 ---
-/* Galvin design reminder: search is an operational deep-blue command panel.
-   Keep the panel sober and useful: violet for the active result, cyan for load status, no decorative gradients. */
+/* Galvin design reminder: search reflects content taxonomy without repeating the
+   header. Resource discovery combines sites and books under `藏页`; text stays primary. */
 import Icon from "./Icon.astro";
 ---
 
@@ -114,14 +114,14 @@ import Icon from "./Icon.astro";
     if (!triggerDesktop || !triggerMobile || !overlay || !panel || !input || !loading || !idle || !tabs || !results || !empty || !count) return;
 
     type SearchItem = { title: string; excerpt: string; tags: string; tagsArr: string[]; category: string; section: string; date: string; href: string; };
-    const sectionMeta: Record<string, { label: string; href: string; short: string; order: number }> = {
-      now: { label: "此刻", href: "/", short: "此", order: 0 },
-      making: { label: "造物", href: "/tools/", short: "造", order: 1 },
-      question: { label: "叩问", href: "/archive/", short: "问", order: 2 },
-      journey: { label: "行迹", href: "/", short: "行", order: 3 },
-      archive: { label: "藏页", href: "/sites/", short: "藏", order: 4 },
-      shelf: { label: "书架", href: "/books/", short: "书", order: 5 },
-      about: { label: "关于", href: "/about/", short: "关", order: 6 },
+    const sectionMeta: Record<string, { label: string; href: string; short: string; order: number; discovery: string }> = {
+      now: { label: "此刻", href: "/", short: "此", order: 0, discovery: "此刻" },
+      making: { label: "造物", href: "/tools/", short: "造", order: 1, discovery: "造物" },
+      question: { label: "叩问", href: "/archive/", short: "问", order: 2, discovery: "叩问" },
+      journey: { label: "行迹", href: "/traces/", short: "行", order: 3, discovery: "行迹" },
+      archive: { label: "藏页", href: "/sites/", short: "藏", order: 4, discovery: "藏页" },
+      shelf: { label: "藏页", href: "/sites/", short: "藏", order: 4, discovery: "藏页" },
+      about: { label: "关于", href: "/about/", short: "关", order: 5, discovery: "关于" },
     };
     let index: SearchItem[] | null = null;
     let activeGroup: string | null = null;
@@ -155,20 +155,23 @@ import Icon from "./Icon.astro";
     const renderIdle = () => {
       if (!index) return;
       const counts = index.reduce<Record<string, number>>((acc, item) => {
-        acc[item.section] = (acc[item.section] || 0) + 1;
+        const key = sectionMeta[item.section]?.discovery || item.section;
+        acc[key] = (acc[key] || 0) + 1;
         return acc;
       }, {});
-      const chips = Object.entries(sectionMeta)
-        .filter(([section]) => counts[section])
-        .sort(([a], [b]) => sectionMeta[a].order - sectionMeta[b].order)
-        .map(([section, meta]) => `<a class="galvin-search-idle__chip" href="${meta.href}">${meta.label}<small>${String(counts[section]).padStart(2, "0")}</small></a>`)
+      const discoveryMeta = Object.values(sectionMeta).filter((meta, index, list) => list.findIndex((candidate) => candidate.discovery === meta.discovery) === index);
+      const chips = discoveryMeta
+        .filter((meta) => counts[meta.discovery])
+        .sort((a, b) => a.order - b.order)
+        .map((meta) => `<a class="galvin-search-idle__chip" href="${meta.href}">${meta.label}<small>${String(counts[meta.discovery]).padStart(2, "0")}</small></a>`)
         .join("");
       idle.innerHTML = `<p class="galvin-search-idle__label">浏览内容工作区</p><div class="galvin-search-idle__chips">${chips}</div>`;
       count.textContent = `已索引 ${index.length} 项内容`;
     };
 
     const groupResults = (items: SearchItem[]) => items.reduce<Record<string, SearchItem[]>>((acc, item) => {
-      (acc[item.category] ||= []).push(item);
+      const group = sectionMeta[item.section]?.discovery || item.category;
+      (acc[group] ||= []).push(item);
       return acc;
     }, {});
 
@@ -182,7 +185,7 @@ import Icon from "./Icon.astro";
     };
 
     const renderResults = (items: SearchItem[], query: string) => {
-      const filtered = activeGroup ? items.filter((item) => item.category === activeGroup) : items;
+      const filtered = activeGroup ? items.filter((item) => (sectionMeta[item.section]?.discovery || item.category) === activeGroup) : items;
       activeIndex = -1;
       if (!filtered.length) {
         results.innerHTML = "";
@@ -193,7 +196,7 @@ import Icon from "./Icon.astro";
       results.innerHTML = sorted(filtered).map((item) => {
         const meta = sectionMeta[item.section] || { short: "内" };
         const tags = item.tagsArr.slice(0, 3).map((tag) => `#${escapeHtml(tag)}`).join(" ");
-        return `<a class="galvin-search-result" href="${escapeHtml(item.href)}"><span class="galvin-search-result__kind">${meta.short}</span><span><h3>${highlight(item.title, query)}</h3>${item.excerpt ? `<p>${highlight(item.excerpt, query)}</p>` : ""}<span class="galvin-search-result__meta"><span>${escapeHtml(item.category)}</span>${item.date ? `<span>${escapeHtml(item.date)}</span>` : ""}${tags ? `<span>${tags}</span>` : ""}</span></span><span class="galvin-search-result__arrow">↗</span></a>`;
+        return `<a class="galvin-search-result" href="${escapeHtml(item.href)}"><span class="galvin-search-result__kind">${meta.short}</span><span><h3>${highlight(item.title, query)}</h3>${item.excerpt ? `<p>${highlight(item.excerpt, query)}</p>` : ""}<span class="galvin-search-result__meta"><span>${escapeHtml(meta.label)}</span>${item.date ? `<span>${escapeHtml(item.date)}</span>` : ""}${tags ? `<span>${tags}</span>` : ""}</span></span><span class="galvin-search-result__arrow">↗</span></a>`;
       }).join("");
     };
 

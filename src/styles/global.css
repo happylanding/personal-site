@@ -1,6 +1,6 @@
 @import "tailwindcss";
-/* Galvin design reminder: the article reading surface is an uncluttered dark AI editor;
-   mobile chapter navigation remains in the content flow instead of floating over prose. */
+/* Galvin design reminder: quiet instrument. Pages use semantic deep-blue tokens, Chinese
+   content hierarchy and visible navigation; resources have one click-activated submenu. */
 @plugin "@tailwindcss/typography";
 
 /* ===== 钟齐陈伟勋硬笔行楷简（自定义品牌中文字体） =====
@@ -3910,10 +3910,72 @@ body.galvin-site ::selection {
   .galvin-about-contact__copy h2 + p { font-size: 15px; line-height: 1.65; }
   .galvin-about-next { gap: 14px; padding-top: 18px; }
   .galvin-about-next a { font-size: 13px; }
-  .galvin-footer__grid { gap: 28px; padding: 34px 0 26px; }
+  .galvin-footer__grid { grid-template-columns: 1fr; gap: 28px; padding: 34px 0 26px; }
+  .galvin-footer__nav > div { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .galvin-footer__wordmark { font-size: 18px; }
   .galvin-footer__identity p { font-size: 15px; }
   .galvin-footer__nav a, .galvin-footer__contact > a, .galvin-footer__contact > button { min-height: 32px; font-size: 14px; }
   .galvin-footer__contact > .galvin-footer__email-row > .galvin-footer__email { font-size: 13px; }
   .galvin-footer__meta { gap: 11px; font-size: 11px; }
+}
+
+/* Navigation IA pilot: direct routes stay compact; resources are a single, readable layer.
+   Mobile shows children in flow so discovery never depends on hover or a tiny target. */
+.galvin-nav__resource { position: relative; display: flex; }
+.galvin-nav__trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 72px;
+  padding: 0 11px;
+  border: 0;
+  color: var(--galvin-text-tertiary);
+  background: transparent;
+  font: 500 14px var(--galvin-font-body);
+  transition: color 180ms var(--galvin-ease-out);
+}
+.galvin-nav__trigger::after { content: ""; position: absolute; right: 11px; bottom: -1px; left: 11px; height: 1px; background: var(--galvin-signal-violet); transform: scaleX(0); transform-origin: left; transition: transform 180ms var(--galvin-ease-out); }
+.galvin-nav__trigger:hover, .galvin-nav__trigger.is-active { color: var(--galvin-text-primary); }
+.galvin-nav__trigger:hover::after, .galvin-nav__trigger.is-active::after, .galvin-nav__trigger[aria-expanded="true"]::after { transform: scaleX(1); }
+.galvin-nav__caret { color: var(--galvin-signal-violet); font: 14px/1 var(--galvin-font-utility); transform: translateY(-2px); }
+.galvin-nav__link--utility { margin-left: 3px; color: var(--galvin-text-secondary); }
+.galvin-resource-menu { position: absolute; top: calc(100% - 8px); right: 0; z-index: 90; width: 270px; padding: 8px; border: 1px solid var(--galvin-line); background: rgba(13, 20, 36, 0.98); box-shadow: 0 22px 54px rgba(0, 0, 0, 0.38); }
+.galvin-resource-menu[hidden] { display: none; }
+.galvin-resource-menu a { display: grid; gap: 5px; padding: 12px; color: var(--galvin-text-primary); text-decoration: none; transition: background-color 180ms var(--galvin-ease-out); }
+.galvin-resource-menu a:hover, .galvin-resource-menu a:focus-visible { background: rgba(155, 140, 255, 0.1); outline: none; }
+.galvin-resource-menu a span { font-size: 14px; font-weight: 600; }
+.galvin-resource-menu a small { color: var(--galvin-text-secondary); font-size: 12px; line-height: 1.5; }
+.galvin-mobile-menu__link { grid-template-columns: 1fr auto; }
+.galvin-mobile-menu__link--utility { color: var(--galvin-text-secondary); font-size: 18px; }
+.galvin-mobile-menu__group { padding: 14px 0; border-bottom: 1px solid var(--galvin-line-subtle); }
+.galvin-mobile-menu__group > p { display: flex; justify-content: space-between; margin: 0 0 8px; color: var(--galvin-text-primary); font-size: 18px; font-weight: 600; }
+.galvin-mobile-menu__group > p span { color: var(--galvin-text-tertiary); font: 11px var(--galvin-font-utility); }
+.galvin-mobile-menu__group a { display: grid; grid-template-columns: 1fr auto; align-items: center; min-height: 48px; padding-left: 12px; color: var(--galvin-text-secondary); font-size: 16px; text-decoration: none; }
+
+/* 行迹: a slow living index rather than a card grid or lifestyle feed. */
+.galvin-traces-page { padding-top: clamp(44px, 7vw, 100px); }
+.galvin-traces-page__hero { max-width: 780px; padding-bottom: clamp(56px, 8vw, 112px); }
+.galvin-traces-page__hero > p, .galvin-traces-page__list > article > p { margin: 0 0 18px; color: var(--galvin-signal-cyan); font: 12px var(--galvin-font-utility); letter-spacing: 0.08em; }
+.galvin-traces-page__hero h1 { margin: 0; color: var(--galvin-text-primary); font-size: clamp(2.75rem, 6vw, 5.4rem); line-height: 1.06; letter-spacing: -0.06em; }
+.galvin-traces-page__hero > div { display: flex; gap: 14px; max-width: 610px; margin-top: 28px; color: var(--galvin-text-secondary); font-size: clamp(1.06rem, 1.6vw, 1.25rem); line-height: 1.75; }
+.galvin-traces-page__hero > div span { flex: 0 0 auto; width: 7px; height: 7px; margin-top: 0.78em; border-radius: 50%; background: var(--galvin-signal-cyan); box-shadow: 0 0 13px rgba(97, 242, 208, 0.5); }
+.galvin-traces-page__hero > div p { margin: 0; }
+.galvin-traces-page__list { max-width: 940px; border-top: 1px solid var(--galvin-line); }
+.galvin-traces-page__list article { display: grid; grid-template-columns: minmax(120px, 0.35fr) minmax(0, 1fr); gap: 32px; padding: 28px 0; border-bottom: 1px solid var(--galvin-line-subtle); }
+.galvin-traces-page__list article > p { margin: 5px 0 0; color: var(--galvin-text-tertiary); }
+.galvin-traces-page__list h2 { margin: 0; color: var(--galvin-text-primary); font-size: clamp(1.3rem, 2vw, 1.75rem); line-height: 1.35; }
+.galvin-traces-page__list div > p { max-width: 570px; margin: 10px 0 0; color: var(--galvin-text-secondary); font-size: 16px; line-height: 1.75; }
+@media (max-width: 720px) {
+  .galvin-traces-page { padding-top: 40px; }
+  .galvin-traces-page__hero { padding-bottom: 56px; }
+  .galvin-traces-page__hero h1 { font-size: clamp(2.6rem, 13vw, 3.1rem); }
+  .galvin-traces-page__hero > div { margin-top: 20px; font-size: 17px; }
+  .galvin-traces-page__list article { grid-template-columns: 1fr; gap: 8px; padding: 23px 0; }
+  .galvin-traces-page__list article > p { margin: 0; }
+  .galvin-traces-page__list div > p { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .galvin-nav__trigger, .galvin-resource-menu a { transition: none; }
 }

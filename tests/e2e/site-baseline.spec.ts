@@ -10,6 +10,55 @@ test("首页保留可读的主标题与键盘可达的导航", async ({ page }) 
   await expect(page.locator(":focus-visible")).toBeVisible();
 });
 
+test("桌面主导航压缩为内容主线，并以点击式藏页菜单公开资源与书架", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("/");
+
+  const nav = page.getByRole("navigation", { name: "主导航" });
+  await expect(nav.getByRole("link", { name: "造物" })).toHaveAttribute("href", "/tools/");
+  await expect(nav.getByRole("link", { name: "叩问" })).toHaveAttribute("href", "/archive/");
+  await expect(nav.getByRole("link", { name: "行迹" })).toHaveAttribute("href", "/traces/");
+  await expect(nav.getByRole("link", { name: "关于" })).toHaveAttribute("href", "/about/");
+  await expect(nav.getByRole("link", { name: "此刻", exact: true })).toHaveCount(0);
+
+  const resources = nav.getByRole("button", { name: "打开藏页资源菜单" });
+  await resources.click();
+  const menu = page.getByRole("menu", { name: "藏页资源" });
+  await expect(menu.getByRole("link", { name: "网站与资源" })).toHaveAttribute("href", "/sites/");
+  await expect(menu.getByRole("link", { name: "书架" })).toHaveAttribute("href", "/books/");
+
+  await page.keyboard.press("Escape");
+  await expect(menu).toBeHidden();
+  await expect(resources).toBeFocused();
+});
+
+test("移动端导航直接呈现藏页的资源与书架二级链接", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "打开栏目导航" }).click();
+
+  const mobileMenu = page.locator("#galvin-mobile-menu");
+  await expect(mobileMenu.getByText("藏页", { exact: true })).toBeVisible();
+  await expect(mobileMenu.getByRole("link", { name: "网站与资源" })).toHaveAttribute("href", "/sites/");
+  await expect(mobileMenu.getByRole("link", { name: "书架" })).toHaveAttribute("href", "/books/");
+  await expect(mobileMenu.getByRole("link", { name: "此刻", exact: true })).toHaveCount(0);
+});
+
+test("手机页脚保持单列信息流，品牌主张不会逐字断行", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const statement = page.locator(".galvin-footer__identity p");
+  await expect(statement).toHaveText("把好奇心，做成一点有用的东西。");
+  const box = await statement.boundingBox();
+  expect(box?.width).toBeGreaterThan(180);
+});
+
+test("行迹具有独立且可访问的内容目的地", async ({ page }) => {
+  await page.goto("/traces/");
+  await expect(page.getByRole("heading", { level: 1, name: "行迹。" })).toBeVisible();
+  await expect(page.getByText("南京、咖啡、力量训练与阅读，留在同一条慢速轨迹里。 ")).toBeVisible();
+});
+
 test("关于页以 Galvin 工作档案呈现公开身份边界与可复制邮箱", async ({ page }) => {
   await page.goto("/about/");
 
@@ -108,7 +157,7 @@ test("全站搜索可检索书架中的首本书目", async ({ page }) => {
 
   const results = page.locator("#search-results-list");
   await expect(results).toContainText("深入理解 AI Agent：设计原理与工程实践");
-  await expect(results).toContainText("书架");
+  await expect(results).toContainText("藏页");
 });
 
 test("书架可进入本站在线预览并保留官方阅读回退", async ({ page }) => {
