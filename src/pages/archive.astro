@@ -8,6 +8,10 @@ import { getQuestionFilterOptions } from "../lib/galvin-content-view";
 const articles = (await getCollection("articles", ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 const filters = getQuestionFilterOptions(articles.flatMap((article) => article.data.tags));
+const preferredFilters = new Set(["全部", "AI", "Vibe Coding", "AI写作", "工作方式", "数字政府"]);
+const primaryFilters = filters.filter((filter) => preferredFilters.has(filter));
+const visibleFilters = primaryFilters.length > 1 ? primaryFilters : filters.slice(0, 6);
+const extraFilters = filters.filter((filter) => !visibleFilters.includes(filter));
 
 function dateLabel(date: Date): string {
   return new Intl.DateTimeFormat("zh-CN", {
@@ -21,10 +25,10 @@ function dateLabel(date: Date): string {
 <BaseLayout title="叩问" description="Galvin 的思考归档：AI 学习、工作方法与持续追问。">
   <section class="galvin-content-page galvin-question-page" aria-labelledby="question-title">
     <header class="galvin-question-directory__header">
-      <p><span aria-hidden="true"></span>问题目录</p>
-      <div>
-        <h1 id="question-title">叩问<span>。</span></h1>
-        <span class="galvin-question-directory__count">{articles.length} 篇</span>
+      <p data-question-metadata><span aria-hidden="true"></span>问题目录</p>
+      <div class="galvin-question-directory__title-row">
+        <h1 id="question-title">叩问</h1>
+        <span class="galvin-question-directory__count" data-question-metadata>{articles.length} 篇已发布</span>
       </div>
       <div class="galvin-question-directory__summary">
         <p>把遇到的问题摊开，把暂时没有答案的事写下来。这里收录 AI 学习、工作方法和持续修正中的思考。</p>
@@ -33,9 +37,15 @@ function dateLabel(date: Date): string {
     </header>
 
     <div class="galvin-question-filter" aria-label="按标签筛选文章">
-      <p>筛选标签</p>
-      <div class="galvin-question-filter__track" role="tablist" aria-label="文章标签">
-        {filters.map((filter, index) => (
+      <div class="galvin-question-filter__head">
+        <div>
+          <p>主题筛选</p>
+          <span>先从一个熟悉的问题开始。</span>
+        </div>
+        <p class="galvin-question-filter__count" aria-live="polite"><span id="question-visible-count">{String(articles.length).padStart(2, "0")}</span> 篇</p>
+      </div>
+      <div class="galvin-question-filter__primary" data-question-filter-primary role="tablist" aria-label="核心文章标签">
+        {visibleFilters.map((filter, index) => (
           <button
             class:list={["galvin-question-filter__tab", index === 0 && "is-active"]}
             type="button"
@@ -48,7 +58,29 @@ function dateLabel(date: Date): string {
           </button>
         ))}
       </div>
-      <p class="galvin-question-filter__count" aria-live="polite"><span id="question-visible-count">{String(articles.length).padStart(2, "0")}</span> 篇</p>
+      {extraFilters.length > 0 && <button
+        id="question-filter-toggle"
+        class="galvin-question-filter__toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="question-filter-extra"
+      >
+        展开全部标签 <span>（{extraFilters.length}）</span>
+      </button>}
+      {extraFilters.length > 0 && <div id="question-filter-extra" class="galvin-question-filter__extra" data-question-filter-extra role="tablist" aria-label="补充文章标签" hidden>
+        {extraFilters.map((filter) => (
+          <button
+            class="galvin-question-filter__tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-controls="question-directory"
+            data-question-filter={filter}
+          >
+            {filter}
+          </button>
+        ))}
+      </div>}
     </div>
 
     <div class="galvin-question-directory__list" id="question-directory">
@@ -57,13 +89,13 @@ function dateLabel(date: Date): string {
           <a href={`/${article.data.section}/${article.id}/`} class="galvin-question-row__link" aria-label={`阅读：${article.data.title}`}></a>
           <span class="galvin-question-row__mark" aria-hidden="true"></span>
           <div class="galvin-question-row__main">
-            <div class="galvin-question-row__utility">
+            <div class="galvin-question-row__utility" data-question-metadata>
               <time datetime={article.data.date.toISOString()}>{dateLabel(article.data.date)}</time>
               <span class="galvin-question-row__section">{article.data.section === "ai" ? "AI 学习" : article.data.section === "insights" ? "工作观察" : article.data.section === "tips" ? "方法实践" : "阅读记录"}</span>
             </div>
             <h2>{article.data.title}</h2>
             {article.data.description && <p>{article.data.description}</p>}
-            <div class="galvin-question-row__tags" aria-label="文章标签">
+            <div class="galvin-question-row__tags" data-question-tags aria-label="文章标签">
               {article.data.tags.slice(0, 4).map((tag) => <span>#{tag}</span>)}
             </div>
           </div>
@@ -81,6 +113,15 @@ function dateLabel(date: Date): string {
       const cards = Array.from(document.querySelectorAll<HTMLElement>("[data-question-card]"));
       const count = document.getElementById("question-visible-count");
       const searchButton = document.getElementById("question-open-search");
+      const filterToggle = document.getElementById("question-filter-toggle");
+      const extraFilterPanel = document.getElementById("question-filter-extra");
+
+      const setExtraFiltersOpen = (open: boolean) => {
+        if (!filterToggle || !extraFilterPanel) return;
+        extraFilterPanel.hidden = !open;
+        filterToggle.setAttribute("aria-expanded", String(open));
+        filterToggle.firstChild!.textContent = open ? "收起补充标签 " : "展开全部标签 ";
+      };
 
       const applyFilter = (filter: string) => {
         let visible = 0;
@@ -94,11 +135,13 @@ function dateLabel(date: Date): string {
           const active = button.dataset.questionFilter === filter;
           button.classList.toggle("is-active", active);
           button.setAttribute("aria-selected", String(active));
+          if (active && button.closest("[data-question-filter-extra]")) setExtraFiltersOpen(true);
         });
         if (count) count.textContent = String(visible).padStart(2, "0");
       };
 
       filters.forEach((button) => button.addEventListener("click", () => applyFilter(button.dataset.questionFilter || "全部")));
+      filterToggle?.addEventListener("click", () => setExtraFiltersOpen(filterToggle.getAttribute("aria-expanded") !== "true"));
       searchButton?.addEventListener("click", () => {
         document.getElementById("search-trigger-desktop")?.click();
         document.getElementById("search-trigger-mobile")?.click();

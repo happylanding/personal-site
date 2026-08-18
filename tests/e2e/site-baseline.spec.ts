@@ -116,7 +116,7 @@ test("手机端栏目索引可打开并通过 Escape 关闭", async ({ page }) =
 test("叩问归档可按标签筛选已发布文章", async ({ page }) => {
   await page.goto("/archive/");
 
-  await expect(page.getByRole("heading", { level: 1, name: "叩问。" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "叩问", exact: true })).toBeVisible();
   const aiFilter = page.getByRole("tab", { name: "AI", exact: true });
   await aiFilter.click();
   await expect(aiFilter).toHaveAttribute("aria-selected", "true");
@@ -136,14 +136,43 @@ test("叩问归档以连续问题目录承载阅读信息而非编号卡片", as
   await expect(page.getByText("篇已发布文章", { exact: false })).toHaveCount(0);
 });
 
-test("叩问标签在单行可横向访问的轨道中保持完整", async ({ page }) => {
+test("叩问筛选以核心主题和可披露的补充标签保持清晰", async ({ page }) => {
+  await page.goto("/archive/");
+
+  await expect(page.locator("[data-question-filter-primary]")).toBeVisible();
+  await expect(page.getByRole("button", { name: /展开全部标签/ })).toBeVisible();
+  await expect(page.locator("[data-question-filter-extra]")).toBeHidden();
+});
+
+test("叩问栏目标题使用中等尺度且不带句号", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto("/archive/");
 
-  const track = page.locator(".galvin-question-filter__track");
-  await expect(track).toBeVisible();
-  await expect(track).toHaveCSS("flex-wrap", "nowrap");
-  await expect(track).toHaveCSS("overflow-x", "auto");
+  const title = page.getByRole("heading", { name: "叩问", exact: true });
+  await expect(title).toBeVisible();
+  await expect(title).toHaveCSS("font-size", "44px");
+});
+
+test("叩问归档的辅助信息保持可读文字尺度", async ({ page }) => {
+  await page.goto("/archive/");
+
+  const metadata = page.locator("[data-question-metadata]").first();
+  const tags = page.locator("[data-question-tags] span").first();
+  await expect(metadata).toBeVisible();
+  await expect(metadata).toHaveCSS("font-size", "13px");
+  await expect(tags).toHaveCSS("font-size", "13px");
+});
+
+test("叩问归档将补充标签放入可展开的筛选披露", async ({ page }) => {
+  await page.goto("/archive/");
+
+  const toggle = page.locator("#question-filter-toggle");
+  const extraFilters = page.locator("[data-question-filter-extra]");
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await expect(extraFilters).toBeHidden();
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  await expect(extraFilters).toBeVisible();
 });
 
 test("造物页保留本地工具的隐私说明与下载入口", async ({ page }) => {
