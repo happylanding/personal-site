@@ -1,7 +1,6 @@
 ---
-/* Galvin design reminder: this page is a focused dark work profile, not a lifestyle
-   collage. Cold-white prose carries the narrative; violet and cyan only mark state,
-   connection and movement. */
+/* Galvin design reminder: this page is a Chinese personal archive in the pure #10131d workspace.
+   A single signature, spacious prose and clear public boundaries take priority over dashboard labels. */
 import Icon from "./Icon.astro";
 
 const email = "cgaojiacheng@gmail.com";
@@ -9,26 +8,24 @@ const xLink = "https://x.com/galvin0119";
 
 const practices = [
   {
-    index: "01",
     title: "学习 AI，但不假装无所不知",
     text: "把踩过的坑、真正有用的路径和可复用的小结留在叩问里。",
   },
   {
-    index: "02",
     title: "把工作里的摩擦，做成小工具",
     text: "从表格、文本到重复流程，先在不触及单位资料的边界内完成一次小实验。",
   },
   {
-    index: "03",
     title: "把过程公开，而不是只展示结果",
     text: "这里收录的是仍在生长的阅读、写作、工具与网站实践。",
   },
 ];
 
 const navLinks = [
-  { label: "此刻", href: "/" },
   { label: "造物", href: "/tools/" },
   { label: "叩问", href: "/archive/" },
+  { label: "行迹", href: "/traces/" },
+  { label: "网站与资源", href: "/sites/" },
   { label: "书架", href: "/books/" },
 ];
 ---
@@ -36,28 +33,26 @@ const navLinks = [
 <article class="galvin-about-page">
   <header class="galvin-about-hero">
     <div class="galvin-about-hero__signal-row" aria-label="关于 Galvin">
-      <span>ABOUT / 07</span>
-      <span class="galvin-about-hero__signal"><i aria-hidden="true"></i> PERSONAL WORKSPACE</span>
+      <span>关于 Galvin</span>
+      <span class="galvin-about-hero__signal"><i aria-hidden="true"></i>持续更新中</span>
     </div>
-    <p class="galvin-about-hero__eyebrow">你好，我是</p>
-    <h1>Galvin，<br />把好奇心，做成一点有用的东西。</h1>
-    <p class="galvin-about-hero__lead">AI 初学者 × 数字政府/数字经济从业者。常驻南京，正在把 AI 学习、工作方法与日常好奇心，慢慢做成能被再次使用的东西。</p>
+    <h1>Galvin</h1>
+    <p class="galvin-about-hero__lead">AI 初学者 × 数字政府/数字经济从业者。把好奇心，做成一点有用的东西；也把 AI 学习、工作方法与日常好奇心，慢慢做成能被再次使用的记录。</p>
     <dl class="galvin-about-hero__meta">
-      <div><dt>BASE</dt><dd>南京</dd></div>
-      <div><dt>FOCUS</dt><dd>AI 学习与效率实验</dd></div>
-      <div><dt>STATUS</dt><dd>持续更新中</dd></div>
+      <div><dt>坐标</dt><dd>南京</dd></div>
+      <div><dt>关注</dt><dd>AI 学习与效率实验</dd></div>
+      <div><dt>状态</dt><dd>持续更新中</dd></div>
     </dl>
   </header>
 
   <section class="galvin-about-section galvin-about-practice" aria-labelledby="about-practice-title">
     <div class="galvin-about-section__head">
-      <p>WORKING NOTES</p>
+      <p>正在推进</p>
       <h2 id="about-practice-title">我正在做的事</h2>
     </div>
     <ol class="galvin-about-practice__list">
       {practices.map((practice) => (
         <li>
-          <span>{practice.index}</span>
           <div><h3>{practice.title}</h3><p>{practice.text}</p></div>
           <Icon name="arrowUpRight" class="galvin-about-practice__icon" />
         </li>
@@ -67,28 +62,28 @@ const navLinks = [
 
   <section class="galvin-about-section galvin-about-profile" aria-labelledby="about-profile-title">
     <div class="galvin-about-section__head">
-      <p>OPERATING RHYTHM</p>
+      <p>生活节奏</p>
       <h2 id="about-profile-title">工作之外，也在慢慢积累</h2>
     </div>
     <div class="galvin-about-profile__grid">
       <p class="galvin-about-profile__statement">我没有把这里做成一份简历，也不急着给自己贴上“专家”标签。它更像一份持续更新的工作档案：记录我如何学习、如何试错，也记录那些让我保持节奏的日常。</p>
       <ul class="galvin-about-profile__signals" aria-label="个人节奏">
-        <li><span>01</span><strong>力量训练</strong><p>把注意力从屏幕带回身体。</p></li>
-        <li><span>02</span><strong>咖啡</strong><p>给思考留一段安静的间隙。</p></li>
-        <li><span>03</span><strong>阅读</strong><p>把零散的兴趣连成更长的线。</p></li>
+        <li><strong>力量训练</strong><p>把注意力从屏幕带回身体。</p></li>
+        <li><strong>咖啡</strong><p>给思考留一段安静的间隙。</p></li>
+        <li><strong>阅读</strong><p>把零散的兴趣连成更长的线。</p></li>
       </ul>
     </div>
   </section>
 
   <section class="galvin-about-section galvin-about-contact" aria-labelledby="about-contact-title">
     <div class="galvin-about-contact__copy">
-      <p>CONTACT PROTOCOL</p>
-      <h2 id="about-contact-title">聊聊正在发生的事。</h2>
+      <p>联系</p>
+      <h2 id="about-contact-title">聊聊正在发生的事</h2>
       <p>欢迎交流 AI 学习、效率工具、数字化工作方法或你读到的一篇好文章。这里不讨论单位项目、未公开文件或未经脱敏的数据。</p>
     </div>
     <div class="galvin-about-contact__actions">
       <div class="galvin-email-contact">
-        <span class="galvin-email-contact__label">EMAIL</span>
+        <span class="galvin-email-contact__label">邮箱</span>
         <a class="galvin-email-contact__address" href={`mailto:${email}`}><Icon name="mail" class="w-4 h-4" />{email}</a>
         <div class="galvin-email-contact__actions">
           <button class="galvin-contact-action" type="button" data-copy-email data-email={email} aria-label="复制邮箱">

@@ -2,7 +2,7 @@
 
 ## Visual intent
 
-Galvin is a Chinese AI learning and making journal for a digital-government and digital-economy practitioner. The visual direction is **quiet instrument**: a dark editorial workspace that feels precise, calm and capable, not like a SaaS dashboard or a generic AI landing page. The page should earn one mood: **composed**.
+Galvin is a Chinese AI learning and making journal for a digital-government and digital-economy practitioner. The visual direction is **quiet instrument**: a dark editorial workspace that feels precise, calm and capable, not like a SaaS dashboard or a generic AI landing page. The page should earn one mood: **composed**. The entire site uses one solid, non-black deep canvas; hierarchy must come from content, spacing, hairlines and necessary solid surfaces rather than background effects.
 
 The primary reader task is to understand what Galvin is doing now, then choose a direct route into making or inquiry. Content has priority over decoration. Motion supports state changes only and always has a reduced-motion fallback.
 
@@ -12,15 +12,15 @@ Use the existing Galvin semantic tokens. Do not introduce local hex colors, font
 
 | Role | Token/value | Usage |
 | --- | --- | --- |
-| Canvas | `--galvin-canvas: #070b14` | Full page ground |
-| Raised surface | `--galvin-surface: #11192b` | Inputs, popovers and only essential contained controls |
+| Canvas | `--galvin-canvas: #10131d` | One solid full-page ground; never pure black |
+| Raised surface | `--galvin-surface: #171d2b` | Inputs, popovers and only essential contained controls |
 | Primary text | `--galvin-text-primary: #f4f7ff` | Headings, primary links and essential content |
 | Secondary text | `--galvin-text-secondary` | Body support, summaries and navigation |
 | Muted text | `--galvin-text-muted` | Dates and nonessential metadata, never core labels |
 | Active signal | `--galvin-signal-violet: #9b8cff` | Active navigation, selection, focus and primary interaction |
 | State signal | `--galvin-signal-cyan: #61f2d0` | Status only; never a competing CTA color |
 
-Depth is communicated by surface shifts and hairline separators, not floating cards or offset shadows. Use one visual field per page maximum.
+Depth is communicated by solid surface shifts and hairline separators, not floating cards, offset shadows or background effects. `body`, page wrappers and sections must use a flat background color with no background image, gradient, grid, texture, curve or particle layer.
 
 ## Typography
 
@@ -51,14 +51,14 @@ The desktop resource popover must have a textual caret, native button semantics,
 
 | Page | Composition |
 | --- | --- |
-| Homepage | Statement, current-status annotation, editorial entry rail and one restrained signal field |
+| Homepage | Statement, current-status annotation and editorial entry rail; the status signal is an inline static mark, never a background effect |
 | Archive | Continuous question directory, compact search/filter rail and reading-first metadata |
 | Navigation | Visible desktop hierarchy, one-layer resource popover and direct mobile disclosure |
 
 ## Prohibited patterns
 
-Do not use a card wall, repeated outlined containers, arbitrary display scaling, English eyebrow clutter, ornamental numeric indexes, fake statistics, global cursors, WebGL particles, scroll hijacking, purple gradients or heavy offset shadows. Do not reproduce an external brand's colors, typeface, logo or component treatment.
+Do not use a card wall, repeated outlined containers, arbitrary display scaling, English eyebrow clutter, ornamental numeric indexes, fake statistics, global cursors, WebGL particles, scroll hijacking, purple gradients, background images, grids, textures, curves, page-level gradients or heavy offset shadows. Do not reproduce an external brand's colors, typeface, logo or component treatment.
 
 ## Delivery gates
 
-After each visual change, verify 1440px, 834px and 390px screenshots in default and reduced-motion modes. Run the project's type, build, browser and axe checks. Reject any design with obscured focus, low-contrast text, clipped labels, horizontal overflow, a control below 44px on mobile, or decorations that outrank the reader task.
+After each visual change, verify 1440px, 834px and 390px screenshots in default and reduced-motion modes. Run the project's type, build, browser and axe checks. Reject any design with a non-solid page canvas, obscured focus, low-contrast text, clipped labels, horizontal overflow, a control below 44px on mobile, or decorations that outrank the reader task.

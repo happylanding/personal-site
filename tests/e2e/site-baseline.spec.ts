@@ -10,6 +10,26 @@ test("首页保留可读的主标题与键盘可达的导航", async ({ page }) 
   await expect(page.locator(":focus-visible")).toBeVisible();
 });
 
+test("Galvin 全站使用统一的纯色非纯黑深色画布", async ({ page }) => {
+  await page.goto("/");
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator("body")).toHaveClass(/galvin-site/);
+
+  const canvas = await page.evaluate(() => {
+    const style = getComputedStyle(document.body);
+    return { color: style.backgroundColor, image: style.backgroundImage };
+  });
+  expect(canvas.color).toBe("rgb(16, 19, 29)");
+  expect(canvas.image).toBe("none");
+});
+
+test("首页以静态状态注释表达此刻而不渲染背景式信号曲线", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(page.getByText("正在搭建 Galvin V1")).toBeVisible();
+  await expect(page.locator(".signal-trail")).toHaveCount(0);
+});
+
 test("首页将四条主线与藏页资源作为连续阅读轨道呈现", async ({ page }) => {
   await page.goto("/");
 
@@ -67,7 +87,7 @@ test("手机页脚保持单列信息流，品牌主张不会逐字断行", async
 
 test("行迹具有独立且可访问的内容目的地", async ({ page }) => {
   await page.goto("/traces/");
-  await expect(page.getByRole("heading", { level: 1, name: "行迹。" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "行迹", exact: true })).toBeVisible();
   await expect(page.getByText("南京、咖啡、力量训练与阅读，留在同一条慢速轨迹里。 ")).toBeVisible();
 });
 
@@ -76,8 +96,9 @@ test("关于页以 Galvin 工作档案呈现公开身份边界与可复制邮箱
 
   const pageRoot = page.locator(".galvin-about-page");
   await expect(pageRoot).toBeVisible();
-  await expect(pageRoot.getByRole("heading", { level: 1, name: /Galvin，/ })).toBeVisible();
+  await expect(pageRoot.getByRole("heading", { level: 1, name: "Galvin", exact: true })).toBeVisible();
   await expect(pageRoot.getByText("AI 初学者 × 数字政府/数字经济从业者")).toBeVisible();
+  await expect(pageRoot.getByText("关于 Galvin", { exact: true })).toBeVisible();
   await expect(pageRoot.locator(".galvin-about-hero__meta dd").getByText("南京", { exact: true })).toBeVisible();
 
   const emailAddress = pageRoot.getByRole("link", { name: "cgaojiacheng@gmail.com" });
@@ -176,10 +197,15 @@ test("叩问归档将补充标签放入可展开的筛选披露", async ({ page 
 });
 
 test("造物页保留本地工具的隐私说明与下载入口", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/tools/");
 
-  await expect(page.getByRole("heading", { level: 1, name: "造物。" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "造物", exact: true })).toBeVisible();
   await expect(page.getByText("浏览器工具在本地运行；本地脚本在 Windows 电脑上执行")).toBeVisible();
+
+  const firstTool = page.locator("[data-tool-card]").first();
+  await expect(firstTool).toBeVisible();
+  expect((await firstTool.boundingBox())?.y).toBeLessThan(844);
 
   const scriptFilter = page.getByRole("tab", { name: /本地脚本/ });
   await scriptFilter.click();
@@ -204,11 +230,23 @@ test("全站搜索以 Galvin 栏目语义检索真实工具", async ({ page }) =
 test("书架展示首本开源书目且不提供站内全文下载", async ({ page }) => {
   await page.goto("/books/");
 
-  await expect(page.getByRole("heading", { level: 1, name: "书架。" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "书架", exact: true })).toBeVisible();
   await expect(page.getByText("深入理解 AI Agent：设计原理与工程实践")).toBeVisible();
   await expect(page.getByText("正在阅读")).toBeVisible();
+  await expect(page.getByText("阅读笔记", { exact: true })).toBeVisible();
+  await expect(page.getByText("BOOK /", { exact: false })).toHaveCount(0);
+  await expect(page.getByText("READING NOTE", { exact: true })).toHaveCount(0);
   await expect(page.getByRole("link", { name: "访问开源项目" })).toHaveAttribute("href", "https://github.com/bojieli/ai-agent-book");
   await expect(page.getByRole("link", { name: /EPUB|PDF|下载/ })).toHaveCount(0);
+});
+
+test("网站与资源以可检索的连续资源目录呈现", async ({ page }) => {
+  await page.goto("/sites/");
+
+  await expect(page.getByRole("heading", { level: 1, name: "网站与资源", exact: true })).toBeVisible();
+  await expect(page.getByRole("searchbox", { name: "检索网站与资源" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "全部资源" })).toBeVisible();
+  await expect(page.locator("[data-resource-row]").first()).toBeVisible();
 });
 
 test("全站搜索可检索书架中的首本书目", async ({ page }) => {
@@ -239,6 +277,15 @@ test("叩问详情页提供 Galvin 阅读工作区与原始资源入口", async 
   await expect(page.getByRole("heading", { level: 1, name: "Easy-Vibe 宝藏指南：把 Datawhale 这套 AI 编程教程里真正的好东西一次讲清楚" })).toBeVisible();
   await expect(page.getByRole("link", { name: "返回叩问" })).toHaveAttribute("href", "/archive/");
   await expect(page.getByRole("link", { name: "原始资源" })).toHaveAttribute("href", "https://datawhalechina.github.io/easy-vibe/zh-cn/");
+});
+
+test("文章阅读页只保留一次标题并在首屏直接进入阅读结构", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/ai/ai-website-rebuild/");
+
+  await expect(page.locator(".galvin-article-page__cover")).toHaveCount(0);
+  await expect(page.getByRole("heading", { level: 1, name: /用 AI 重构个人网站：一场.*非程序员.*的改造实验/ })).toHaveCount(1);
+  await expect(page.locator(".galvin-article-content")).toBeVisible();
 });
 
 test("叩问详情页按正文滚动同步可访问阅读进度", async ({ page }) => {

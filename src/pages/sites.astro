@@ -1,34 +1,24 @@
 ---
+/* Galvin design reminder: resources are a continuous research directory in the pure #10131d workspace.
+   Search and filters clarify discovery; each source expands in flow rather than becoming a floating card. */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Breadcrumb from "../components/Breadcrumb.astro";
-import Icon from "../components/Icon.astro";
 import { getCollection } from "astro:content";
-import { getLangFromUrl, useTranslations } from "../i18n/utils";
 
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
-
-const isEn = lang === "en";
-
-// 已收录的站点报告（按日期倒序）
 const siteEntries = (await getCollection("sites", ({ data }) => !data.draft && !!data.siteUrl))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
-// 从 markdown 正文提取「一句话定位」与「亮点特色总结」小节的首段，供可展开列表展示
 function extractSection(content: string, heading: string): string {
-  // 匹配 "## 一句话定位\n\n正文..."
   const re = new RegExp(`^##\\s*${heading}\\s*\\n+([\\s\\S]*?)(?=^##\\s|\\Z)`, "m");
-  const m = content.match(re);
-  if (!m) return "";
-  // 取第一段非空文本，去掉 markdown 语法
-  const para = m[1]
+  const matched = content.match(re);
+  if (!matched) return "";
+  const paragraph = matched[1]
     .split(/\n\s*\n/)
-    .map((s) => s.trim())
-    .find((s) => s.length > 0 && !s.startsWith(">") && !s.startsWith("#"));
-  if (!para) return "";
-  return para
+    .map((value) => value.trim())
+    .find((value) => value.length > 0 && !value.startsWith(">") && !value.startsWith("#"));
+  if (!paragraph) return "";
+  return paragraph
     .replace(/\*\*([^*]+)\*\*/g, "$1")
     .replace(/\*([^*]+)\*/g, "$1")
     .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
@@ -36,10 +26,9 @@ function extractSection(content: string, heading: string): string {
     .trim();
 }
 
-// 从中文 + 英文标签自动归并出展示分类
 function classify(entry): string {
-  const tags = [...(entry.data.tags || []), ...(entry.data.tagsEn || [])].map((x) => x.toLowerCase());
-  const has = (...kw: string[]) => tags.some((tag) => kw.some((k) => tag.includes(k)));
+  const tags = [...(entry.data.tags || []), ...(entry.data.tagsEn || [])].map((value) => value.toLowerCase());
+  const has = (...keywords: string[]) => tags.some((tag) => keywords.some((keyword) => tag.includes(keyword)));
   if (has("个人品牌站", "personal-site", "作品集", "portfolio")) return "personal";
   if (has("策展", "日报", "编辑", "curation", "daily", "editorial")) return "curation";
   if (has("教程站", "教程", "course-site", "tutorial", "学习", "开源教育")) return "course";
@@ -47,20 +36,16 @@ function classify(entry): string {
   return "other";
 }
 
-// 分类展示名（中/英）
-const CATEGORY_NAMES = {
-  personal: isEn ? "Personal Brands" : "个人品牌站",
-  curation: isEn ? "Curation & Editorial" : "策展与编辑",
-  course: isEn ? "Courses & Learning" : "教程与学习",
-  product: isEn ? "Products & Knowledge" : "产品与知识",
-  other: isEn ? "Others" : "其他",
+const categoryNames = {
+  personal: "个人品牌",
+  curation: "策展与编辑",
+  course: "教程与学习",
+  product: "产品与知识",
+  other: "其他",
 };
-const CATEGORY_ORDER = ["personal", "curation", "course", "product", "other"];
+const categoryOrder = ["personal", "curation", "course", "product", "other"];
+const usedCategories = categoryOrder.filter((category) => siteEntries.some((entry) => classify(entry) === category));
 
-// 收集所有用到过的分类（按固定顺序）
-const usedCategories = CATEGORY_ORDER.filter((c) => siteEntries.some((e) => classify(e) === c));
-
-// 构建前端数据
 const siteData = siteEntries.map((entry) => {
   let body = "";
   try {
@@ -68,256 +53,130 @@ const siteData = siteEntries.map((entry) => {
   } catch {
     body = "";
   }
-  const title = isEn ? (entry.data.titleEn || entry.data.title) : entry.data.title;
-  const desc = isEn ? (entry.data.descriptionEn || entry.data.description) : entry.data.description;
-  const tags = (isEn ? entry.data.tagsEn : entry.data.tags) || [];
   return {
     id: entry.id,
-    slug: entry.id,
-    title,
-    desc,
+    title: entry.data.title,
+    desc: entry.data.description || "",
     host: entry.data.siteUrl ? new URL(entry.data.siteUrl).hostname : "",
-    siteUrl: entry.data.siteUrl || "",
-    date: entry.data.date.toLocaleDateString(isEn ? "en-US" : "zh-CN", {
-      year: "numeric", month: "long", day: "numeric",
-    }),
-    tags,
+    date: entry.data.date.toLocaleDateString("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" }).replaceAll("/", "."),
+    tags: entry.data.tags || [],
     category: classify(entry),
     tagline: extractSection(body, "一句话定位"),
     highlight: extractSection(body, "亮点特色总结"),
-    href: isEn ? `/en/sites/${entry.id}/` : `/sites/${entry.id}/`,
+    href: `/sites/${entry.id}/`,
   };
 });
-
-const updatedDateStr = siteEntries.length
-  ? siteEntries[0].data.date.toLocaleDateString(isEn ? "en-US" : "zh-CN", {
-      year: "numeric", month: "long", day: "numeric",
-    })
-  : "";
 ---
 
-<BaseLayout
-  title={isEn ? "Design Inspiration Collection" : "设计灵感收藏夹"}
-  description={isEn ? "Great sites & designs I come across, with breakdowns, creative analysis and highlights." : "平时刷到的好网站、好设计都收录在这里，附上拆解、创意分析与亮点特色。"}
->
-  <Breadcrumb
-    crumbs={[{ label: isEn ? "Collection" : "收藏夹", href: isEn ? "/en/sites/" : "/sites/" }]}
-  />
-
-  <section data-reveal>
-    <header class="mb-6">
-      <div class="flex items-center gap-3">
-        <span class="block opacity-70 flex-shrink-0"><Icon name="bookmark" class="w-9 h-9" style="color:#0E96E9" /></span>
-        <div>
-          <h1 class="text-3xl font-serif font-bold flex items-center gap-3">
-            <span>{isEn ? "Design Inspiration Collection" : "设计灵感收藏夹"}</span>
-            <span class="text-sm font-mono font-normal px-2.5 py-0.5 rounded-full bg-[#0E96E9]/10 text-[#0E96E9] dark:text-[#6CC3FF]">{siteEntries.length}</span>
-          </h1>
-          <p class="text-sm text-black/40 dark:text-white/40 mt-1">
-            {isEn ? "Curated sites & designs with breakdowns" : "收藏好网站 · 附拆解与创意分析"}
-          </p>
-        </div>
-      </div>
-      <p class="text-base text-black/50 dark:text-white/50 mt-4 leading-relaxed max-w-2xl">
-        {isEn
-          ? "Great sites & designs I come across are archived here — each entry is a breakdown of structure, creative analysis and highlights."
-          : "平时刷到的好网站会持续收录在这里，每篇都是一份「网站拆解 + 创意分析 + 亮点特色」报告。"}
-      </p>
+<BaseLayout title="网站与资源" description="Galvin 收录的个人网站、设计案例与资源拆解。">
+  <section class="galvin-directory-page galvin-resource-page" aria-labelledby="resources-title">
+    <header class="galvin-directory-intro">
+      <p class="galvin-page-kicker"><span aria-hidden="true"></span>藏页 · 研究记录</p>
+      <h1 id="resources-title">网站与资源</h1>
+      <p>平时刷到的好网站、好设计都收录在这里。每一项保留原始链接、结构拆解与值得继续回看的创意线索。</p>
     </header>
 
-    <!-- 统计条 -->
-    <div class="flex flex-wrap items-center gap-x-5 gap-y-1 mb-6 text-[13px] text-black/45 dark:text-white/60 font-mono">
-      <span>{isEn ? `共收录 ${siteEntries.length} 篇` : `共收录 ${siteEntries.length} 篇`}</span>
-      {updatedDateStr && <span class="inline-flex items-center gap-1"><Icon name="arrowUp" class="w-3 h-3" />{isEn ? "最近更新 " : "最近更新 "}{updatedDateStr}</span>}
-      <span class="inline-flex items-center gap-1"><Icon name="list" class="w-3 h-3" />{isEn ? "按收录时间倒序" : "按收录时间倒序"}</span>
+    <div class="galvin-resource-toolbar" aria-label="网站与资源筛选">
+      <div class="galvin-resource-toolbar__search">
+        <label for="sites-search">检索网站与资源</label>
+        <input id="sites-search" type="search" aria-label="检索网站与资源" placeholder="输入网站名、域名或描述" />
+      </div>
+      <div class="galvin-resource-toolbar__filters" role="group" aria-label="资源分类">
+        <button data-cat="all" class="galvin-resource-filter is-active" type="button">全部资源 <small>{siteEntries.length}</small></button>
+        {usedCategories.map((category) => (
+          <button data-cat={category} class="galvin-resource-filter" type="button">
+            {categoryNames[category]} <small>{siteEntries.filter((entry) => classify(entry) === category).length}</small>
+          </button>
+        ))}
+      </div>
     </div>
 
-    <!-- 搜索框 -->
-    <div class="relative mb-5">
-      <Icon name="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-black/35 dark:text-white/40 pointer-events-none" />
-      <input
-        id="sites-search"
-        type="text"
-        class="w-full pl-11 pr-16 py-3 rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-neutral-900 focus:outline-none focus:border-[#0E96E9] focus:ring-2 focus:ring-[#0E96E9]/20 transition-all text-sm placeholder:text-black/35 dark:placeholder:text-white/35"
-        placeholder={isEn ? "搜索网站名 / 域名 / 描述…" : "搜索网站名 / 域名 / 描述…"}
-      />
-      <kbd class="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-mono px-1.5 py-0.5 rounded border border-black/10 dark:border-white/10 text-black/40 dark:text-white/50 pointer-events-none">
-        {isEn ? "⌘K" : "⌘K"}
-      </kbd>
-    </div>
-
-    <!-- 分组锚点 -->
-    <div id="sites-cats" class="flex flex-wrap gap-2 mb-6">
-      <button
-        data-cat="all"
-        class="cat-chip text-[13px] px-3.5 py-1.5 rounded-full border transition-all cursor-pointer border-black/10 dark:border-white/10 text-black/60 dark:text-white/75 hover:border-black/30 dark:hover:border-white/30 cat-active"
-      >
-        {isEn ? "All" : "全部"}
-      </button>
-      {usedCategories.map((c) => (
-        <button
-          data-cat={c}
-          class="cat-chip text-[13px] px-3.5 py-1.5 rounded-full border transition-all cursor-pointer border-black/10 dark:border-white/10 text-black/60 dark:text-white/75 hover:border-black/30 dark:hover:border-white/30"
-        >
-          {CATEGORY_NAMES[c]}
-          <span class="opacity-50 ml-1">{siteEntries.filter((e) => classify(e) === c).length}</span>
-        </button>
-      ))}
-    </div>
-
-    <!-- 卡片列表（可展开） -->
-    {siteEntries.length > 0 ? (
-      <div id="sites-list" class="space-y-3">
-        {siteData.map((item, i) => (
-          <div
-            class="site-card block p-5 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-all duration-300 cursor-pointer group"
+    {siteData.length > 0 ? (
+      <div id="sites-list" class="galvin-resource-rail">
+        {siteData.map((item) => (
+          <article
+            class="galvin-resource-row"
+            data-resource-row
             data-id={item.id}
             data-cat={item.category}
-            data-search={(item.title + " " + item.host + " " + (item.desc || "") + " " + (item.tags || []).join(" ")).toLowerCase()}
+            data-search={(item.title + " " + item.host + " " + item.desc + " " + item.tags.join(" ")).toLowerCase()}
           >
-            <div class="flex items-center gap-2 mb-2">
-              <span class="text-[13px] font-mono text-black/45 dark:text-white/60">{String(i + 1).padStart(2, "0")}</span>
-              {item.host && (
-                <span class="text-[13px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/75 inline-flex items-center gap-1">
-                  <Icon name="link" class="w-3 h-3" />{item.host}
-                </span>
-              )}
-              <span class="ml-auto text-xs opacity-30 group-hover:opacity-60 transition-opacity"><Icon name="arrowRight" class="w-3.5 h-3.5" /></span>
-            </div>
-            <h3 class="font-bold font-serif text-base mb-1.5 leading-snug">{item.title}</h3>
-            {item.desc && <p class="text-[15px] text-black/60 dark:text-white/60 line-clamp-2 leading-relaxed">{item.desc}</p>}
-
-            <!-- 展开区 -->
-            <div class="site-expand hidden mt-3 pt-3 border-t border-black/5 dark:border-white/5">
-              {item.tagline && (
-                <div class="mb-2.5">
-                  <p class="inline-flex items-center gap-1 text-[12px] font-semibold uppercase tracking-wider mb-1 text-[#0E96E9] dark:text-[#6CC3FF]"><span class="w-1 h-1 rounded-full bg-[#0E96E9] dark:bg-[#6CC3FF]"></span>{isEn ? "One-liner" : "一句话定位"}</p>
-                  <p class="text-sm text-black/60 dark:text-white/70 leading-relaxed">{item.tagline}</p>
-                </div>
-              )}
-              {item.highlight && (
-                <div class="mb-2.5">
-                  <p class="inline-flex items-center gap-1 text-[12px] font-semibold uppercase tracking-wider mb-1 text-[#0E96E9] dark:text-[#6CC3FF]"><span class="w-1 h-1 rounded-full bg-[#0E96E9] dark:bg-[#6CC3FF]"></span>{isEn ? "Highlights" : "亮点特色"}</p>
-                  <p class="text-sm text-black/60 dark:text-white/70 leading-relaxed">{item.highlight}</p>
-                </div>
-              )}
-              <a
-                href={item.href}
-                class="inline-flex items-center gap-1.5 text-[13px] text-[#0E96E9] dark:text-[#6CC3FF] hover:opacity-80 mt-1"
-              >
-                {isEn ? "Read full breakdown →" : "查看完整拆解 →"}
-              </a>
-            </div>
-
-            <div class="flex items-center justify-between mt-3">
-              <time class="text-[13px] text-black/55 dark:text-white/65 font-mono inline-flex items-center gap-1.5"><Icon name="calendar" class="w-3.5 h-3.5 opacity-70" />{item.date}</time>
-              <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0E96E9] dark:text-[#6CC3FF] bg-[#0E96E9]/10 dark:bg-[#6CC3FF]/10 px-2.5 py-1 rounded-full transition-colors expand-hint">
-                <span class="grid place-items-center w-4 h-4 rounded-full bg-[#0E96E9] dark:bg-[#6CC3FF] text-white dark:text-[#06121a]">
-                  <Icon name="plus" class="w-3 h-3 expand-icon transition-transform" strokeWidth="2.4" />
-                </span>
-                {isEn ? "Expand" : "展开"}
+            <button class="galvin-resource-row__summary" type="button" data-resource-toggle aria-expanded="false" aria-controls={`resource-${item.id}`}>
+              <span class="galvin-resource-row__utility">{item.host || "网站记录"} · {item.date}</span>
+              <span class="galvin-resource-row__main">
+                <strong>{item.title}</strong>
+                {item.desc && <span>{item.desc}</span>}
               </span>
+              <span class="galvin-resource-row__action" aria-hidden="true">展开 <i>↓</i></span>
+            </button>
+            <div id={`resource-${item.id}`} class="galvin-resource-row__detail" hidden>
+              {item.tagline && <div><p>一句话定位</p><span>{item.tagline}</span></div>}
+              {item.highlight && <div><p>亮点特色</p><span>{item.highlight}</span></div>}
+              <a href={item.href}>查看完整拆解 <span aria-hidden="true">→</span></a>
             </div>
-          </div>
+          </article>
         ))}
       </div>
     ) : (
-      <p class="py-12 text-center text-black/30 dark:text-white/30 italic inline-flex items-center gap-1.5">
-        {isEn ? "Nothing collected yet." : "暂无收录，敬请期待"}
-        <Icon name="sparkles" class="w-3.5 h-3.5" />
-      </p>
+      <p class="galvin-empty-state">资源记录正在整理中。</p>
     )}
 
-    <p id="sites-empty" class="hidden py-12 text-center text-black/30 dark:text-white/30 italic">
-      {isEn ? "No matches — try another keyword." : "没有匹配的收藏，换个关键词试试。"}
-    </p>
+    <p id="sites-empty" class="galvin-empty-state" hidden>没有匹配的资源，换个关键词试试。</p>
   </section>
 </BaseLayout>
 
-<style is:global>
-  .cat-chip.cat-active {
-    background: #0E96E9;
-    border-color: #0E96E9;
-    color: #fff;
-  }
-  :global(.dark) .cat-chip.cat-active {
-    color: #06121a;
-    background: #6CC3FF;
-    border-color: #6CC3FF;
-  }
-</style>
-
 <script>
-  (function () {
-    var list = document.getElementById("sites-list");
+  (() => {
+    const list = document.getElementById("sites-list");
     if (!list) return;
-    var cards = Array.prototype.slice.call(list.querySelectorAll(".site-card"));
-    var search = document.getElementById("sites-search");
-    var empty = document.getElementById("sites-empty");
-    var catBtns = Array.prototype.slice.call(document.querySelectorAll(".cat-chip"));
-    var state = { query: "", cat: "all" };
+    const rows = Array.from(list.querySelectorAll<HTMLElement>("[data-resource-row]"));
+    const search = document.getElementById("sites-search") as HTMLInputElement | null;
+    const empty = document.getElementById("sites-empty");
+    const filters = Array.from(document.querySelectorAll<HTMLButtonElement>(".galvin-resource-filter"));
+    const toggles = Array.from(list.querySelectorAll<HTMLButtonElement>("[data-resource-toggle]"));
+    const state = { query: "", category: "all" };
 
-    // ⌘K / Ctrl+K 聚焦搜索框
-    document.addEventListener("keydown", function (e) {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        if (search) { search.focus(); search.select(); }
-      }
+    const closeRow = (row: HTMLElement) => {
+      const toggle = row.querySelector<HTMLButtonElement>("[data-resource-toggle]");
+      const detail = row.querySelector<HTMLElement>(".galvin-resource-row__detail");
+      if (toggle) toggle.setAttribute("aria-expanded", "false");
+      if (detail) detail.hidden = true;
+    };
+
+    const apply = () => {
+      const query = state.query.trim().toLowerCase();
+      let shown = 0;
+      rows.forEach((row) => {
+        const matchesCategory = state.category === "all" || row.dataset.cat === state.category;
+        const matchesQuery = !query || (row.dataset.search || "").includes(query);
+        const show = matchesCategory && matchesQuery;
+        row.hidden = !show;
+        if (!show) closeRow(row);
+        if (show) shown += 1;
+      });
+      if (empty) empty.hidden = shown !== 0;
+      list.hidden = shown === 0;
+    };
+
+    search?.addEventListener("input", () => {
+      state.query = search.value;
+      apply();
     });
 
-    function apply() {
-      var q = state.query.trim().toLowerCase();
-      var shown = 0;
-      cards.forEach(function (card) {
-        var okCat = state.cat === "all" || card.getAttribute("data-cat") === state.cat;
-        var okQ = !q || card.getAttribute("data-search").indexOf(q) !== -1;
-        var show = okCat && okQ;
-        card.style.display = show ? "" : "none";
-        if (show) shown++;
-      });
-      if (empty) empty.style.display = shown ? "none" : "";
-      if (list) list.style.display = shown ? "" : "none";
-    }
+    filters.forEach((filter) => filter.addEventListener("click", () => {
+      state.category = filter.dataset.cat || "all";
+      filters.forEach((item) => item.classList.toggle("is-active", item === filter));
+      apply();
+    }));
 
-    if (search) {
-      search.addEventListener("input", function () {
-        state.query = search.value;
-        apply();
-      });
-    }
-
-    catBtns.forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        catBtns.forEach(function (b) { b.classList.remove("cat-active"); });
-        btn.classList.add("cat-active");
-        state.cat = btn.getAttribute("data-cat");
-        apply();
-      });
-    });
-
-    // 可展开列表：同时只展开一个
-    cards.forEach(function (card) {
-      card.addEventListener("click", function (e) {
-        // 点击"查看完整拆解"链接时不拦截
-        if (e.target.closest("a")) return;
-        var expand = card.querySelector(".site-expand");
-        var isOpen = expand && !expand.classList.contains("hidden");
-        // 收起所有
-        cards.forEach(function (c) {
-          var ex = c.querySelector(".site-expand");
-          var icon = c.querySelector(".expand-icon");
-          if (ex) ex.classList.add("hidden");
-          if (icon) icon.style.transform = "";
-          c.classList.remove("expanded");
-        });
-        if (!isOpen && expand) {
-          expand.classList.remove("hidden");
-          card.classList.add("expanded");
-          var openIcon = card.querySelector(".expand-icon");
-          // 展开后 + 旋转 45° 变成 ×，直观表示“收起”
-          if (openIcon) openIcon.style.transform = "rotate(45deg)";
-        }
-      });
-    });
+    toggles.forEach((toggle) => toggle.addEventListener("click", () => {
+      const row = toggle.closest<HTMLElement>("[data-resource-row]");
+      if (!row) return;
+      const detail = row.querySelector<HTMLElement>(".galvin-resource-row__detail");
+      const shouldOpen = toggle.getAttribute("aria-expanded") !== "true";
+      rows.forEach(closeRow);
+      toggle.setAttribute("aria-expanded", String(shouldOpen));
+      if (detail) detail.hidden = !shouldOpen;
+    }));
   })();
 </script>

@@ -1,6 +1,6 @@
 ---
-/* Galvin design reminder: traces is a quiet living index, not a lifestyle feed.
-   Use spacious Chinese reading type and one restrained cyan status signal. */
+/* Galvin design reminder: traces is a quiet living directory in the pure #10131d workspace.
+   Use a medium Chinese title and continuous records, not dashboard numbering or a lifestyle feed. */
 import BaseLayout from "../layouts/BaseLayout.astro";
 
 const moments = [
@@ -11,19 +11,16 @@ const moments = [
 ---
 
 <BaseLayout title="行迹" description="Galvin 的南京、咖啡、力量训练与阅读片段。">
-  <section class="galvin-traces-page">
-    <header class="galvin-traces-page__hero">
-      <p>慢速记录</p>
-      <h1>行迹。</h1>
-      <div>
-        <span aria-hidden="true"></span>
-        <p>南京、咖啡、力量训练与阅读，留在同一条慢速轨迹里。</p>
-      </div>
+  <section class="galvin-directory-page galvin-traces-page" aria-labelledby="traces-title">
+    <header class="galvin-directory-intro galvin-traces-page__hero">
+      <p class="galvin-page-kicker"><span aria-hidden="true"></span>慢速记录</p>
+      <h1 id="traces-title">行迹</h1>
+      <p>南京、咖啡、力量训练与阅读，留在同一条慢速轨迹里。</p>
     </header>
     <div class="galvin-traces-page__list">
-      {moments.map((moment, index) => (
+      {moments.map((moment) => (
         <article>
-          <p>{String(index + 1).padStart(2, "0")} / {moment.label}</p>
+          <p>{moment.label}</p>
           <div><h2>{moment.title}</h2><p>{moment.text}</p></div>
         </article>
       ))}

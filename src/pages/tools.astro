@@ -1,6 +1,6 @@
 ---
-/* Galvin design reminder: 造物 is a product desk inside the deep-blue editorial system.
-   Prefer structured utility panels and persistent actions; violet denotes intent, cyan denotes local/safe status. */
+/* Galvin design reminder: 造物 is a content directory in a pure #10131d workspace.
+   Real tools appear before system metadata; violet denotes action and cyan only denotes local/safe status. */
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 import { filterToolsByType } from "../lib/galvin-content-view";
@@ -39,30 +39,20 @@ function dateLabel(date: Date): string {
 ---
 
 <BaseLayout title="造物" description="Galvin 的实用工具、工作脚本与持续试验。">
-  <section class="galvin-content-page galvin-making-page" aria-labelledby="making-title">
-    <header class="galvin-content-page__hero">
-      <div class="galvin-content-page__signal" aria-hidden="true"><i></i><span>MAKING / UTILITY DESK</span></div>
-      <div class="galvin-content-page__hero-grid">
-        <div>
-          <p class="galvin-content-page__number">02 / 07</p>
-          <h1 id="making-title">造物<span>。</span></h1>
-          <p class="galvin-content-page__lead">从工作里冒出来的小麻烦开始，做一些自己能用、也希望能帮到别人的工具。它们不承诺解决一切，只尽量把一件事做顺。</p>
-        </div>
-        <div class="galvin-content-page__meta" aria-label="造物工作台状态">
-          <div><span>AVAILABLE</span><strong>{String(tools.length).padStart(2, "0")}</strong><small>项可访问工具</small></div>
-          <a class="galvin-content-page__search" href="#making-list"><span>查看工具列表</span><span aria-hidden="true">↓</span></a>
-        </div>
-      </div>
+  <section class="galvin-directory-page galvin-making-page" aria-labelledby="making-title">
+    <header class="galvin-directory-intro">
+      <p class="galvin-page-kicker"><span aria-hidden="true"></span>造物</p>
+      <h1 id="making-title">造物</h1>
+      <p>从工作里冒出来的小麻烦开始，做一些自己能用、也希望能帮到别人的工具。它们不承诺解决一切，只尽量把一件事做顺。</p>
     </header>
 
-    <aside class="galvin-privacy-note" aria-label="工具隐私边界">
-      <span class="galvin-privacy-note__node" aria-hidden="true"></span>
-      <div><strong>使用边界</strong><p>浏览器工具在本地运行；本地脚本在 Windows 电脑上执行。除特别标注的外部链接外，本站不接收你的文本或工作文件。</p></div>
-    </aside>
-
-    <div class="galvin-filter-rail galvin-filter-rail--making" aria-label="按类型筛选工具">
-      <p>FILTER / 类型</p>
-      <div class="galvin-filter-rail__track" role="tablist" aria-label="工具类型">
+    <div class="galvin-directory-toolbar" aria-label="造物目录工具带">
+      <div class="galvin-directory-toolbar__filters">
+        <div class="galvin-directory-toolbar__head">
+          <p>筛选工具</p>
+          <span><span id="tool-visible-count">{tools.length}</span> 项可用</span>
+        </div>
+        <div class="galvin-filter-rail__track" role="tablist" aria-label="工具类型">
         {typeMeta.map((type, index) => (
           <button
             class:list={["galvin-filter-chip", index === 0 && "is-active"]}
@@ -71,14 +61,18 @@ function dateLabel(date: Date): string {
             aria-selected={index === 0 ? "true" : "false"}
             data-tool-filter={type.id}
           >
-            {type.label}<small>{String(filterToolsByType(tools, type.id).length).padStart(2, "0")}</small>
+            {type.label}<small>{filterToolsByType(tools, type.id).length}</small>
           </button>
         ))}
+        </div>
       </div>
-      <p class="galvin-filter-rail__count"><span id="tool-visible-count">{String(tools.length).padStart(2, "0")}</span> / {String(tools.length).padStart(2, "0")}</p>
+      <aside class="galvin-directory-note" aria-label="工具隐私边界">
+        <span aria-hidden="true"></span>
+        <p>浏览器工具在本地运行；本地脚本在 Windows 电脑上执行。除特别标注的外部链接外，本站不接收你的文本或工作文件。</p>
+      </aside>
     </div>
 
-    <div class="galvin-tool-grid" id="making-list">
+    <div class="galvin-tool-rail" id="making-list">
       {tools.map((tool, index) => {
         const updated = tool.data.updated || tool.data.date;
         const privacy = tool.data.type === "app"
@@ -89,28 +83,19 @@ function dateLabel(date: Date): string {
         const primaryHref = tool.data.downloadUrl || tool.data.url || `/tools/${tool.id}/`;
         const primaryLabel = tool.data.downloadUrl ? "下载工具" : tool.data.url ? "打开工具" : "进入试用";
         return (
-          <article class:list={["galvin-tool-card", tool.data.featured && "is-featured"]} data-tool-card data-tool-type={tool.data.type}>
-            <div class="galvin-tool-card__topline">
-              <span>{String(index + 1).padStart(2, "0")} / {toolTypeLabel[tool.data.type]}</span>
-              <span class="galvin-tool-card__status"><i></i>{toolStatusLabel[tool.data.status]}</span>
+          <article class="galvin-tool-row" data-tool-card data-tool-type={tool.data.type}>
+            <div class="galvin-tool-row__utility">
+              <span>{toolTypeLabel[tool.data.type]} · {dateLabel(updated)}</span>
+              <span class="galvin-tool-row__status"><i></i>{toolStatusLabel[tool.data.status]}</span>
             </div>
-            <div class="galvin-tool-card__body">
+            <div class="galvin-tool-row__main">
               <h2>{tool.data.title}</h2>
               {tool.data.description && <p>{tool.data.description}</p>}
-              <div class="galvin-tool-card__privacy"><span aria-hidden="true">◌</span>{privacy}</div>
+              <span>{privacy}</span>
             </div>
-            {tool.data.usage?.length ? (
-              <ol class="galvin-tool-card__steps">
-                {tool.data.usage.slice(0, 3).map((step, stepIndex) => <li><span>{stepIndex + 1}</span>{step}</li>)}
-              </ol>
-            ) : <div class="galvin-tool-card__spacer"></div>}
-            <div class="galvin-tool-card__footer">
-              <div class="galvin-tool-card__tags">{tool.data.tags.slice(0, 3).map((tag) => <span>#{tag}</span>)}</div>
-              <time datetime={updated.toISOString()}>{dateLabel(updated)}</time>
-            </div>
-            <div class="galvin-tool-card__actions">
+            <div class="galvin-tool-row__actions">
               <a
-                class="galvin-button galvin-button--primary"
+                class="galvin-action-link galvin-action-link--primary"
                 href={primaryHref}
                 download={tool.data.downloadUrl ? true : undefined}
                 target={tool.data.url ? "_blank" : undefined}
@@ -118,7 +103,7 @@ function dateLabel(date: Date): string {
               >
                 {primaryLabel}<span aria-hidden="true">{tool.data.downloadUrl ? "↓" : "↗"}</span>
               </a>
-              <a class="galvin-button galvin-button--quiet" href={`/tools/${tool.id}/`}>工具说明</a>
+              <a class="galvin-action-link" href={`/tools/${tool.id}/`}>工具说明 <span aria-hidden="true">→</span></a>
             </div>
           </article>
         );
@@ -146,7 +131,7 @@ function dateLabel(date: Date): string {
           button.classList.toggle("is-active", active);
           button.setAttribute("aria-selected", String(active));
         });
-        if (count) count.textContent = String(visible).padStart(2, "0");
+        if (count) count.textContent = String(visible);
       };
 
       filters.forEach((button) => button.addEventListener("click", () => applyFilter(button.dataset.toolFilter || "all")));
