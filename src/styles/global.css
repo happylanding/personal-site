@@ -1307,6 +1307,19 @@ html:not(.js) .lmask-inner {
   text-shadow: 0 0 12px rgba(245, 158, 11, 0.4), 0 0 24px rgba(245, 158, 11, 0.2);
 }
 
+/* 列表标题 hover 放大。配合父级背景框 overflow-hidden 使用，
+   放大后的文字被裁剪在背景框内，不会跃出框外。 */
+.hover-scale-text {
+  display: inline-block;
+  transform-origin: left center;
+  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.group:hover .hover-scale-text,
+.hover-scale-text:hover {
+  transform: scale(1.05);
+}
+
 /* ===== 栏目图标/导航暗色模式亮版（ColumnIcon / Header 注入 --section-color-dark 变量） =====
    暗色背景上使用主色的亮版（docs/illustration-workflow.md 深色区文字规范），
    避免深蓝/酒红等深色栏目色与暗色背景融合难以分辨。 */

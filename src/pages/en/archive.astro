@@ -42,7 +42,7 @@ const grouped = sorted.reduce<YearGroups>((acc, article) => {
                     <ColumnIcon section={article.data.section as SectionKey} class="w-3 h-3" />
                     {t(`columns.${article.data.section}.name`)}
                   </span>
-                  <span class="font-serif font-bold group-hover:text-black dark:group-hover:text-white transition-colors">{title}</span>
+                  <span class="font-serif font-bold group-hover:text-black dark:group-hover:text-white transition-colors hover-scale-text">{title}</span>
                 </a>
               </div>
             );

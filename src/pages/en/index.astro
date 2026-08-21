@@ -144,7 +144,7 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
                   {a.data.date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
                 </span>
               </div>
-              <h3 class="font-bold font-serif text-base mb-2 group-hover:text-black dark:group-hover:text-white transition-colors leading-snug">{title}</h3>
+              <h3 class="font-bold font-serif text-base mb-2 group-hover:text-black dark:group-hover:text-white transition-colors leading-snug hover-scale-text">{title}</h3>
               {desc && <p class="text-sm text-black/40 dark:text-white/40 line-clamp-2 leading-relaxed">{desc}</p>}
             </a>
           );
@@ -171,12 +171,12 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
         {latest.map((a) => (
           <a
             href={`/en/${a.data.section}/${a.id}`}
-            class="latest-row flex items-center justify-between py-3 px-4 rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-colors group"
+            class="latest-row flex items-center justify-between py-3 px-4 rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-colors group overflow-hidden"
             data-c-accent={a.data.section as SectionKey}
           >
             <div class="flex items-center gap-3 min-w-0">
               <span class="flex-shrink-0 opacity-40"><ColumnIcon section={a.data.section as SectionKey} class="w-4 h-4" /></span>
-              <span class="text-sm font-medium truncate group-hover:text-black dark:group-hover:text-white transition-colors">
+              <span class="text-sm font-medium truncate group-hover:text-black dark:group-hover:text-white transition-colors hover-scale-text">
                 {a.data.titleEn || a.data.title}
               </span>
             </div>

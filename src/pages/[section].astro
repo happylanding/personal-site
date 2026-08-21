@@ -73,7 +73,7 @@ const isBooksSection = section === "books";
                 {/* Content */}
                 <div class="flex-1 min-w-0">
                   <h3 class="text-lg font-bold font-serif group-hover:text-black dark:group-hover:text-white transition-colors mb-1">
-                    <a href={lang === "en" ? `/en/${section}/${article.id}` : `/${section}/${article.id}`} class="inline-block">
+                    <a href={lang === "en" ? `/en/${section}/${article.id}` : `/${section}/${article.id}`} class="hover-scale-text inline-block">
                       {title}
                     </a>
                     {article.data.featured && <Icon name="star" class="w-3.5 h-3.5 inline-block ml-1 align-middle text-amber-500" />}
@@ -172,10 +172,10 @@ const isBooksSection = section === "books";
             return (
               <a
                 href={lang === "en" ? `/en/${section}/${article.id}` : `/${section}/${article.id}`}
-                class="flex items-start justify-between py-4 px-4 rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-colors group"
+                class="flex items-start justify-between py-4 px-4 rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-colors group overflow-hidden"
               >
                 <div class="min-w-0">
-                  <h3 class="text-base font-bold font-serif group-hover:text-black dark:group-hover:text-white transition-colors mb-1">
+                  <h3 class="text-base font-bold font-serif group-hover:text-black dark:group-hover:text-white transition-colors mb-1 hover-scale-text">
                     {title}
                     {article.data.featured && <Icon name="star" class="w-3 h-3 inline-block ml-1 align-middle text-amber-500" />}
                   </h3>
