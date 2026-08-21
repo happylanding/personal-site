@@ -19,7 +19,7 @@
 /* ===== Theme tokens ===== */
 @theme {
   --font-serif: "Playfair Display", "Noto Serif SC", Georgia, "SimSun", serif;
-  --font-song: "Songti SC", "STSong", "SimSun", "宋体", "Noto Serif SC", "Source Han Serif SC", serif;
+  --font-song: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", "宋体", serif;
   --font-sans: "Source Sans 3", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, system-ui, sans-serif;
   --font-mono: "Cascadia Code", "Consolas", monospace;
   --font-hand: "Caveat", cursive;
@@ -1366,11 +1366,22 @@ html:not(.js) .lmask-inner {
 .dark .latest-row[data-c-accent="books"]:hover { background-color: rgba(167, 139, 250, 0.12); box-shadow: inset 2px 0 0 rgba(167, 139, 250, 0.65); }
 
 /* ===== Article prose overrides ===== */
-/* 正文排版：中文宋体 + 规范行高/行宽（见 docs/typography-guide.md） */
+/* 正文排版：中文宋体 + 规范行高/行宽（见 docs/typography-guide.md）
+   字体栈优先思源宋体（Noto Serif SC，已加载 web 字体，笔画更实、屏幕渲染更清晰），
+   回退系统宋体；正文加 500 字重提升可读性，解决系统宋体过细的问题。 */
 .article-content {
   font-family: var(--font-song);
+  font-weight: 500;
   line-height: 1.9;
   max-width: 42rem !important;
+}
+
+/* 桌面端（≥1024px，右侧存在目录栏）：正文列自适应填满，仅保留与目录的网格间距，
+   消除行宽限制造成的正文与目录间大段空白；仍以 min(100%, 58rem) 兜底，避免超宽屏上行过长。 */
+@media (min-width: 1024px) {
+  .article-content {
+    max-width: min(100%, 58rem) !important;
+  }
 }
 
 /* Headings → site serif font */
@@ -2144,7 +2155,7 @@ body {
 /* 阅读排版：英文新罗马体，中文宋体（同一 font-family 栈，拉丁字符落到 Times New Roman，CJK 字符落到宋体）
    中文正文由 lang-zh 选择器单独覆盖为宋体，详见 docs/typography-guide.md */
 .book-reader {
-  --book-font: "Times New Roman", "Georgia", "SimSun", "Songti SC", "STSong", "宋体", "Noto Serif SC", serif;
+  --book-font: "Times New Roman", "Georgia", "Noto Serif SC", "Songti SC", "SimSun", "STSong", "宋体", serif;
   font-family: var(--book-font);
   font-size: 1.15rem;
   line-height: 1.95;
