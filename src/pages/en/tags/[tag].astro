@@ -44,7 +44,7 @@ const filtered = allArticles
             href={`/en/${article.data.section}/${article.id}`}
             class="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-colors group"
           >
-            <span class="text-sm group-hover:opacity-70 transition-opacity font-medium">{title}</span>
+            <span class="text-sm group-hover:text-black dark:group-hover:text-white transition-colors font-medium">{title}</span>
             <time class="text-[13px] text-black/45 dark:text-white/60 font-mono flex-shrink-0 ml-4">
               {article.data.date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
             </time>

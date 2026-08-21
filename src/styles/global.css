@@ -1293,14 +1293,6 @@ html:not(.js) .lmask-inner {
   box-shadow: 0 8px 25px rgba(255, 255, 255, 0.05);
 }
 
-.hover-scale-text {
-  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-.hover-scale-text:hover {
-  transform: scale(1.05);
-}
-
 .hover-glow {
   transition: color 0.35s ease, text-shadow 0.35s ease;
 }
