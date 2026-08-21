@@ -117,10 +117,10 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
             data-tilt
             data-c-accent={s}
           >
-            <span class="ghost-num text-black/5 dark:text-white/5 select-none pointer-events-none" aria-hidden="true">
+            <span class="ghost-num text-black/10 dark:text-white/20 select-none pointer-events-none" aria-hidden="true">
               {String(i + 1).padStart(2, "0")}
             </span>
-            <span class="mb-3 block opacity-60 relative"><ColumnIcon section={s} class="w-8 h-8" /></span>
+            <span class="mb-3 block opacity-80 dark:opacity-100 relative"><ColumnIcon section={s} class="w-8 h-8" /></span>
             <h3 class="font-bold text-base mb-1 hover-glow relative">
               {text.columnsName[s]}
             </h3>
@@ -210,7 +210,7 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
             data-c-accent={a.data.section as SectionKey}
           >
             <div class="flex items-center gap-3 min-w-0">
-              <span class="flex-shrink-0 opacity-40"><ColumnIcon section={a.data.section as SectionKey} class="w-4 h-4" /></span>
+              <span class="flex-shrink-0 opacity-75 dark:opacity-100"><ColumnIcon section={a.data.section as SectionKey} class="w-4 h-4" /></span>
               <span class="text-sm font-medium truncate group-hover:text-black dark:group-hover:text-white transition-colors hover-scale-text">
                 {a.data.title}
               </span>

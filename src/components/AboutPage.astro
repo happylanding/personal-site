@@ -257,10 +257,10 @@ const articleTitle = (a: (typeof allArticles)[number]) => a.data.title;
           data-tilt
           data-c-accent={s}
         >
-          <span class="ghost-num text-black/5 dark:text-white/5 select-none pointer-events-none" aria-hidden="true">
+          <span class="ghost-num text-black/10 dark:text-white/20 select-none pointer-events-none" aria-hidden="true">
             {String(i + 1).padStart(2, "0")}
           </span>
-          <span class="mb-3 block opacity-60 relative"><ColumnIcon section={s} class="w-8 h-8" /></span>
+          <span class="mb-3 block opacity-80 dark:opacity-100 relative"><ColumnIcon section={s} class="w-8 h-8" /></span>
           <h3 class="font-bold text-base mb-1 hover-glow relative">
             {text.columnsName[s]}
           </h3>
@@ -282,7 +282,7 @@ const articleTitle = (a: (typeof allArticles)[number]) => a.data.title;
   <!-- ============ CTA：联系 ============ -->
   <section class="about-cta" aria-label={text.ctaTitle} data-reveal>
     <div class="about-cta-card glass-card relative overflow-hidden" data-spotlight>
-      <span class="ghost-num text-black/5 dark:text-white/5" aria-hidden="true">HI</span>
+      <span class="ghost-num text-black/10 dark:text-white/20" aria-hidden="true">HI</span>
       <p class="about-person-kicker">{text.ctaKicker}</p>
       <h2 class="about-cta-title">{text.ctaTitle}</h2>
       <p class="about-cta-desc">{text.ctaDesc}</p>
