@@ -117,7 +117,7 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
       enArticle ? (
         <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14">
           <div class="min-w-0 order-1">
-            <div class="prose dark:prose-invert article-content max-w-none">
+            <div class="prose dark:prose-invert article-content">
               <Content />
             </div>
           </div>
@@ -128,7 +128,7 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
       ) : article.data.bodyEn ? (
         <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14">
           <div class="min-w-0 order-1">
-            <div class="prose dark:prose-invert article-content max-w-none" set:html={article.data.bodyEn} />
+            <div class="prose dark:prose-invert article-content" set:html={article.data.bodyEn} />
           </div>
           <div class="min-w-0 order-2">
             <ArticleTOC label={t("articles.toc")} countFormat={t("articles.tocCount")} />
@@ -137,7 +137,7 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
       ) : (
         <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14">
           <div class="min-w-0 order-1">
-            <div class="prose dark:prose-invert article-content max-w-none">
+            <div class="prose dark:prose-invert article-content">
               <Content />
             </div>
           </div>
