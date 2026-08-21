@@ -9,9 +9,6 @@ usage:
   - "点击下方「下载」，得到 excel-sheet-cleaner.zip 并解压"
   - "把 ExcelSheetCleaner.ps1 和 运行.bat 复制到存放 Excel 的文件夹"
   - "双击 运行.bat，自动扫描清理，完成后生成 excel-cleaner-log.txt 日志"
-  - "Click Download below to get excel-sheet-cleaner.zip and unzip it"
-  - "Copy ExcelSheetCleaner.ps1 and 运行.bat into the folder where your Excel files live"
-  - "Double-click 运行.bat — it scans and cleans automatically, then writes an excel-cleaner-log.txt log"
 downloadUrl: "/downloads/excel-sheet-cleaner.zip"
 date: 2026-08-08
 updated: 2026-08-08
