@@ -45,26 +45,6 @@ body {
   text-size-adjust: 100%;
 }
 
-/* ===== 跨页 FOUC 抑制（Effect C 配套）=====
-   跨栏目录切换是 MPA 全量导航，新页面加载时若 web font 缓存未命中，
-   文字会先用系统字体渲染、字体就绪后再 swap，造成“闪烁/跳动”。
-   这里让启用 JS 的页面在字体就绪前先隐藏 body，由 html.fonts-ready
-   驱动淡入（0.35s），把字体 swap 的跳变藏进淡入过程；无 JS 或
-   reduced-motion 时直接显示，超时 1s 由 BaseLayout 内联脚本兜底。 */
-html.js body {
-  opacity: 0;
-  transition: opacity 0.35s ease;
-}
-html.js.fonts-ready body {
-  opacity: 1;
-}
-@media (prefers-reduced-motion: reduce) {
-  html.js body {
-    opacity: 1;
-    transition: none;
-  }
-}
-
 /* ===== Handwriting font for English motto ===== */
 .font-hand {
   font-family: var(--font-hand);

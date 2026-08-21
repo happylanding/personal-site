@@ -75,8 +75,8 @@ const canonical = Astro.url.pathname;
 
     <!-- P2-4 字体就绪门控：先标 .js，等 document.fonts 就绪后加 .fonts-ready，
          启动 hero 遮罩上拉动画；1s 超时兜底避免字体加载过慢导致首屏空白。
-         body 级淡入（见 global.css html.js body）也由 fonts-ready 驱动，
-         抑制跨栏目录 MPA 导航时字体 swap 造成的文字闪烁。 -->
+         （不再做 body 级隐藏淡入：整页隐藏会在手机 MPA 切换时造成白屏闪烁，
+          字体 swap 由跨页 View Transition 交叉淡入天然掩蔽。） -->
     <script is:inline>
       (function () {
         var html = document.documentElement;
