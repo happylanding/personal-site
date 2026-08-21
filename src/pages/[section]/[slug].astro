@@ -5,6 +5,7 @@ import Breadcrumb from "../../components/Breadcrumb.astro";
 import ColumnIcon from "../../components/ColumnIcon.astro";
 import Icon from "../../components/Icon.astro";
 import ArticleTOC from "../../components/ArticleTOC.astro";
+import { SECTION_COLORS, SECTION_COLORS_DARK } from "../../lib/sections";
 
 const columnNames: Record<string, string> = {
   insights: "行业洞察",
@@ -54,7 +55,12 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
     ]}
   />
 
-  <article data-reveal>
+  <article data-reveal
+    style={{
+      "--toc-accent": SECTION_COLORS[section as keyof typeof SECTION_COLORS],
+      "--toc-accent-dark": SECTION_COLORS_DARK[section as keyof typeof SECTION_COLORS_DARK],
+    }}
+  >
     <header class="mb-10">
       {article.data.ogImage && (
         <img
@@ -123,7 +129,12 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
 
       <!-- 右侧 sticky 目录（lg+ 显示 rail；移动端/平板显示折叠卡片，均由组件内响应式 class 控制） -->
       <div class="min-w-0 order-2">
-        <ArticleTOC label="目录" countFormat="{count} 节" />
+        <ArticleTOC
+          label="目录"
+          countFormat="{count} 节"
+          sectionColor={SECTION_COLORS[section as keyof typeof SECTION_COLORS]}
+          sectionColorDark={SECTION_COLORS_DARK[section as keyof typeof SECTION_COLORS_DARK]}
+        />
       </div>
     </div>
 

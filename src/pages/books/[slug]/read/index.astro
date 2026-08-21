@@ -5,6 +5,7 @@ import Breadcrumb from "../../../../components/Breadcrumb.astro";
 import ColumnIcon from "../../../../components/ColumnIcon.astro";
 import Icon from "../../../../components/Icon.astro";
 import ArticleTOC from "../../../../components/ArticleTOC.astro";
+import { SECTION_COLORS, SECTION_COLORS_DARK } from "../../../../lib/sections";
 
 export async function getStaticPaths() {
   const books = await getCollection("articles", ({ data }) => !data.draft && data.section === "books");
@@ -219,7 +220,12 @@ const totalChapters = chaptersMeta.length;
         </div>
       </div>
       <div class="min-w-0 order-2">
-        <ArticleTOC label="目录" countFormat="{count} 节" />
+        <ArticleTOC
+          label="目录"
+          countFormat="{count} 节"
+          sectionColor={SECTION_COLORS.books}
+          sectionColorDark={SECTION_COLORS_DARK.books}
+        />
       </div>
     </div>
   )}

@@ -11,18 +11,30 @@
 //
 // Props:
 //   @param {string} [label] - 目录标题文案（默认「目录」），中英文由页面传入
+//   @param {string} [sectionColor] - 栏目主题色（亮色模式），用于目录跟随专栏配色
+//   @param {string} [sectionColorDark] - 栏目主题色（暗色模式亮版）
 
 interface Props {
   label?: string;
   /** 计数格式，{count} 会被替换为标题数，如 "{count} 节" / "{count} items" */
   countFormat?: string;
+  /** 栏目主题色（亮色），如 #1E3A8A */
+  sectionColor?: string;
+  /** 栏目主题色（暗色亮版），如 #8FB4F5 */
+  sectionColorDark?: string;
 }
 
 import Icon from "./Icon.astro";
-const { label = "目录", countFormat = "{count} 节" } = Astro.props;
+const { label = "目录", countFormat = "{count} 节", sectionColor, sectionColorDark } = Astro.props;
+
+// 将栏目主题色注入 CSS 变量，供目录各项 hover/active/fab 等复用
+const tocStyle =
+  sectionColor || sectionColorDark
+    ? `--toc-accent:${sectionColor || "#B45309"}; --toc-accent-dark:${sectionColorDark || "#F59E0B"};`
+    : undefined;
 ---
 
-<div class="article-toc-root">
+<div class="article-toc-root" style={tocStyle}>
   <!-- 桌面端：右侧 sticky 目录栏（lg+ 显示；标题数 >= 2 时显示，JS 控制 .toc-hide） -->
   <nav id="article-toc-rail" class="article-toc-rail" aria-label={label}>
     <p class="article-toc-rail-label">
@@ -92,8 +104,16 @@ const { label = "目录", countFormat = "{count} 节" } = Astro.props;
       // 避免被 data-reveal 等祖先的 transform 属性破坏 position:fixed 的视口定位
       // （transform 非 none 时会创建 containing block，使 fixed 相对该祖先而非视口，
       //   表现为悬浮球跟着文章滚动、固定在文章的某一处）。移到 body 后恢复正确的视口固定。
+      // 同时把根节点注入的栏目主题色 CSS 变量复制到被移动元素上，
+      // 否则移出 .article-toc-root 后继承链断裂，导致目录配色丢失。
+      var tocRoot = document.querySelector(".article-toc-root");
       function mountToBody(el) {
         if (el && el.parentNode && el.parentNode !== document.body) {
+          if (tocRoot && el.style) {
+            ["--toc-accent", "--toc-accent-dark"].forEach(function (v) {
+              el.style.setProperty(v, getComputedStyle(tocRoot).getPropertyValue(v).trim());
+            });
+          }
           document.body.appendChild(el);
         }
       }

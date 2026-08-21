@@ -4,6 +4,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import Icon from "../../components/Icon.astro";
 import ArticleTOC from "../../components/ArticleTOC.astro";
+import { SECTION_COLORS, SECTION_COLORS_DARK, type SectionKey } from "../../lib/sections";
 
 export async function getStaticPaths() {
   const sites = await getCollection("sites", ({ data }) => !data.draft && !!data.siteUrl);
@@ -40,7 +41,12 @@ const host = entry.data.siteUrl ? new URL(entry.data.siteUrl).hostname : "";
     ]}
   />
 
-  <article data-reveal>
+  <article data-reveal
+    style={{
+      "--toc-accent": SECTION_COLORS[entry.data.section as SectionKey],
+      "--toc-accent-dark": SECTION_COLORS_DARK[entry.data.section as SectionKey],
+    }}
+  >
     <header class="mb-10">
       <div class="flex items-center gap-3 mb-4">
         <span class="text-[13px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/75 inline-flex items-center gap-1">
@@ -88,7 +94,12 @@ const host = entry.data.siteUrl ? new URL(entry.data.siteUrl).hostname : "";
 
       <!-- 右侧 sticky 目录 -->
       <div class="min-w-0 order-2">
-        <ArticleTOC label="目录" countFormat="{count} 节" />
+        <ArticleTOC
+          label="目录"
+          countFormat="{count} 节"
+          sectionColor={SECTION_COLORS[entry.data.section as SectionKey]}
+          sectionColorDark={SECTION_COLORS_DARK[entry.data.section as SectionKey]}
+        />
       </div>
     </div>
 
