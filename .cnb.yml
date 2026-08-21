@@ -31,9 +31,11 @@ main:
           script: npm ci
         - name: build
           # 先自动解析 public/books/ 下的书本文件（生成在线阅读数据），再执行构建
+          # 同时先运行「上线前全面体检」脚本，发现 error 级问题即令流水线失败
           script: |
             apt-get update && apt-get install -y --no-install-recommends poppler-utils
             node scripts/build-books.mjs
+            node scripts/check-articles.mjs || (echo "❌ 文章上线前体检发现 error 级问题，请先修复再合并" && exit 1)
             npm run build
         - name: sync-to-github
           image: tencentcom/git-sync
@@ -73,9 +75,11 @@ $:
           script: npm ci
         - name: build
           # 先自动解析 public/books/ 下的书本文件（生成在线阅读数据），再执行构建
+          # 同时先运行「上线前全面体检」脚本，发现 error 级问题即令流水线失败
           script: |
             apt-get update && apt-get install -y --no-install-recommends poppler-utils
             node scripts/build-books.mjs
+            node scripts/check-articles.mjs || (echo "❌ 文章上线前体检发现 error 级问题，请先修复再合并" && exit 1)
             npm run build
 
   # 云原生开发环境（点「云原生开发」按钮或 API 启动时生效）
