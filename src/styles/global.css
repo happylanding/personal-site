@@ -2182,3 +2182,25 @@ body {
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
 }
+
+/* ===== 双端兼顾的字体就绪门控（改善 #176 切换闪烁） =====
+   仅对支持跨文档 View Transition 的浏览器（html.vt，由 BaseLayout 检测并标记）
+   在字体未就绪时隐藏 body，用跨页交叉淡入掩蔽 web 字体的 swap 跳变。
+   - 电脑端（Chrome/Edge/Android，.vt 生效）：字体就绪前 body 透明，切栏不闪烁；
+   - 手机端 / iOS Safari / Firefox（无 .vt）：body 始终可见，无白屏。
+   通过 Transition 的交叉淡入（fade-in 0.25s）让隐藏→显示平滑衔接，避免生硬闪现。 */
+html.vt:not(.fonts-ready) body {
+  opacity: 0;
+}
+
+html.vt.fonts-ready body {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* reduced-motion：不做淡入门控，直接显示，避免等待字体造成可感知延迟 */
+@media (prefers-reduced-motion: reduce) {
+  html.vt body {
+    opacity: 1 !important;
+  }
+}

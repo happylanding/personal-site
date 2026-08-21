@@ -82,6 +82,20 @@ const canonical = Astro.url.pathname;
         var html = document.documentElement;
         html.classList.add("js");
         var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        // 检测是否支持跨文档 View Transition（据此决定是否启用 body 隐藏门控）。
+        // 跨文档 VT 仅 Chrome/Edge/Chromium（桌面与 Android）支持；iOS Safari / Firefox / Safari 不支持。
+        var vt = false;
+        try {
+          if (typeof CSS !== "undefined" && CSS.supports && CSS.supports("view-transition-name: root")) {
+            var ua = navigator.userAgent;
+            var isIOS = /iPhone|iPad|iPod/i.test(ua);
+            var isFF = /Firefox\//i.test(ua);
+            var isSafari = /Version\/[\d.]+ Safari/i.test(ua) && !/Chrome\//i.test(ua);
+            vt = !isIOS && !isFF && !isSafari && (/Chrome\//.test(ua) || /Edg\//.test(ua) || /Chromium/i.test(ua));
+          }
+        } catch (e) { vt = false; }
+        if (vt) html.classList.add("vt");
+
         function ready() {
           html.classList.add("fonts-ready");
         }
