@@ -146,12 +146,12 @@ const gachaTools = tools.map((x) => ({
               data-spotlight
               data-tilt
             >
-              <span class="ghost-num text-black/5 dark:text-white/5 select-none pointer-events-none" aria-hidden="true">
+              <span class="ghost-num text-black/10 dark:text-white/20 select-none pointer-events-none" aria-hidden="true">
                 {String(i + 1).padStart(2, "0")}
               </span>
 
               <div class="flex items-center gap-2 mb-3">
-                <span class="block opacity-60"><ToolIcon type={type} class="w-7 h-7" /></span>
+                <span class="block opacity-80 dark:opacity-100"><ToolIcon type={type} class="w-7 h-7" /></span>
                 <span
                   class="inline-flex items-center gap-1.5 text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5"
                   style={{ color: statusColor }}
@@ -308,7 +308,7 @@ const gachaTools = tools.map((x) => ({
       <div
         class="gacha-modal-card relative w-full max-w-sm rounded-2xl border border-black/10 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-2xl p-6 text-center overflow-hidden my-auto pointer-events-auto"
       >
-      <span class="ghost-num text-black/5 dark:text-white/5 select-none pointer-events-none" aria-hidden="true">🎲</span>
+      <span class="ghost-num text-black/10 dark:text-white/20 select-none pointer-events-none" aria-hidden="true">🎲</span>
       <button
         id="tool-gacha-close"
         class="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-black/40 dark:text-white/40 transition-colors"
