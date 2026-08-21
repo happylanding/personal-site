@@ -118,9 +118,9 @@ AI is an executor with an infinite asset library but no "taste filter." Your cor
 
 ## References
 
-[1] Manus AI. (2026). *Frontend Design Skill Guidelines*. Internal Sandbox Documentation.
-[2] Anthropic. (2025). [Frontend Aesthetics: A Prompting Guide](https://platform.claude.com/cookbook/coding-prompting-for-frontend-aesthetics). Claude Cookbook.
-[3] Alex Pate. (2026). [Awesome Design Systems](https://github.com/alexpate/awesome-design-systems). GitHub Repository.
-[4] shadcn. (2026). [shadcn/ui](https://github.com/shadcn-ui/ui). GitHub Repository.
-[5] WorkOS. (2026). [Radix Primitives](https://github.com/radix-ui/primitives). GitHub Repository.
-[6] Motion Division. (2026). [Motion](https://github.com/motiondivision/motion). GitHub Repository.
+1. Manus AI. (2026). *Frontend Design Skill Guidelines*. Internal Sandbox Documentation.
+2. Anthropic. (2025). [Frontend Aesthetics: A Prompting Guide](https://platform.claude.com/cookbook/coding-prompting-for-frontend-aesthetics). Claude Cookbook.
+3. Alex Pate. (2026). [Awesome Design Systems](https://github.com/alexpate/awesome-design-systems). GitHub Repository.
+4. shadcn. (2026). [shadcn/ui](https://github.com/shadcn-ui/ui). GitHub Repository.
+5. WorkOS. (2026). [Radix Primitives](https://github.com/radix-ui/primitives). GitHub Repository.
+6. Motion Division. (2026). [Motion](https://github.com/motiondivision/motion). GitHub Repository.
