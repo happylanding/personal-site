@@ -137,12 +137,9 @@ src/content/articles/xxx.md    ← 自动补建的书籍文章页（若尚无文
 
 自动生成的章节是"完整原文、按文件结构切分"的原始版本。若想让书达到《孙子兵法》那种精修效果（精选/拆分章节/排版优化），可让 AI 基于 `src/data/books/{slug}.json` 二次整理。**精修属大改动，需先出原型图或确认再执行。**
 
-### 4.5 配图 / 简介 / 封面
+### 4.5 简介 / 标签
 
-自动补建的文章只带占位简介（"该书已上传，等待补充简介"）。上线后可按需：
-- 补写简介、标签、`description`
-- 生成封面（遵循 `docs/illustration-workflow.md` 规范）
-- 校正作者、评分、`readUrl`/`epubUrl`/`pdfUrl`
+自动补建的文章只带占位简介（"该书已上传，等待补充简介"）。上线后可按需补写简介、标签、`description`、校正作者、评分、`readUrl`/`epubUrl`/`pdfUrl`。**不再生成封面/配图**（见 Issue #153）。
 
 ---
 
@@ -159,7 +156,7 @@ CodeBuddy 收到后会执行：
 3. **语言保护**：识别书语言，中文原书保持中文、外文原书保持原文，不擅自翻译
 4. **跑解析**：`node scripts/build-books.mjs`，生成 `src/data/books/{slug}.json` + 自动补建文章
 5. **构建验证**：`npm run build` 通过
-6. **配图/简介**（如需）：补封面 + 简介 + 标签，遵循配图规范
+6. **简介/标签**：补简介 + 标签（**不再生成封面/配图**，见 Issue #153）
 7. **拉预览**：涉及视觉/阅读页改动时，拉起 `.cnb.run` 预览给站主确认
 8. **合并部署**：小改动直接合并部署；大改动先提 PR 由站主确认
 
@@ -191,4 +188,4 @@ CodeBuddy 收到后会执行：
 | `public/books/` | 上传书本的目录 |
 | `.cnb.yml` | CI 构建 + GitHub 同步 + 云原生开发环境 |
 | `MAINTENANCE.md` §7.1 | 书籍在线阅读导入链路的既有说明 |
-| `docs/illustration-workflow.md` | 封面/配图规范 |
+| `docs/illustration-workflow.md` | 封面/配图规范（已废弃，不再生成配图，见 Issue #153） |

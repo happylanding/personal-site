@@ -7,8 +7,6 @@ date: 2026-07-25
 tags: ["tailwind", "css", "design"]
 tagsEn: ["tailwind", "css", "design"]
 section: tips
-ogImage: /images/dark-mode-tailwind/cover.png
-ogImageEn: /images/dark-mode-tailwind/cover-en.png
 ---
 
 暗色模式已成为现代网站的标配功能。Tailwind CSS 提供了极其简洁的方式来实现暗色模式。

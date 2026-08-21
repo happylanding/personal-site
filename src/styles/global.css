@@ -696,7 +696,7 @@ html:not(.js) .lmask-inner {
   min-width: 0;
 }
 
-/* ---- 右：图片区（精选文章单图轮播） ---- */
+/* ---- 右：精选文章（无图文字列表，文章不再生成配图，见 Issue #153） ---- */
 .about-person-media {
   min-width: 0;
   display: flex;
@@ -717,163 +717,96 @@ html:not(.js) .lmask-inner {
   color: rgba(255, 255, 255, 0.58);
 }
 
-/* A：精选文章单图轮播（左右自动切换） */
-.about-carousel {
+/* 精选文章列表（文字卡片，无图） */
+.about-featured {
   min-width: 0;
 }
 
-.about-carousel-viewport {
-  position: relative;
-  border-radius: 0.8rem;
-  overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-}
-
-.dark .about-carousel-viewport {
-  border-color: rgba(255, 255, 255, 0.14);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-}
-
-.about-carousel-track {
-  display: flex;
+.about-featured-list {
   list-style: none;
   margin: 0;
   padding: 0;
-  transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
-.about-carousel-slide {
-  flex: 0 0 100%;
+.about-featured-item {
   min-width: 0;
 }
 
-.about-carousel-item {
+.about-featured-link {
   position: relative;
-  display: block;
-  overflow: hidden;
-  transform-style: preserve-3d;
-}
-
-.about-carousel-item img {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.45s ease;
-}
-
-.about-carousel-item:hover img {
-  transform: scale(1.04);
-}
-
-.about-carousel-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 5;
-  width: 2rem;
-  height: 2rem;
-  display: grid;
-  place-items: center;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: rgba(0, 0, 0, 0.35);
-  color: #fff;
-  cursor: pointer;
-  backdrop-filter: blur(4px);
-  transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
-  opacity: 0;
-}
-
-.about-carousel:hover .about-carousel-arrow,
-.about-carousel-arrow:focus-visible {
-  opacity: 1;
-}
-
-.about-carousel-prev {
-  left: 0.6rem;
-}
-
-.about-carousel-next {
-  right: 0.6rem;
-}
-
-.about-carousel-arrow:hover {
-  background: rgba(0, 0, 0, 0.6);
-  transform: translateY(-50%) scale(1.06);
-}
-
-.about-carousel-dots {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 0.55rem;
-  z-index: 5;
   display: flex;
-  gap: 0.4rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.7rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.03);
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.25s ease, border-color 0.25s, transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.about-carousel-dot {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 9999px;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.5);
-  transition: background 0.25s ease, transform 0.25s ease, width 0.25s ease;
+.dark .about-featured-link {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.about-carousel-dot.is-active {
-  width: 1.1rem;
-  border-radius: 9999px;
-  background: #fff;
+.about-featured-link:hover {
+  background: rgba(180, 83, 9, 0.08);
+  border-color: rgba(180, 83, 9, 0.28);
+  transform: translateX(3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
-.about-carousel-dot:hover {
-  background: #fff;
-  transform: scale(1.15);
-}
-
-.about-gallery-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 0.15rem;
-  padding: 0.65rem 0.7rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.66) 0%, rgba(0, 0, 0, 0.12) 55%, transparent 100%);
-  transition: background 0.3s ease;
-}
-
-.about-carousel-item:hover .about-gallery-overlay,
-.about-carousel-item:focus-visible .about-gallery-overlay {
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.28) 55%, transparent 100%);
-}
-
-.about-gallery-section {
+.about-featured-section {
+  flex-shrink: 0;
   font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.14em;
+  font-size: 11px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(180, 83, 9, 0.9);
+  background: rgba(180, 83, 9, 0.1);
+  border: 1px solid rgba(180, 83, 9, 0.22);
+  padding: 0.18rem 0.5rem;
+  border-radius: 9999px;
 }
 
-.about-gallery-title {
+.dark .about-featured-section {
+  color: rgba(245, 158, 11, 0.95);
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.28);
+}
+
+.about-featured-title {
+  flex: 1;
+  min-width: 0;
   font-size: 0.92rem;
   font-weight: 600;
-  line-height: 1.35;
-  color: #fff;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  line-height: 1.4;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+.about-featured-arrow {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  color: rgba(0, 0, 0, 0.35);
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+
+.dark .about-featured-arrow {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.about-featured-link:hover .about-featured-arrow {
+  transform: translateX(3px);
+  color: rgba(180, 83, 9, 0.9);
+}
 /* 移动端：两栏变一栏，图片区放身份信息下方 */
 @media (max-width: 1023px) {
   .about-person-grid {

@@ -8,8 +8,6 @@ tags: ["AI写作", "写作技巧", "去AI味", "AI味检测器"]
 tagsEn: ["AI Writing", "Writing Tips", "De-AI", "AI-ism Detector"]
 section: ai
 featured: true
-ogImage: /images/de-ai-writing/cover.png
-ogImageEn: /images/de-ai-writing/cover-en.png
 ---
 
 > 你拿到一段 AI 写好的文字，读了一遍，说不出哪里不对，但就是觉得"很 AI"。这篇文章把这种感觉拆开，给你一份能直接照做的去 AI 味清单——每一条都配有"机器腔 → 人话"的替换示例。配合我做的 [AI 味检测器](/tools/ai-ism-detector/)，写完随手一测，机器味一目了然。

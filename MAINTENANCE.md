@@ -73,7 +73,7 @@ src/
 
 docs/                           # 归档文档
 ├── github-sync.md              # CNB → GitHub 自动同步配置指南
-└── illustration-workflow.md    # 文章配图流程（星野极光·分栏配色）
+└── illustration-workflow.md    # 文章配图流程（已废弃，文章不再生成配图，见 Issue #153）
 ```
 
 ---
@@ -132,7 +132,7 @@ docs/                           # 归档文档
   1. `src/content/articles-en/<slug>.md`（英文 Markdown 原文，推荐）
   2. frontmatter `bodyEn`（HTML 字符串，旧方式，仍兼容）
   3. 中文原文（fallback，无英文版本时）
-- 英文正文的 frontmatter 只作为信息源，页面头部（标题/摘要/标签/日期/作者/封面）仍取中文文章 frontmatter 的 `titleEn/descriptionEn/tagsEn/authorEn/ogImageEn`，确保整页一致
+- 英文正文的 frontmatter 只作为信息源，页面头部（标题/摘要/标签/日期/作者）仍取中文文章 frontmatter 的 `titleEn/descriptionEn/tagsEn/authorEn`，确保整页一致（不再使用封面 `ogImageEn`，文章不生成配图，见 Issue #153）
 - 目录（TOC）随正文语言自动生成：英文正文 → 英文目录，中文正文 → 中文目录
 
 > 新增文章时的建议：先在 `src/content/articles/` 写中文正文 + frontmatter，再在 `src/content/articles-en/` 写同 slug 的英文正文。若暂时没有英文正文，英文页会自动回退中文原文，不影响构建。

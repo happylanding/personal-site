@@ -5,8 +5,6 @@ description: "简·奥斯汀的经典爱情小说，以幽默讽刺的笔触描�
 descriptionEn: "Jane Austen's beloved classic novel of manners, following the emotional development of Elizabeth Bennet who learns about the repercussions of hasty judgments and the difference between superficial and actual goodness."
 date: 2024-02-20
 section: books
-ogImage: /images/pride-and-prejudice/cover.png
-ogImageEn: /images/pride-and-prejudice/cover-en.png
 tags: ["经典", "文学", "小说"]
 tagsEn: ["classic", "literature", "fiction"]
 author: "简·奥斯汀 (Jane Austen)"
