@@ -1,16 +1,12 @@
 ---
-import { useTranslations, getLangFromUrl } from "../i18n/utils";
 import Icon from "./Icon.astro";
-
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 ---
 
 <button
   id="theme-toggle"
   type="button"
   class="w-[42px] h-[42px] flex items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 dark:active:bg-white/10 transition-all duration-200"
-  aria-label={t("theme.dark")}
+  aria-label="深色模式"
 >
   <!-- 太阳图标（浅色模式显示） -->
   <span class="theme-icon sun-icon block h-[18px] w-[18px] dark:hidden">

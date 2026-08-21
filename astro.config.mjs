@@ -39,13 +39,6 @@ export default defineConfig({
       },
     }),
   ],
-  i18n: {
-    defaultLocale: "zh",
-    locales: ["zh", "en"],
-    routing: {
-      prefixDefaultLocale: false,
-    },
-  },
   markdown: {
     shikiConfig: {
       theme: "github-dark-dimmed",

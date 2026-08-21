@@ -1,11 +1,8 @@
 ---
 title: "使用 Astro 构建静态网站"
-titleEn: "Building Static Sites with Astro"
 description: "Astro 是一个现代的静态网站生成器，专为内容驱动的网站设计。"
-descriptionEn: "Astro is a modern static site generator designed for content-driven websites."
 date: 2026-07-28
 tags: ["astro", "web", "tutorial"]
-tagsEn: ["astro", "web", "tutorial"]
 section: tips
 ---
 

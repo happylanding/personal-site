@@ -5,8 +5,24 @@ import Breadcrumb from "../../components/Breadcrumb.astro";
 import ToolIcon from "../../components/ToolIcon.astro";
 import Icon from "../../components/Icon.astro";
 import AIIsmDetector from "../../components/AIIsmDetector.astro";
-import { getLangFromUrl, useTranslations } from "../../i18n/utils";
 import { TOOL_COLORS } from "../../content/tools/config";
+
+const ui = {
+  "tools.name": "工具箱",
+  "tools.type.online": "在线工具",
+  "tools.type.app": "自研小工具",
+  "tools.type.script": "脚本工具",
+  "tools.status.online": "在线",
+  "tools.status.dev": "开发中",
+  "tools.status.beta": "试玩中",
+  "tools.status.stable": "稳定",
+  "tools.download": "下载",
+  "tools.open": "打开",
+  "tools.stepsTitle": "使用步骤",
+  "tools.usageSteps": "共 {count} 步",
+  "tools.backToList": "返回工具箱",
+};
+const t = (key: string): string => ui[key] ?? key;
 
 export async function getStaticPaths() {
   const tools = await getCollection("tools", ({ data }) => !data.draft);
@@ -14,9 +30,6 @@ export async function getStaticPaths() {
 }
 
 const { slug } = Astro.params;
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
-const isEn = lang === "en";
 
 const allTools = await getCollection("tools", ({ data }) => !data.draft);
 const tool = allTools.find((x) => x.id === slug);
@@ -25,21 +38,21 @@ if (!tool) return Astro.redirect("/404");
 const { Content } = await render(tool);
 
 const type = tool.data.type;
-const title = isEn ? (tool.data.titleEn || tool.data.title) : tool.data.title;
-const desc = isEn ? (tool.data.descriptionEn || tool.data.description) : tool.data.description;
+const title = tool.data.title;
+const desc = tool.data.description;
 const statusLabel = t(`tools.status.${tool.data.status}`);
 const statusColor =
   tool.data.status === "online" ? "#16A34A"
   : tool.data.status === "stable" ? "#B45309"
   : tool.data.status === "beta" ? "#0E96E9"
   : "#737373";
-const tags = isEn ? (tool.data.tagsEn?.length ? tool.data.tagsEn : tool.data.tags) : tool.data.tags;
-const usage = isEn ? (tool.data.usageEn?.length ? tool.data.usageEn : tool.data.usage) : tool.data.usage;
+const tags = tool.data.tags;
+const usage = tool.data.usage;
 const updated = tool.data.updated || tool.data.date;
-const dateStr = updated.toLocaleDateString(isEn ? "en-US" : "zh-CN", {
+const dateStr = updated.toLocaleDateString("zh-CN", {
   year: "numeric", month: "long", day: "numeric",
 });
-const listHref = isEn ? "/en/tools/" : "/tools/";
+const listHref = "/tools/";
 const downloadUrl = tool.data.downloadUrl;
 ---
 

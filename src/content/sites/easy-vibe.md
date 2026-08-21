@@ -1,12 +1,9 @@
 ---
 title: "Easy-Vibe：Datawhale 出品、从零到全栈的 AI 编程（Vibe Coding）教程站"
-titleEn: "Easy-Vibe — Datawhale's Zero-to-Fullstack Vibe Coding Course Site"
 description: "Datawhale 开源教程站，用『会说话就能编程』的 Vibe Coding 理念，把从零基础到全栈开发的完整学习路径做成了 10 种语言的单页导航，信息架构清晰得像一份产品手册。"
-descriptionEn: "An open-source course by Datawhale — turning 'talk-to-code' Vibe Coding into a 4-stage learning path, navigable in 10 languages with a single-page IA as clean as a product manual."
 date: 2026-08-08
 updated: 2026-08-08
 tags: ["设计灵感", "教程站", "信息架构", "AI 编程", "开源教育"]
-tagsEn: ["design", "course-site", "information-architecture", "ai-coding", "open-education"]
 section: insights
 featured: false
 siteUrl: https://datawhalechina.github.io/easy-vibe/zh-cn/

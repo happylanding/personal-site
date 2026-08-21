@@ -1,14 +1,10 @@
 ---
 title: "孙子兵法 · The Art of War"
-titleEn: "The Art of War"
 description: "中国古代军事经典著作，由春秋时期军事家孙武所著，被誉为「兵学圣典」。本书系统阐述了战争策略、军事哲学和领导智慧，其思想已广泛应用于商业、管理和竞争领域。"
-descriptionEn: "The ancient Chinese military treatise attributed to Sun Tzu, a seminal work on strategy, military philosophy, and leadership wisdom that has influenced both Eastern and Western military and business thinking."
 date: 2024-01-15
 section: books
 tags: ["经典", "战略", "哲学"]
-tagsEn: ["classic", "strategy", "philosophy"]
 author: "孙武 (Sun Tzu)"
-authorEn: "Sun Tzu"
 epubUrl: "/books/the-art-of-war.epub"
 readUrl: "/books/the-art-of-war/read/"
 rating: 5

@@ -1,11 +1,8 @@
 ---
 title: "Easy-Vibe 宝藏指南：把 Datawhale 这套 AI 编程教程里真正的好东西一次讲清楚"
-titleEn: "Easy-Vibe Treasure Guide: The Best Resources in Datawhale's AI Coding Course"
 description: "Datawhale 开源的 Easy-Vibe 教程站藏着大量好东西：从 60 秒生成贪吃蛇的在线编程平台实测，到 Claude Code、MCP、Agent Teams 进阶玩法，再到 49 篇附录知识库。这篇文章带你完整拆解这份'从零到全栈'的 AI 编程学习地图。"
-descriptionEn: "Datawhale's open-source Easy-Vibe site is full of treasures: hands-on reviews of browser-based coding platforms, Claude Code / MCP / Agent Teams deep dives, and a 49-article appendix. This guide walks through the whole zero-to-fullstack AI coding map."
 date: 2026-08-08
 tags: ["AI编程", "Vibe Coding", "学习路径", "Datawhale", "教程资源"]
-tagsEn: ["AI Coding", "Vibe Coding", "Learning Path", "Datawhale", "Resources"]
 section: ai
 featured: false
 ---

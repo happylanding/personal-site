@@ -1,11 +1,8 @@
 ---
 title: "我的第一件 Vibe Coding 作品：与 AI 共创一个个人网站"
-titleEn: "My First Vibe Coding Project — Building a Personal Site with AI"
 description: "一个不懂代码的人，靠和 AI 对话，用 5 天从零做出一个 55+ 双语页面的个人网站。这篇文章记录全过程：人机怎么分工、五个阶段怎么推进、手机端适配踩了哪些坑、哪些经验值得你直接复制。"
-descriptionEn: "A non-developer built a 55-page bilingual personal site in five days by talking to AI. This article documents the whole process: how we divided labor, how the five stages went, the mobile adaptation pitfalls, and which lessons you can copy directly."
 date: 2026-08-02
 tags: ["Vibe Coding", "AI编程", "网站搭建", "个人博客", "CodeBuddy"]
-tagsEn: ["Vibe Coding", "AI Programming", "Web Dev", "Personal Blog", "CodeBuddy"]
 section: tips
 featured: true
 ---

@@ -1,39 +1,37 @@
 ---
-import { getLangFromUrl, useTranslations } from "../i18n/utils";
 import Icon from "./Icon.astro";
 
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
-const langPrefix = lang === "en" ? "/en/" : "/";
+// 本站只提供中文（不再提供英文版）
+const langPrefix = "/";
 
-// 搜索索引已抽取为独立 JSON（/search-index.json、/en/search-index.json），
+// 搜索索引已抽取为独立 JSON（/search-index.json），
 // 由前端在搜索框首次打开时才 fetch，页面不再内联全站文章数据（每页少 23~26KB 解析）。
 
 // 搜索 UI 文案（直接传给前端 JS，避免运行时再判断语言）
 const searchUI = {
-  placeholder: t("search.placeholder"),
-  noResults: t("search.noResults"),
-  idleHint: t("search.idleHint"),
-  shortcut: t("search.shortcut"),
-  hintClose: t("search.hintClose"),
-  hintNav: t("search.hintNav"),
-  hintOpen: t("search.hintOpen"),
-  hintAll: t("search.hintAll"),
-  popTags: t("search.popTags"),
-  totalPosts: t("search.totalPosts"),
-  matched: t("search.matched"),
-  of: t("search.of"),
-  groupBy: t("search.groupBy"),
-  tryKeywords: t("search.tryKeywords"),
-  clear: t("search.clear"),
+  placeholder: "搜索标题、描述、标签...",
+  noResults: "未找到相关文章",
+  idleHint: "输入关键词开始搜索",
+  shortcut: "Ctrl+K",
+  hintClose: "关闭",
+  hintNav: "导航",
+  hintOpen: "打开",
+  hintAll: "全部",
+  popTags: "热门标签",
+  totalPosts: "篇文章",
+  matched: "命中",
+  of: "共",
+  groupBy: "按栏目分组",
+  tryKeywords: "试试这些关键词",
+  clear: "清空输入",
 };
 
 // 栏目名称（用于空态导航）
 const sectionNames = {
-  insights: t("columns.insights.name"),
-  ai: t("columns.ai.name"),
-  tips: t("columns.tips.name"),
-  books: t("columns.books.name"),
+  insights: "行业洞察",
+  ai: "AI 学习",
+  tips: "实用技巧",
+  books: "阅读思考",
 };
 ---
 
@@ -43,10 +41,10 @@ const sectionNames = {
   id="search-trigger-desktop"
   type="button"
   class="hidden lg:flex items-center w-[200px] h-[42px] px-3 rounded-xl border border-black/10 dark:border-white/10 bg-black/[0.06] dark:bg-white/10 hover:bg-black/[0.09] dark:hover:bg-white/[0.14] active:bg-black/10 dark:active:bg-white/20 transition-all duration-200 text-left"
-  aria-label={t("search.trigger")}
+  aria-label="打开搜索"
 >
   <Icon name="search" class="shrink-0 w-[15px] h-[15px] opacity-40 mr-2" />
-  <span class="flex-1 truncate text-[13px] text-black/40 dark:text-white/40">{t("search.placeholder")}</span>
+  <span class="flex-1 truncate text-[13px] text-black/40 dark:text-white/40">{searchUI.placeholder}</span>
   <kbd class="shrink-0 ml-2 px-1.5 py-0.5 rounded bg-white/70 dark:bg-white/20 border border-black/5 dark:border-white/10 text-[10px] font-mono text-black/40 dark:text-white/40">
     ⌘K
   </kbd>
@@ -57,8 +55,8 @@ const sectionNames = {
   id="search-trigger-md"
   type="button"
   class="hidden md:flex lg:hidden w-[42px] h-[42px] items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 dark:active:bg-white/10 transition-all duration-200"
-  aria-label={t("search.trigger")}
-  title={t("search.placeholder")}
+  aria-label="打开搜索"
+  title={searchUI.placeholder}
 >
   <Icon name="search" class="w-[18px] h-[18px] opacity-60" />
 </button>
@@ -68,8 +66,8 @@ const sectionNames = {
   id="search-trigger-mobile"
   type="button"
   class="md:hidden w-[42px] h-[42px] flex items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 dark:active:bg-white/10 transition-all duration-200"
-  aria-label={t("search.trigger")}
-  title={t("search.placeholder")}
+  aria-label="打开搜索"
+  title={searchUI.placeholder}
 >
   <Icon name="search" class="w-[18px] h-[18px] opacity-60" />
 </button>
@@ -535,7 +533,7 @@ const sectionNames = {
       var tags = popularTags(8);
       var tagHtml = '<div class="idle-block"><div class="idle-title">' + ui.popTags + "</div><div class='idle-chips'>";
       for (var t = 0; t < tags.length; t++) {
-        // 标签页路径需跟随当前语言前缀（英文站 /en/tags/...）
+        // 标签页路径（本站仅中文，前缀为 /）
         tagHtml += '<a href="' + langPrefix + 'tags/' + encodeURIComponent(tags[t].tag) + '" class="idle-chip">#' +
           tags[t].tag +
           ' <span class="chip-num">' + tags[t].n + "</span></a>";

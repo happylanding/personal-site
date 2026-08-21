@@ -1,14 +1,10 @@
 ---
 title: "傲慢与偏见 · Pride and Prejudice"
-titleEn: "Pride and Prejudice"
 description: "简·奥斯汀的经典爱情小说，以幽默讽刺的笔触描绘了19世纪英国乡绅阶层的生活与婚恋观，是世界文学史上最受欢迎的小说之一。"
-descriptionEn: "Jane Austen's beloved classic novel of manners, following the emotional development of Elizabeth Bennet who learns about the repercussions of hasty judgments and the difference between superficial and actual goodness."
 date: 2024-02-20
 section: books
 tags: ["经典", "文学", "小说"]
-tagsEn: ["classic", "literature", "fiction"]
 author: "简·奥斯汀 (Jane Austen)"
-authorEn: "Jane Austen"
 epubUrl: "/books/pride-prejudice.epub"
 readUrl: "/books/pride-and-prejudice/read/"
 rating: 5

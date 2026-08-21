@@ -1,5 +1,4 @@
 ---
-import { getLangFromUrl, useTranslations } from "../i18n/utils";
 import Icon from "./Icon.astro";
 
 interface Crumb {
@@ -12,8 +11,6 @@ interface Props {
   class?: string;
 }
 
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 const { crumbs, class: navClass = "mb-8" } = Astro.props;
 ---
 
@@ -21,10 +18,10 @@ const { crumbs, class: navClass = "mb-8" } = Astro.props;
   <ol class="flex flex-wrap items-center gap-1 text-sm text-black/40 dark:text-white/40">
     <li>
       <a
-        href={lang === "en" ? "/en/" : "/"}
+        href="/"
         class="hover:text-black dark:hover:text-white transition-colors"
       >
-        {t("breadcrumb.home")}
+        首页
       </a>
     </li>
     {crumbs.map((crumb, i) => (

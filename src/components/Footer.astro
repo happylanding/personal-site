@@ -1,11 +1,8 @@
 ---
-import { getLangFromUrl } from "../i18n/utils";
 import Icon from "./Icon.astro";
 
-const lang = getLangFromUrl(Astro.url);
-const isEn = lang === "en";
-const sitesHref = isEn ? "/en/sites/" : "/sites/";
-const toolsHref = isEn ? "/en/tools/" : "/tools/";
+const sitesHref = "/sites/";
+const toolsHref = "/tools/";
 ---
 
 <footer class="border-t border-black/10 dark:border-white/10 mt-8">

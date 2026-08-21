@@ -1,11 +1,8 @@
 ---
 title: "数字经济脉搏：从产业数字化看中国经济的底层逻辑"
-titleEn: "The Pulse of the Digital Economy: Understanding China's Economic Logic Through Digital Transformation"
 description: "从产业数字化、数字产业化两条主线出发，拆解数字经济增长背后的底层逻辑，并探讨它对个人职业选择与学习方向的影响。"
-descriptionEn: "Starting from the two main threads of industrial digitalization and digital industrialization, this article unpacks the underlying logic of digital economic growth and its implications for personal career choices and learning directions."
 date: 2026-08-05
 tags: ["数字经济", "产业观察", "数字化转型"]
-tagsEn: ["Digital Economy", "Industry Insights", "Digital Transformation"]
 section: insights
 featured: true
 ---

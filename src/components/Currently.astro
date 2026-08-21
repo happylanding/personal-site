@@ -26,22 +26,18 @@
  *   - 标题/描述单行截断（truncate），右边缘对齐
  *   - 行间细分隔线，信息主次分明
  */
-import { useTranslations, getLangFromUrl } from "../i18n/utils";
 import { getCollection } from "astro:content";
 import Icon from "./Icon.astro";
-
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 
 const now = Date.now();
 const yearMs = 365 * 24 * 60 * 60 * 1000;
 
 const isBook = (a) => Boolean(a.data.author);
-const titleOf = (a) => (lang === "en" ? a.data.titleEn || a.data.title : a.data.title);
-const pathOf = (a) => `${lang === "en" ? "/en" : ""}/${a.data.section}/${a.id}`;
+const titleOf = (a) => a.data.title;
+const pathOf = (a) => `/${a.data.section}/${a.id}`;
 const stripBookMarks = (s) => s.replace(/^《|》$/g, "");
 const fmtDate = (a) =>
-  (a.data.updated || a.data.date).toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", {
+  (a.data.updated || a.data.date).toLocaleDateString("zh-CN", {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -49,94 +45,46 @@ const fmtDate = (a) =>
 
 /** 网络热梗 × 有趣动词池：本站不严肃，标题也要会整活 😎 每行 8 个备选，池子越大越不容易撞句 */
 const VIBES = {
-  reading: {
-    zh: [
-      "在啃《{t}》",
-      "在盘《{t}》",
-      "在读《{t}》，已上头",
-      "在卷《{t}》，精神状态良好",
-      "今天也在啃《{t}》",
-      "在磨《{t}》，越磨越香",
-      "掉进《{t}》出不来了",
-      "抱着《{t}》不肯撒手",
-    ],
-    en: [
-      "Crushing {t}",
-      "Deep in {t}",
-      "Obsessed with {t}",
-      "Devouring {t}",
-      "Loving {t}",
-      "Savoring {t}",
-      "Falling down the {t} rabbit hole",
-      "Glued to {t}",
-    ],
-  },
-  writing: {
-    zh: [
-      "在肝《{t}》",
-      "键盘冒烟中：《{t}》",
-      "在憋大招：《{t}》",
-      "灵感上头，在写《{t}》",
-      "在更文《{t}》",
-      "码字到飞起：《{t}》",
-      "在憋《{t}》这篇大的",
-      "深夜码字：《{t}》",
-    ],
-    en: [
-      "Cooking up {t}",
-      "Drafting {t}",
-      "Pounding out {t}",
-      "On a roll: {t}",
-      "Working on {t}",
-      "Smashing out {t}",
-      "Crafting {t}",
-      "Late-night writing: {t}",
-    ],
-  },
-  coding: {
-    zh: [
-      "在折腾 {l}",
-      "在跟 {l} 极限拉扯",
-      "在搓 {l}，面向 BUG 编程",
-      "在整活 {l}",
-      "在肝 {l}，头秃警告",
-      "在调 {l}，死活不报错",
-      "在跟 {l} 掰头",
-      "在驯服 {l}",
-    ],
-    en: [
-      "Tinkering with {l}",
-      "Wrestling with {l}",
-      "Hacking on {l}",
-      "Fighting {l}",
-      "Grinding {l}",
-      "Battling {l}",
-      "Taming {l}",
-      "Poking {l} with a stick",
-    ],
-  },
-  learning: {
-    zh: [
-      "在学 {l}",
-      "在偷偷卷 {l}",
-      "在给大脑升级：{l}",
-      "在上头 {l}",
-      "在补课：{l}",
-      "在悄悄点 {l} 技能点",
-      "在研习 {l}",
-      "在恶补 {l}",
-    ],
-    en: [
-      "Leveling up in {l}",
-      "Grinding {l}",
-      "Studying {l}",
-      "Upskilling in {l}",
-      "Learning {l}",
-      "Leveling {l} skill points",
-      "Geeking out on {l}",
-      "Cramming {l}",
-    ],
-  },
+  reading: [
+    "在啃《{t}》",
+    "在盘《{t}》",
+    "在读《{t}》，已上头",
+    "在卷《{t}》，精神状态良好",
+    "今天也在啃《{t}》",
+    "在磨《{t}》，越磨越香",
+    "掉进《{t}》出不来了",
+    "抱着《{t}》不肯撒手",
+  ],
+  writing: [
+    "在肝《{t}》",
+    "键盘冒烟中：《{t}》",
+    "在憋大招：《{t}》",
+    "灵感上头，在写《{t}》",
+    "在更文《{t}》",
+    "码字到飞起：《{t}》",
+    "在憋《{t}》这篇大的",
+    "深夜码字：《{t}》",
+  ],
+  coding: [
+    "在折腾 {l}",
+    "在跟 {l} 极限拉扯",
+    "在搓 {l}，面向 BUG 编程",
+    "在整活 {l}",
+    "在肝 {l}，头秃警告",
+    "在调 {l}，死活不报错",
+    "在跟 {l} 掰头",
+    "在驯服 {l}",
+  ],
+  learning: [
+    "在学 {l}",
+    "在偷偷卷 {l}",
+    "在给大脑升级：{l}",
+    "在上头 {l}",
+    "在补课：{l}",
+    "在悄悄点 {l} 技能点",
+    "在研习 {l}",
+    "在恶补 {l}",
+  ],
 };
 
 /** 稳定字符串哈希（FNV-1a 风格），同一输入永远得到同一数字 */
@@ -156,8 +104,8 @@ const hashStr = (s) => {
  *  - 内容没变 → 指纹不变 → 前缀稳定，不抽风
  *  - 每行用不同偏移（kind + 行序号），保证四行前缀互不重复
  */
-const pickVibe = (kind, lang, seed, offset = 0) => {
-  const pool = VIBES[kind]?.[lang] ?? [];
+const pickVibe = (kind, seed, offset = 0) => {
+  const pool = VIBES[kind] ?? [];
   return pool[((hashStr(seed) + offset * 0x9e3779b1) >>> 0) % pool.length];
 };
 
@@ -185,7 +133,6 @@ const siteFingerprint = published
       a.id,
       a.data.section,
       a.data.title,
-      a.data.titleEn,
       a.data.author || "",
       (a.data.tags || []).join(","),
       (a.data.date?.getTime?.() ?? ""),
@@ -205,12 +152,10 @@ const writing = pickRecent(posts);
 const reading = book
   ? {
       label: "READING",
-      title: pickVibe("reading", lang, siteFingerprint, 0).replace("{t}", stripBookMarks(titleOf(book))),
+      title: pickVibe("reading", siteFingerprint, 0).replace("{t}", stripBookMarks(titleOf(book))),
       desc: book.data.author
-        ? `${lang === "en" ? "by" : "作者"} ${lang === "en" ? book.data.authorEn || book.data.author : book.data.author}`
-        : lang === "en"
-          ? "Latest book on the shelf"
-          : "书架上的新书",
+        ? `作者 ${book.data.author}`
+        : "书架上的新书",
       href: pathOf(book),
     }
   : null;
@@ -219,8 +164,8 @@ const reading = book
 const writingItem = writing
   ? {
       label: "WRITING",
-      title: pickVibe("writing", lang, siteFingerprint, 1).replace("{t}", stripBookMarks(titleOf(writing))),
-      desc: lang === "en" ? `Updated ${fmtDate(writing)}` : `更新于 ${fmtDate(writing)}`,
+      title: pickVibe("writing", siteFingerprint, 1).replace("{t}", stripBookMarks(titleOf(writing))),
+      desc: `更新于 ${fmtDate(writing)}`,
       href: pathOf(writing),
     }
   : null;
@@ -262,17 +207,11 @@ const codeLangPretty = LANG_NAMES[codeLang.toLowerCase()] || codeLang;
 const coding = {
   label: "CODING",
   title: codeLang
-    ? pickVibe("coding", lang, siteFingerprint, 2).replace("{l}", codeLangPretty)
-    : lang === "en"
-      ? "Hacking on Astro & this site"
-      : "在折腾 Astro 个人网站",
+    ? pickVibe("coding", siteFingerprint, 2).replace("{l}", codeLangPretty)
+    : "在折腾 Astro 个人网站",
   desc: codeSource
-    ? lang === "en"
-      ? `From ${titleOf(codeSource)}`
-      : `来自《${stripBookMarks(titleOf(codeSource))}》`
-    : lang === "en"
-      ? "Building this site with Astro + Tailwind"
-      : "用 Astro + Tailwind 维护这个站点",
+    ? `来自《${stripBookMarks(titleOf(codeSource))}》`
+    : "用 Astro + Tailwind 维护这个站点",
   href: codeSource ? pathOf(codeSource) : "/",
 };
 
@@ -289,15 +228,15 @@ const learning = (() => {
     const pretty = { ai: "AI", astro: "Astro", tailwind: "Tailwind CSS", css: "CSS", javascript: "JavaScript", node: "Node.js", vue: "Vue", react: "React", python: "Python", web: "Web" }[tag] || tag;
     return {
       label: "LEARNING",
-      title: pickVibe("learning", lang, siteFingerprint, 3).replace("{l}", pretty),
-      desc: lang === "en" ? `From ${titleOf(seen)}` : `来自《${stripBookMarks(titleOf(seen))}》`,
+      title: pickVibe("learning", siteFingerprint, 3).replace("{l}", pretty),
+      desc: `来自《${stripBookMarks(titleOf(seen))}》`,
       href: pathOf(seen),
     };
   }
   return {
     label: "LEARNING",
-    title: lang === "en" ? "Leveling up in AI & tools" : "在偷偷卷 AI 与效率工具",
-    desc: lang === "en" ? "The long-running theme of this site" : "本站一直关注的主题",
+    title: "在偷偷卷 AI 与效率工具",
+    desc: "本站一直关注的主题",
     href: "/",
   };
 })();
@@ -318,10 +257,10 @@ const grid = rows.length > 0 ? rows.slice(0, 4) : [];
         >
           <span class="inline-block w-1.5 h-1.5 rounded-full bg-green-600 dark:bg-green-400 animate-pulse" aria-hidden="true"></span>
           <Icon name="radio" class="w-3.5 h-3.5" />
-          {lang === "en" ? "CURRENTLY" : "最近在做什么"}
+          {"最近在做什么"}
         </h2>
         <span class="font-mono text-xs text-black/40 dark:text-white/55">
-          {lang === "en" ? "auto · from posts" : "自动 · 来自站内文章"}
+          {"自动 · 来自站内文章"}
         </span>
       </div>
       <!-- 方案 A 升级：卡片内 4 行文字带交错延迟 + back.out 弹性逐个入场 -->

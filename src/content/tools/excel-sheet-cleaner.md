@@ -1,8 +1,6 @@
 ---
 title: "Excel 空 Sheet 批量清理工具"
-titleEn: "Excel Empty Sheet Cleaner"
 description: "部署在目标文件夹，双击运行即可自动扫描并删除 Excel 文件中的空 Sheet，保留格式与样式。支持识别 .csv 伪装成 xlsx 的文件与多种编码。"
-descriptionEn: "Drop it into any folder and double-click to run — automatically scans and removes empty sheets from Excel files, keeping formatting intact. Handles CSV-as-XLSX imposters and multi-encoding."
 type: "script"
 status: "stable"
 version: "v2.0"
@@ -11,7 +9,6 @@ usage:
   - "点击下方「下载」，得到 excel-sheet-cleaner.zip 并解压"
   - "把 ExcelSheetCleaner.ps1 和 运行.bat 复制到存放 Excel 的文件夹"
   - "双击 运行.bat，自动扫描清理，完成后生成 excel-cleaner-log.txt 日志"
-usageEn:
   - "Click Download below to get excel-sheet-cleaner.zip and unzip it"
   - "Copy ExcelSheetCleaner.ps1 and 运行.bat into the folder where your Excel files live"
   - "Double-click 运行.bat — it scans and cleans automatically, then writes an excel-cleaner-log.txt log"
@@ -19,7 +16,6 @@ downloadUrl: "/downloads/excel-sheet-cleaner.zip"
 date: 2026-08-08
 updated: 2026-08-08
 tags: ["Excel", "效率", "批量清理", "WPS"]
-tagsEn: ["excel", "productivity", "batch-cleanup", "wps"]
 featured: true
 ---
 

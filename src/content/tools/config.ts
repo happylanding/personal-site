@@ -8,24 +8,19 @@ export type ToolStatus = "online" | "dev" | "beta" | "stable";
 
 export interface ToolData {
   title: string;
-  titleEn?: string;
   description?: string;
-  descriptionEn?: string;
   type: ToolType;
   url?: string;
   status: ToolStatus;
   command?: string;
   /** 使用方法步骤（script 类型，无 command 时展示步骤卡） */
   usage?: string[];
-  /** 使用方法步骤（英文版） */
-  usageEn?: string[];
   downloadUrl?: string;
   version?: string;
   repo?: string;
   date: Date;
   updated?: Date;
   tags: string[];
-  tagsEn: string[];
   draft: boolean;
   featured: boolean;
 }

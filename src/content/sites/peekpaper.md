@@ -1,12 +1,9 @@
 ---
 title: "Peek Paper：每天精选网页的『网络日报』——手工策展美学与编辑设计范本"
-titleEn: "Peek Paper — The Web's Daily Paper, a Hand-Curated Editorial Showcase of Beautiful Websites"
 description: "每天手工精选优秀网站的『网络日报』，用报纸头版式的编辑排版 + 双色主题切换 + 克制的入场动效，把『策展』做成了一种审美产品。"
-descriptionEn: "A daily hand-picked editorial on the best of the web — newspaper-front-page layout, warm/mint dual theme, and restrained entrance motion that turn curation into an aesthetic product."
 date: 2026-08-10
 updated: 2026-08-10
 tags: ["设计灵感", "策展", "编辑设计", "日报", "网站灵感"]
-tagsEn: ["design", "curation", "editorial", "daily", "inspiration"]
 section: insights
 featured: false
 siteUrl: https://peekpaper.com/

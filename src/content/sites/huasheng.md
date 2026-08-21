@@ -1,12 +1,9 @@
 ---
 title: "花叔 Alchain：一个人用『代码杠杆』撑起一家公司的 AI Native Coder"
-titleEn: "Huashu (Alchain) — One-Man Company Powered by Code Leverage & Media Leverage"
 description: "花叔的个人品牌站，暗色胶片质感 + 数据驱动的 REEL 作品集 + 媒体矩阵 + 合作服务，把独立开发者的『作品资产』全部织进一张网。"
-descriptionEn: "Huashu's personal brand site — dark film-grain aesthetic, metric-driven REEL portfolio, media matrix and services, weaving a solo developer's entire asset network."
 date: 2026-08-08
 updated: 2026-08-08
 tags: ["设计灵感", "个人品牌站", "作品集", "数据驱动", "暗色系"]
-tagsEn: ["design", "personal-site", "portfolio", "data-driven", "dark-ui"]
 section: insights
 featured: false
 siteUrl: https://www.huasheng.ai/

@@ -1,11 +1,8 @@
 ---
 title: "当 AI 成为同事：人机协作时代的工作方式重构"
-titleEn: "When AI Becomes a Colleague: Rethinking How We Work in the Human-AI Era"
 description: "AI 正在从'工具'变成'协作者'。本文结合一线实践，探讨人机协作的新分工、技能需求的变化，以及普通人如何在新工作方式中找到自己的位置。"
-descriptionEn: "AI is shifting from a 'tool' to a 'collaborator.' Drawing on hands-on practice, this article explores the new division of labor in human-AI collaboration, the changing skill demands, and how ordinary people can find their place."
 date: 2026-08-06
 tags: ["AI", "人机协作", "工作方式"]
-tagsEn: ["AI", "Human-AI Collaboration", "Future of Work"]
 section: insights
 ---
 

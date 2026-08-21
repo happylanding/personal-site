@@ -4,7 +4,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import Icon from "../../components/Icon.astro";
 import ArticleTOC from "../../components/ArticleTOC.astro";
-import { getLangFromUrl, useTranslations } from "../../i18n/utils";
 
 export async function getStaticPaths() {
   const sites = await getCollection("sites", ({ data }) => !data.draft && !!data.siteUrl);
@@ -12,8 +11,6 @@ export async function getStaticPaths() {
 }
 
 const { slug } = Astro.params;
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 
 const allSites = await getCollection("sites", ({ data }) => !data.draft && !!data.siteUrl);
 const entry = allSites.find((s) => s.id === slug);
@@ -27,10 +24,9 @@ const nextEntry = idx >= 0 && idx < sectionSites.length - 1 ? sectionSites[idx +
 
 const { Content } = await render(entry);
 
-const isEn = lang === "en";
-const title = isEn ? (entry.data.titleEn || entry.data.title) : entry.data.title;
-const desc = isEn ? (entry.data.descriptionEn || entry.data.description) : entry.data.description;
-const dateStr = entry.data.date.toLocaleDateString(isEn ? "en-US" : "zh-CN", {
+const title = entry.data.title;
+const desc = entry.data.description;
+const dateStr = entry.data.date.toLocaleDateString("zh-CN", {
   year: "numeric", month: "long", day: "numeric",
 });
 const host = entry.data.siteUrl ? new URL(entry.data.siteUrl).hostname : "";
@@ -39,7 +35,7 @@ const host = entry.data.siteUrl ? new URL(entry.data.siteUrl).hostname : "";
 <BaseLayout title={title} description={desc}>
   <Breadcrumb
     crumbs={[
-      { label: isEn ? "Collection" : "收藏夹", href: isEn ? "/en/sites/" : "/sites/" },
+      { label: "收藏夹", href: "/sites/" },
       { label: title, href: "#" },
     ]}
   />
@@ -49,7 +45,7 @@ const host = entry.data.siteUrl ? new URL(entry.data.siteUrl).hostname : "";
       <div class="flex items-center gap-3 mb-4">
         <span class="text-[13px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/75 inline-flex items-center gap-1">
           <Icon name="bookmark" class="w-3 h-3" />
-          {isEn ? "Collection" : "收藏夹"}
+          收藏夹
         </span>
         {entry.data.siteUrl && (
           <a
@@ -92,7 +88,7 @@ const host = entry.data.siteUrl ? new URL(entry.data.siteUrl).hostname : "";
 
       <!-- 右侧 sticky 目录 -->
       <div class="min-w-0 order-2">
-        <ArticleTOC label={t("articles.toc")} countFormat={t("articles.tocCount")} />
+        <ArticleTOC label="目录" countFormat="{count} 节" />
       </div>
     </div>
 
@@ -102,12 +98,12 @@ const host = entry.data.siteUrl ? new URL(entry.data.siteUrl).hostname : "";
         <div class="min-w-0 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {prevEntry ? (
             <a
-              href={isEn ? `/en/sites/${prevEntry.id}/` : `/sites/${prevEntry.id}/`}
+              href={`/sites/${prevEntry.id}/`}
               class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors"
             >
-              <p class="text-xs text-black/30 dark:text-white/30 mb-1 inline-flex items-center gap-1"><Icon name="arrowLeft" class="w-3 h-3" /> {isEn ? "Previous" : "上一篇"}</p>
+              <p class="text-xs text-black/30 dark:text-white/30 mb-1 inline-flex items-center gap-1"><Icon name="arrowLeft" class="w-3 h-3" /> 上一篇</p>
               <p class="text-sm font-medium group-hover:text-black dark:group-hover:text-white transition-colors line-clamp-2">
-                {isEn ? (prevEntry.data.titleEn || prevEntry.data.title) : prevEntry.data.title}
+                {prevEntry.data.title}
               </p>
             </a>
           ) : (
@@ -115,12 +111,12 @@ const host = entry.data.siteUrl ? new URL(entry.data.siteUrl).hostname : "";
           )}
           {nextEntry ? (
             <a
-              href={isEn ? `/en/sites/${nextEntry.id}/` : `/sites/${nextEntry.id}/`}
+              href={`/sites/${nextEntry.id}/`}
               class="group p-4 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 transition-colors sm:text-right"
             >
-              <p class="text-xs text-black/30 dark:text-white/30 mb-1 inline-flex items-center gap-1">{isEn ? "Next" : "下一篇"} <Icon name="arrowRight" class="w-3 h-3" /></p>
+              <p class="text-xs text-black/30 dark:text-white/30 mb-1 inline-flex items-center gap-1">下一篇 <Icon name="arrowRight" class="w-3 h-3" /></p>
               <p class="text-sm font-medium group-hover:text-black dark:group-hover:text-white transition-colors line-clamp-2">
-                {isEn ? (nextEntry.data.titleEn || nextEntry.data.title) : nextEntry.data.title}
+                {nextEntry.data.title}
               </p>
             </a>
           ) : (
@@ -134,11 +130,11 @@ const host = entry.data.siteUrl ? new URL(entry.data.siteUrl).hostname : "";
 
     <nav class="mt-12">
       <a
-        href={isEn ? "/en/sites/" : "/sites/"}
+        href="/sites/"
         class="inline-flex items-center gap-2 text-sm text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white transition-colors"
       >
         <Icon name="arrowLeft" class="w-4 h-4" />
-        {isEn ? "Back to collection" : "返回收藏夹"}
+        返回收藏夹
       </a>
     </nav>
   </article>

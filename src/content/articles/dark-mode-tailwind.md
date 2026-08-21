@@ -1,11 +1,8 @@
 ---
 title: "Tailwind CSS 暗色模式实践"
-titleEn: "Practicing Dark Mode with Tailwind CSS"
 description: "介绍如何使用 Tailwind CSS 的 class 策略实现暗色模式切换。"
-descriptionEn: "How to implement dark mode toggle using Tailwind CSS class strategy."
 date: 2026-07-25
 tags: ["tailwind", "css", "design"]
-tagsEn: ["tailwind", "css", "design"]
 section: tips
 ---
 

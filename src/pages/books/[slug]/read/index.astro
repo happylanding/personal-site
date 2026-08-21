@@ -5,7 +5,6 @@ import Breadcrumb from "../../../../components/Breadcrumb.astro";
 import ColumnIcon from "../../../../components/ColumnIcon.astro";
 import Icon from "../../../../components/Icon.astro";
 import ArticleTOC from "../../../../components/ArticleTOC.astro";
-import { getLangFromUrl, useTranslations } from "../../../../i18n/utils";
 
 export async function getStaticPaths() {
   const books = await getCollection("articles", ({ data }) => !data.draft && data.section === "books");
@@ -13,8 +12,6 @@ export async function getStaticPaths() {
 }
 
 const { slug } = Astro.params;
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 
 const allBooks = await getCollection("articles", ({ data }) => !data.draft && data.section === "books");
 const book = allBooks.find((b) => b.id === slug);
@@ -23,11 +20,11 @@ if (!book) return Astro.redirect("/404");
 // 加载书籍正文数据
 const { default: chapters } = await import(`../../../../data/books/${slug}.json`);
 
-const displayTitle = lang === "en" ? (book.data.titleEn || book.data.title) : book.data.title;
-const displayDesc = lang === "en" ? (book.data.descriptionEn || book.data.description) : book.data.description;
-const displayAuthor = lang === "en" ? (book.data.authorEn || book.data.author) : book.data.author;
-const isEn = lang === "en";
-const base = isEn ? "/en/books" : "/books";
+const displayTitle = book.data.title;
+const displayDesc = book.data.description;
+const displayAuthor = book.data.author;
+const isEn = false;
+const base = "/books";
 // PDF 原书：用原图展示 + 翻页（不做文本解析）；其他格式用章节文本
 const isPdf = chapters && chapters.type === "pdf";
 // 每本书始终展示其原始语言正文（不翻译）：中文原书取 textZh（中文原文），外文原书取 text（原文）
@@ -36,7 +33,7 @@ const chapterText = (c) => c.textZh || c.text || "";
 // 中文原书 → 楷体；外文原书 → 新罗马体
 const hasCJK = (s) => /[\u4e00-\u9fff]/.test(s || "");
 const firstText = Array.isArray(chapters) && chapters[0] ? chapterText(chapters[0]) : "";
-const isChineseContent = !isEn && hasCJK(firstText);
+const isChineseContent = hasCJK(firstText);
 
 // —— 章节切换阅读：任意章节数的章节文本书统一用“选章节 → 只看该章”模式 ——
 // 大书（章节 >= 30）后续章节正文按需 fetch（build-books.mjs 拆分为独立 JSON 到
@@ -47,7 +44,7 @@ const isLargeBook = Array.isArray(chapters) && chapters.length >= LARGE_BOOK_THR
 const INITIAL_CHAPTERS = 3;
 const initialChapters = isLargeBook ? chapters.slice(0, INITIAL_CHAPTERS) : chapters;
 // 章节标题显示（构建时 + 懒加载统一逻辑）
-const chapterTitle = (c) => (c.titleZh ? c.titleZh : isEn ? `Chapter ${c.num}` : `第 ${c.num} 章`);
+const chapterTitle = (c) => (c.titleZh ? c.titleZh : `第 ${c.num} 章`);
 // 渲染章节正文段落（合并段内硬换行，消除排版空白）
 const chapterBody = (c) => chapterText(c).split(/\n\s*\n/).map((p) => p.replace(/\s+/g, " ").trim()).filter(Boolean);
 // 章节元数据：供章节切换器下拉/导航使用（index 为 0-based 章节位置）
@@ -57,19 +54,19 @@ const chaptersMeta = Array.isArray(chapters)
 const totalChapters = chaptersMeta.length;
 ---
 
-<BaseLayout title={`${displayTitle} · ${t("articles.preview")}`} description={displayDesc}>
+<BaseLayout title={`${displayTitle} · 在线阅读`} description={displayDesc}>
   <Breadcrumb
     crumbs={[
-      { label: t(`columns.books.name`), href: `${base}/` },
+      { label: "阅读思考", href: `${base}/` },
       { label: displayTitle, href: `${base}/${slug}/` },
-      { label: t("articles.preview"), href: "#" },
+      { label: "在线阅读", href: "#" },
     ]}
   />
 
   <div class="mb-8" data-reveal>
     <div class="flex items-center gap-3 mb-3">
       <span class="text-[13px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/75 inline-flex items-center gap-1">
-        <ColumnIcon section="books" class="w-3 h-3" /> {t(`columns.books.name`)}
+        <ColumnIcon section="books" class="w-3 h-3" /> 阅读思考
       </span>
     </div>
     <h1 class="text-3xl md:text-4xl font-serif font-bold leading-tight mb-3">
@@ -77,14 +74,14 @@ const totalChapters = chaptersMeta.length;
     </h1>
     {displayAuthor && (
       <p class="text-base text-black/50 dark:text-white/50 mb-2">
-        {t("articles.author")}: {displayAuthor}
+        作者: {displayAuthor}
       </p>
     )}
     {displayDesc && (
       <p class="text-sm text-black/40 dark:text-white/40 leading-relaxed max-w-3xl mb-4">{displayDesc}</p>
     )}
     <a href={`${base}/${slug}/`} class="inline-flex items-center gap-1.5 text-sm text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white transition-colors">
-      <Icon name="arrowLeft" class="w-3.5 h-3.5" /> {isEn ? "Back to book page" : "返回书籍页"}
+      <Icon name="arrowLeft" class="w-3.5 h-3.5" /> 返回书籍页
     </a>
   </div>
 
@@ -222,7 +219,7 @@ const totalChapters = chaptersMeta.length;
         </div>
       </div>
       <div class="min-w-0 order-2">
-        <ArticleTOC label={t("articles.toc")} countFormat={t("articles.tocCount")} />
+        <ArticleTOC label="目录" countFormat="{count} 节" />
       </div>
     </div>
   )}

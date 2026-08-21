@@ -1,18 +1,28 @@
 ---
-import { getLangFromUrl, useTranslations } from "../i18n/utils";
 import ThemeToggle from "./ThemeToggle.astro";
-import LanguageSwitcher from "./LanguageSwitcher.astro";
 import ColumnIcon from "./ColumnIcon.astro";
 import Icon from "./Icon.astro";
 import SearchDialog from "./SearchDialog.astro";
 import { SECTION_COLORS, SECTION_COLORS_DARK } from "../lib/sections";
 
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
+const nav = {
+  home: "首页",
+  about: "关于",
+  menu: "打开菜单",
+  tools: "工具箱",
+  more: "更多",
+  exploreColumns: "探索专栏",
+};
 
 const columns = ["insights", "ai", "tips", "books"] as const;
+const columnNames: Record<string, string> = {
+  insights: "行业洞察",
+  ai: "AI 学习",
+  tips: "实用技巧",
+  books: "阅读思考",
+};
 const isCurrentSection = (s: string) => Astro.url.pathname.includes(`/${s}`);
-const toolsHref = lang === "en" ? "/en/tools/" : "/tools/";
+const toolsHref = "/tools/";
 const isToolsPage = Astro.url.pathname.includes("/tools");
 ---
 
@@ -20,10 +30,10 @@ const isToolsPage = Astro.url.pathname.includes("/tools");
   <nav class="mx-auto max-w-6xl flex items-center justify-between px-4 sm:px-6 py-3 2xl:max-w-[1400px]">
     <!-- Logo / Site title -->
     <a
-      href={lang === "en" ? "/en/" : "/"}
+      href="/"
       class="text-base sm:text-lg md:text-xl font-bold tracking-tight text-black dark:text-white hover:opacity-70 transition-opacity shrink-0"
     >
-      {t("site.title")}
+      Galvin
     </a>
 
     <!-- Right section: desktop links + shared controls + mobile hamburger -->
@@ -31,14 +41,14 @@ const isToolsPage = Astro.url.pathname.includes("/tools");
       <!-- Desktop-only nav links (hidden on mobile) -->
       <div class="hidden md:flex items-center gap-1">
         <a
-          href={lang === "en" ? "/en/" : "/"}
+          href="/"
           class={`px-3 py-2 text-sm rounded-lg transition-colors ${
-            Astro.url.pathname === "/" || Astro.url.pathname === "/en/" || Astro.url.pathname === "/en"
+            Astro.url.pathname === "/"
               ? "bg-black/10 dark:bg-white/10 font-semibold"
               : "hover:bg-black/5 dark:hover:bg-white/5"
           }`}
         >
-          {t("nav.home")}
+          {nav.home}
         </a>
 
         <!-- Columns dropdown -->
@@ -54,14 +64,14 @@ const isToolsPage = Astro.url.pathname.includes("/tools");
               return cur ? { color: SECTION_COLORS[cur], "--section-color-dark": SECTION_COLORS_DARK[cur] } : undefined;
             })()}
           >
-            {t("home.exploreColumns")}
+            {nav.exploreColumns}
             <Icon name="chevronDown" class="w-3 h-3 mt-px opacity-50 group-hover:rotate-180 transition-transform" />
           </button>
           <!-- Dropdown menu -->
           <div class="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
             <div class="bg-white dark:bg-neutral-900 border border-black/10 dark:border-white/10 rounded-xl shadow-lg py-2 min-w-[200px]">
               {columns.map((col) => {
-                const colPath = lang === "en" ? `/en/${col}/` : `/${col}/`;
+                const colPath = `/${col}/`;
                 return (
                   <a
                     href={colPath}
@@ -73,7 +83,7 @@ const isToolsPage = Astro.url.pathname.includes("/tools");
                     style={isCurrentSection(col) ? { color: SECTION_COLORS[col], "--section-color-dark": SECTION_COLORS_DARK[col] } : undefined}
                   >
                     <ColumnIcon section={col} class="w-3.5 h-3.5 inline-block mr-1.5 align-middle" />
-                    {t(`columns.${col}.name`)}
+                    {columnNames[col]}
                   </a>
                 );
               })}
@@ -92,17 +102,17 @@ const isToolsPage = Astro.url.pathname.includes("/tools");
                 <svg class="w-3.5 h-3.5 inline-block mr-1.5 align-middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:#B45309">
                   <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
                 </svg>
-                {t("tools.name")}
+                {nav.tools}
               </a>
             </div>
           </div>
         </div>
 
         <a
-          href={lang === "en" ? "/en/about/" : "/about/"}
+          href="/about/"
           class={`px-3 py-2 text-sm rounded-lg transition-colors ${isCurrentSection("about") ? "bg-black/10 dark:bg-white/10 font-semibold" : "hover:bg-black/5 dark:hover:bg-white/5"}`}
         >
-          {t("nav.about")}
+          {nav.about}
         </a>
       </div>
 
@@ -112,13 +122,12 @@ const isToolsPage = Astro.url.pathname.includes("/tools");
       <!-- ──────── Shared controls (rendered ONCE, visible on ALL screen sizes) ──────── -->
       <SearchDialog />
       <ThemeToggle />
-      <LanguageSwitcher lang={lang} />
 
       <!-- Hamburger button (mobile only, always last) -->
       <button
         id="hamburger-btn"
         class="md:hidden relative w-[42px] h-[42px] flex flex-col items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 dark:active:bg-white/10 gap-[5px] transition-all duration-200 -mr-1"
-        aria-label={t("nav.menu")}
+        aria-label={nav.menu}
         aria-expanded="false"
         aria-controls="mobile-overlay"
       >
@@ -149,27 +158,27 @@ const isToolsPage = Astro.url.pathname.includes("/tools");
       <div class="max-w-sm mx-auto w-full space-y-0">
         <!-- Home -->
         <a
-          href={lang === "en" ? "/en/" : "/"}
+          href="/"
           class="mobile-nav-item group"
           style="transition-delay: 0.06s"
         >
           <span class="mobile-nav-icon">
             <Icon name="home" class="w-5 h-5" />
           </span>
-          <span class="mobile-nav-label">{t("nav.home")}</span>
+          <span class="mobile-nav-label">{nav.home}</span>
           <span class="mobile-nav-arrow opacity-0 group-hover:opacity-30 transition-opacity"><Icon name="chevronRight" class="w-4 h-4" /></span>
         </a>
 
         <!-- divider: columns -->
         <div class="mobile-nav-section-label" style="transition-delay: 0.12s">
           <span class="text-[10px] uppercase tracking-[0.15em] opacity-40 font-medium">
-            {t("home.exploreColumns")}
+            {nav.exploreColumns}
           </span>
         </div>
 
         <!-- columns -->
         {columns.map((col, i) => {
-          const colPath = lang === "en" ? `/en/${col}/` : `/${col}/`;
+          const colPath = `/${col}/`;
           return (
             <a
               href={colPath}
@@ -179,7 +188,7 @@ const isToolsPage = Astro.url.pathname.includes("/tools");
               <span class="mobile-nav-icon">
                 <ColumnIcon section={col} class="w-5 h-5" />
               </span>
-              <span class="mobile-nav-label" style={isCurrentSection(col) ? { color: SECTION_COLORS[col], "--section-color-dark": SECTION_COLORS_DARK[col] } : undefined}>{t(`columns.${col}.name`)}</span>
+              <span class="mobile-nav-label" style={isCurrentSection(col) ? { color: SECTION_COLORS[col], "--section-color-dark": SECTION_COLORS_DARK[col] } : undefined}>{columnNames[col]}</span>
               <span class="mobile-nav-arrow opacity-0 group-hover:opacity-30 transition-opacity"><Icon name="chevronRight" class="w-4 h-4" /></span>
             </a>
           );
@@ -196,7 +205,7 @@ const isToolsPage = Astro.url.pathname.includes("/tools");
               <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
             </svg>
           </span>
-          <span class="mobile-nav-label" style={isToolsPage ? { color: "#B45309" } : undefined}>{t("tools.name")}</span>
+          <span class="mobile-nav-label" style={isToolsPage ? { color: "#B45309" } : undefined}>{nav.tools}</span>
           <span class="mobile-nav-arrow opacity-0 group-hover:opacity-30 transition-opacity">→</span>
         </a>
 
@@ -204,20 +213,20 @@ const isToolsPage = Astro.url.pathname.includes("/tools");
 
         <div class="mobile-nav-section-label" style="transition-delay: 0.44s">
           <span class="text-[10px] uppercase tracking-[0.15em] opacity-40 font-medium">
-            {lang === "en" ? "More" : "更多"}
+            {nav.more}
           </span>
         </div>
 
         <!-- About -->
         <a
-          href={lang === "en" ? "/en/about/" : "/about/"}
+          href="/about/"
           class="mobile-nav-item group"
           style="transition-delay: 0.50s"
         >
           <span class="mobile-nav-icon">
             <Icon name="user" class="w-5 h-5" />
           </span>
-          <span class="mobile-nav-label">{t("nav.about")}</span>
+          <span class="mobile-nav-label">{nav.about}</span>
           <span class="mobile-nav-arrow opacity-0 group-hover:opacity-30 transition-opacity"><Icon name="chevronRight" class="w-4 h-4" /></span>
         </a>
 

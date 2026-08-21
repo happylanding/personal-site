@@ -1,11 +1,8 @@
 ---
 title: "欢迎来到我的个人网站"
-titleEn: "Welcome to My Personal Site"
 description: "这是本站的第一篇文章，介绍这个网站的背景和用途。"
-descriptionEn: "The first post on this site, introducing its background and purpose."
 date: 2026-08-01
 tags: ["intro", "website"]
-tagsEn: ["intro", "website"]
 section: tips
 featured: true
 ---

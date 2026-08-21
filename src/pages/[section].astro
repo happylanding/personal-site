@@ -4,16 +4,20 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Breadcrumb from "../components/Breadcrumb.astro";
 import ColumnIcon from "../components/ColumnIcon.astro";
 import Icon from "../components/Icon.astro";
-import { getLangFromUrl, useTranslations } from "../i18n/utils";
 import { ALL_SECTIONS, SECTION_COLORS } from "../lib/sections";
+
+const sectionMeta: Record<string, { name: string; enName: string; desc: string }> = {
+  insights: { name: "行业洞察", enName: "Industry Insights", desc: "数字经济与产业观察，记录我在这个行业里的一点见闻和思考" },
+  ai: { name: "AI 学习", enName: "AI Learning", desc: "AI 工具实测、学习路径与实战笔记，从入门到上手，一起慢慢摸索" },
+  tips: { name: "实用技巧", enName: "Practical Tips", desc: "效率工具、办公技巧与折腾心得，让技术为你所用" },
+  books: { name: "阅读思考", enName: "Reading & Thinking", desc: "书评与阅读笔记，经典好书支持在线阅读与下载" },
+};
 
 export async function getStaticPaths() {
   return ALL_SECTIONS.map((section) => ({ params: { section } }));
 }
 
 const { section } = Astro.params;
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 
 const allArticles = await getCollection("articles", ({ data }) => !data.draft);
 const sectionArticles = allArticles
@@ -23,10 +27,10 @@ const sectionArticles = allArticles
 const isBooksSection = section === "books";
 ---
 
-<BaseLayout title={t(`columns.${section}.name`)} description={t(`columns.${section}.desc`)}>
+<BaseLayout title={sectionMeta[section].name} description={sectionMeta[section].desc}>
   <Breadcrumb
     crumbs={[
-      { label: t(`columns.${section}.name`), href: `/${section}/` },
+      { label: sectionMeta[section].name, href: `/${section}/` },
     ]}
   />
 
@@ -35,11 +39,11 @@ const isBooksSection = section === "books";
       <div class="w-12 h-1 rounded-full mb-4" style={{ backgroundColor: SECTION_COLORS[section] }}></div>
       <h1 class="text-3xl font-serif font-bold mb-2 flex items-center gap-3 lmask">
         <span class="block opacity-70 flex-shrink-0"><ColumnIcon section={section as import("../lib/sections").SectionKey} class="w-9 h-9" /></span>
-        <span class="lmask-inner" style="--lmask-delay:0.1s"><span>{t(`columns.${section}.name`)}</span></span>
+        <span class="lmask-inner" style="--lmask-delay:0.1s"><span>{sectionMeta[section].name}</span></span>
       </h1>
-      <p class="text-sm text-black/40 dark:text-white/40">{t(`columns.${section}.enName`)}</p>
+      <p class="text-sm text-black/40 dark:text-white/40">{sectionMeta[section].enName}</p>
       <p class="text-base text-black/50 dark:text-white/50 mt-3 leading-relaxed max-w-2xl">
-        {t(`columns.${section}.desc`)}
+        {sectionMeta[section].desc}
       </p>
     </div>
 
@@ -48,11 +52,11 @@ const isBooksSection = section === "books";
         /* ===== Book cards with download buttons ===== */
         <div class="grid grid-cols-1 gap-6">
           {sectionArticles.map((article) => {
-            const title = lang === "en" ? (article.data.titleEn || article.data.title) : article.data.title;
-            const desc = lang === "en" ? (article.data.descriptionEn || article.data.description) : article.data.description;
-            const author = lang === "en" ? (article.data.authorEn || article.data.author) : article.data.author;
-            const displayTags = lang === "en" ? (article.data.tagsEn?.length ? article.data.tagsEn : article.data.tags) : article.data.tags;
-            const dateStr = article.data.date.toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", {
+            const title = article.data.title;
+            const desc = article.data.description;
+            const author = article.data.author;
+            const displayTags = article.data.tags;
+            const dateStr = article.data.date.toLocaleDateString("zh-CN", {
               year: "numeric", month: "long", day: "numeric",
             });
             const hasEpub = !!article.data.epubUrl;
@@ -73,16 +77,16 @@ const isBooksSection = section === "books";
                 {/* Content */}
                 <div class="flex-1 min-w-0">
                   <h3 class="text-lg font-bold font-serif group-hover:text-black dark:group-hover:text-white transition-colors mb-1">
-                    <a href={lang === "en" ? `/en/${section}/${article.id}` : `/${section}/${article.id}`} class="hover-scale-text inline-block">
+                    <a href={`/${section}/${article.id}`} class="hover-scale-text inline-block">
                       {title}
                     </a>
                     {article.data.featured && <Icon name="star" class="w-3.5 h-3.5 inline-block ml-1 align-middle text-amber-500" />}
                   </h3>
-                  {author && <p class="text-sm text-black/50 dark:text-white/50 mb-2">{t("articles.author")}: {author}</p>}
+                  {author && <p class="text-sm text-black/50 dark:text-white/50 mb-2">作者: {author}</p>}
                   {desc && <p class="text-sm text-black/40 dark:text-white/40 line-clamp-2 mb-3">{desc}</p>}
                   {article.data.rating && (
                     <div class="text-xs text-black/30 dark:text-white/30 mb-3 inline-flex items-center gap-0.5">
-                      <span class="mr-1">{t("articles.rating")}:</span>
+                      <span class="mr-1">评分:</span>
                       {Array.from({ length: article.data.rating }).map(() => (
                         <Icon name="star" class="w-3.5 h-3.5 text-amber-500" />
                       ))}
@@ -94,15 +98,15 @@ const isBooksSection = section === "books";
                   {/* Download/action buttons */}
                   <div class="flex flex-wrap gap-2 mt-1">
                     {hasRead && (
-                      <a href={lang === "en" ? `/en/books/${article.id}/read/` : `/books/${article.id}/read/`} class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 text-xs font-medium hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors">
+                      <a href={`/books/${article.id}/read/`} class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 text-xs font-medium hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors">
                         <Icon name="bookOpen" class="w-3.5 h-3.5" />
-                        {t("articles.preview")}
+                        在线阅读
                       </a>
                     )}
                     {hasReview && (
                       <a href={article.data.reviewUrl} class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-black/15 dark:border-white/15 text-xs font-medium hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors">
                         <Icon name="fileText" class="w-3.5 h-3.5" />
-                        {t("articles.review") || "书评"}
+                        书评
                       </a>
                     )}
                     {hasEpub && (
@@ -144,7 +148,7 @@ const isBooksSection = section === "books";
                     {hasBuy && (
                       <a href={article.data.buyUrl} target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black dark:bg-white text-white dark:text-black text-xs font-medium hover:opacity-80 transition-opacity">
                         <Icon name="cart" class="w-3.5 h-3.5" />
-                        {t("articles.buyBook")}
+                        购买此书
                       </a>
                     )}
                   </div>
@@ -163,15 +167,15 @@ const isBooksSection = section === "books";
         /* ===== Regular article list ===== */
         <div class="space-y-1">
           {sectionArticles.map((article) => {
-            const title = lang === "en" ? (article.data.titleEn || article.data.title) : article.data.title;
-            const desc = lang === "en" ? (article.data.descriptionEn || article.data.description) : article.data.description;
-            const displayTags = lang === "en" ? (article.data.tagsEn?.length ? article.data.tagsEn : article.data.tags) : article.data.tags;
-            const dateStr = article.data.date.toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", {
+            const title = article.data.title;
+            const desc = article.data.description;
+            const displayTags = article.data.tags;
+            const dateStr = article.data.date.toLocaleDateString("zh-CN", {
               year: "numeric", month: "long", day: "numeric",
             });
             return (
               <a
-                href={lang === "en" ? `/en/${section}/${article.id}` : `/${section}/${article.id}`}
+                href={`/${section}/${article.id}`}
                 class="flex items-start justify-between py-4 px-4 rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-colors group overflow-hidden"
               >
                 <div class="min-w-0">
@@ -197,7 +201,7 @@ const isBooksSection = section === "books";
         </div>
       )
     ) : (
-      <p class="py-12 text-center text-black/30 dark:text-white/30 italic">{t("articles.noArticles")}</p>
+      <p class="py-12 text-center text-black/30 dark:text-white/30 italic">暂无文章</p>
     )}
   </section>
 </BaseLayout>

@@ -1,11 +1,8 @@
 ---
 title: "AI 学习路径：从零基础到能落地，我建议这样走"
-titleEn: "An AI Learning Path: From Zero to Practical, My Recommended Route"
 description: "一套低门槛、可落地的 AI 学习路径：先会用，再理解，后深入。不劝你啃数学，先让你把 AI 变成生产力。"
-descriptionEn: "A low-friction, practical AI learning path: use it first, understand it next, then go deeper. No need to grind through math first — make AI productive from day one."
 date: 2026-08-07
 tags: ["AI", "学习路径", "入门"]
-tagsEn: ["AI", "Learning Path", "Beginner"]
 section: ai
 featured: true
 ---

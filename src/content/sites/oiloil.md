@@ -1,12 +1,9 @@
 ---
 title: "Oil® — 欧呦：把『产品、作品、个人』织成一张网的个人品牌站"
-titleEn: "Oil® — A Personal Brand Site That Weaves Products, Works & Self into One"
 description: "AI 产品经理 Oil 的个人品牌站，单页叙事 + 视差动效 + 产品矩阵 + 作品集 + 咨询服务，值得收藏的个人站设计范本。"
-descriptionEn: "A one-page portfolio of AI PM Oil — narrative scroll, parallax motion, product matrix, work gallery and consulting — a personal site design playbook."
 date: 2026-08-08
 updated: 2026-08-08
 tags: ["设计灵感", "个人品牌站", "交互设计", "动效", "作品集"]
-tagsEn: ["design", "personal-site", "interaction", "motion", "portfolio"]
 section: insights
 featured: false
 siteUrl: https://www.oiloil.org/#products

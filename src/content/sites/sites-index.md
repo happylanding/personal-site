@@ -1,12 +1,9 @@
 ---
 title: "设计灵感收藏夹"
-titleEn: "Design Inspiration Collection"
 description: "平时刷到的好网站、好设计都收录在这里，附上拆解、创意分析与亮点特色。"
-descriptionEn: "Great sites & designs I come across, with breakdowns, creative analysis and highlights."
 date: 2026-08-08
 updated: 2026-08-08
 tags: ["设计", "收藏夹", "网站拆解"]
-tagsEn: ["design", "collection", "breakdown"]
 section: insights
 featured: true
 ---

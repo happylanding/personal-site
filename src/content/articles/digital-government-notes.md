@@ -1,11 +1,8 @@
 ---
 title: "数字政府观察：'一网通办'背后的治理逻辑"
-titleEn: "Observing Digital Government: The Governance Logic Behind 'One-Stop Online Services'"
 description: "以'一网通办'为例，拆解数字政府建设的核心理念、数据要素的作用，以及它对政务服务效率的深层改变。"
-descriptionEn: "Taking 'one-stop online services' as an example, this article unpacks the core ideas of digital government, the role of data as a factor, and how it fundamentally reshapes public service efficiency."
 date: 2026-08-09
 tags: ["数字政府", "数字经济", "产业观察"]
-tagsEn: ["Digital Government", "Digital Economy", "Industry Insights"]
 section: insights
 ---
 

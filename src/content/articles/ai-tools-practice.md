@@ -1,11 +1,8 @@
 ---
 title: "AI 效率工具实测：我的 5 个高频使用场景"
-titleEn: "AI Productivity Tools in Practice: My 5 High-Frequency Use Cases"
 description: "实测 AI 效率工具在文档处理、信息整理、写作辅助等场景的真实表现，分享值得长期使用的 5 个高频用法与避坑建议。"
-descriptionEn: "A hands-on review of AI productivity tools across document processing, information organization, and writing assistance — 5 high-frequency use cases worth keeping, plus pitfalls to avoid."
 date: 2026-08-08
 tags: ["AI工具", "效率", "WPS"]
-tagsEn: ["AI Tools", "Productivity", "WPS"]
 section: ai
 ---
 

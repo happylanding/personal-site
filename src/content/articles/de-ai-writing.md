@@ -1,11 +1,8 @@
 ---
 title: "怎么把 AI 写的文章改得像人写的"
-titleEn: "How to Make AI Writing Sound Human"
 description: "AI 写的东西一眼就能被认出来：首先、其次、综上所述，赋能、抓手、闭环。这篇文章给你一套可操作的去 AI 味清单，把机器腔逐句改回人话，并附上我的自研检测器帮你自查。"
-descriptionEn: "AI-written text is easy to spot: Moreover, Furthermore, In conclusion — and a parade of buzzwords. This article gives you an actionable de-AI checklist to rewrite machine-speak into human language, plus a self-built detector to help you self-check."
 date: 2026-08-09
 tags: ["AI写作", "写作技巧", "去AI味", "AI味检测器"]
-tagsEn: ["AI Writing", "Writing Tips", "De-AI", "AI-ism Detector"]
 section: ai
 featured: true
 ---

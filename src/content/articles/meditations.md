@@ -1,14 +1,10 @@
 ---
 title: "沉思录 · Meditations"
-titleEn: "Meditations"
 description: "罗马皇帝马可·奥勒留的个人哲学随笔，斯多葛学派经典著作。一位帝国统治者在征战途中写下的内心独白，关于自我修养、人生意义与内心平静的永恒智慧。"
-descriptionEn: "A series of personal writings by Marcus Aurelius, Roman Emperor from 161 to 180 AD, recording his private notes to himself and ideas on Stoic philosophy — a timeless guide to self-mastery and inner peace."
 date: 2024-03-10
 section: books
 tags: ["哲学", "斯多葛", "经典"]
-tagsEn: ["philosophy", "stoicism", "classic"]
 author: "马可·奥勒留 (Marcus Aurelius)"
-authorEn: "Marcus Aurelius"
 pdfUrl: "/books/meditations.pdf"
 readUrl: "/books/meditations/read/"
 rating: 5

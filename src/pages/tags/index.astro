@@ -2,28 +2,23 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import ScrollReveal from "../../components/ScrollReveal.astro";
-import { getLangFromUrl, useTranslations } from "../../i18n/utils";
 import { getCollection } from "astro:content";
-
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
 
 const allArticles = await getCollection("articles", ({ data }) => !data.draft);
 const tagMap = new Map<string, number>();
 allArticles.forEach((a) => {
-  const tags = lang === "en" ? (a.data.tagsEn.length > 0 ? a.data.tagsEn : a.data.tags) : a.data.tags;
-  tags.forEach((tag: string) => {
+  a.data.tags.forEach((tag: string) => {
     tagMap.set(tag, (tagMap.get(tag) || 0) + 1);
   });
 });
 const sortedTags = [...tagMap.entries()].sort(([, a], [, b]) => b - a);
 ---
 
-<BaseLayout title={t("tags.title")} description={t("tags.description")}>
-  <Breadcrumb crumbs={[{ label: t("tags.title"), href: "/tags/" }]} />
+<BaseLayout title="标签" description="按标签浏览文章">
+  <Breadcrumb crumbs={[{ label: "标签", href: "/tags/" }]} />
 
   <section data-reveal>
-    <h1 class="text-3xl font-serif font-bold mb-12">{t("tags.title")}</h1>
+    <h1 class="text-3xl font-serif font-bold mb-12">标签</h1>
     <div class="flex flex-wrap gap-3">
       {sortedTags.map(([tag, count]) => (
         <a

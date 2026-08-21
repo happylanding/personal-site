@@ -1,12 +1,9 @@
 ---
 title: "陈硕 everlightai.top：用『知识结构』做壁垒的 AI 连续创业者个人知识产品站"
-titleEn: "Chen Shuo everlightai.top — An AI Serial Founder's Personal Knowledge-Product Hub Built on Structure"
 description: "AI 连续创业者陈硕的个人站，以『结构外脑』为核心把知识库、工具库、阅览室、社群织成一张持续生长的网，报纸编辑部风格 + 动态眼睛 + 半色调肖像 + 滚动揭幕，Build in Public 的范本。"
-descriptionEn: "AI serial founder Chen Shuo's personal site — a growing 'structural exobrain' weaving knowledge base, tools, reading room and community into one system; editorial-newspaper aesthetics, a dynamic CSS eye, halftone portrait and scroll-reveal motion. A build-in-public playbook."
 date: 2026-08-10
 updated: 2026-08-10
 tags: ["设计灵感", "个人品牌站", "知识库", "信息架构", "动效"]
-tagsEn: ["design", "personal-site", "knowledge-base", "information-architecture", "motion"]
 section: insights
 featured: false
 siteUrl: https://everlightai.top/

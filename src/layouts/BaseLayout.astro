@@ -1,6 +1,5 @@
 ---
 import "../styles/global.css";
-import { getLangFromUrl, useTranslations } from "../i18n/utils";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import BackToTop from "../components/BackToTop.astro";
@@ -14,23 +13,19 @@ interface Props {
   ogImage?: string;
 }
 
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
+const siteTitle = "Galvin";
+const siteSubtitle = "从好奇，到创造";
+const defaultTitle = siteTitle + " — " + siteSubtitle;
+const defaultDesc = "Galvin 的个人网站 — AI 学习 × 数字经济，记录思考、分享知识";
 
-const defaultTitle = t("site.title") + " — " + t("site.subtitle");
-const defaultDesc = t("site.description");
-
-const pageTitle = Astro.props.title ? `${Astro.props.title} — ${t("site.title")}` : defaultTitle;
+const pageTitle = Astro.props.title ? `${Astro.props.title} — ${siteTitle}` : defaultTitle;
 const pageDesc = Astro.props.description || defaultDesc;
 const ogImg = Astro.props.ogImage || "/favicon.svg";
-const path = Astro.url.pathname;
-const canonical = lang === "en" ? path : path.replace(/^\/en/, "") || "/";
-const alternateEn = lang === "zh" ? `/en${path}` : path;
-const alternateZh = lang === "en" ? path.replace(/^\/en/, "") || "/" : path;
+const canonical = Astro.url.pathname;
 ---
 
 <!doctype html>
-<html lang={lang} class="">
+<html lang="zh" class="">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -40,11 +35,9 @@ const alternateZh = lang === "en" ? path.replace(/^\/en/, "") || "/" : path;
     <meta property="og:description" content={pageDesc} />
     <meta property="og:type" content="website" />
     <meta property="og:image" content={ogImg} />
-    <meta property="og:site_name" content={t("site.title")} />
+    <meta property="og:site_name" content={siteTitle} />
 
     <link rel="canonical" href={new URL(canonical, Astro.site).href} />
-    <link rel="alternate" hreflang="zh" href={new URL(alternateZh, Astro.site).href} />
-    <link rel="alternate" hreflang="en" href={new URL(alternateEn, Astro.site).href} />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 

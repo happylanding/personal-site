@@ -1,11 +1,8 @@
 ---
 title: "用 AI 重构个人网站：一场'非程序员'的改造实验"
-titleEn: "Rebuilding a Personal Site with AI: A Non-Programmer's Experiment"
 description: "从选型、双语、动效到部署，记录我作为非程序员用 AI 完成个人网站改造的全过程，总结 Vibe Coding 的实战方法论与边界。"
-descriptionEn: "From stack choice, i18n, interactions to deployment — a record of rebuilding a personal site with AI as a non-programmer, plus a practical methodology and the boundaries of Vibe Coding."
 date: 2026-08-10
 tags: ["AI", "Vibe Coding", "实践"]
-tagsEn: ["AI", "Vibe Coding", "Hands-on"]
 section: ai
 ---
 

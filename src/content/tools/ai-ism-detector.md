@@ -1,14 +1,11 @@
 ---
 title: "AI 味检测器"
-titleEn: "AI-ism Detector"
 description: "粘贴一段文字，实时算出 AI 味指数，逐句高亮命中 AI 高频腔，一键替换成更自然的人话。"
-descriptionEn: "Paste any text and get a real-time AI-ism score — highlighted AI clichés sentence by sentence, with one-click rewrites into natural human language."
 type: "app"
 status: "beta"
 date: 2026-08-09
 updated: 2026-08-09
 tags: ["AI", "写作", "反套路"]
-tagsEn: ["ai", "writing", "de-ai"]
 featured: true
 ---
 

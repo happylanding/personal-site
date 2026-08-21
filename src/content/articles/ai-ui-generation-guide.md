@@ -1,11 +1,8 @@
 ---
 title: "跨越视觉鸿沟：将灵感转化为 AI 可执行代码的深度实践指南"
-titleEn: "Crossing the Visual Divide: A Deep Practice Guide to Turning Inspiration into AI-Executable Code"
 description: "为什么 AI 生成的 UI 总带着一股'廉价感'？关键在于 AI 看不到'感觉'，只能理解'系统与规则'。本文结合业界顶尖设计规范与开源项目，给你一套把灵感翻译成 AI 可执行指令的完整方法论：先输出《设计计划》、锁定设计系统、再用克制原则与真实开源标准为 AI 戴上'品味滤镜'。"
-descriptionEn: "Why does AI-generated UI always feel 'cheap'? Because AI can't see 'feelings' — it only understands 'systems and rules.' Drawing on industry-leading design systems and open-source projects, this article gives you a complete methodology for translating inspiration into AI-executable instructions: emit a Design Plan first, lock in the design system, then put a 'taste filter' on AI with restraint and real-world open-source standards."
 date: 2026-08-21
 tags: ["AI", "UI生成", "Vibe Coding", "设计系统", "提示词工程"]
-tagsEn: ["AI", "UI Generation", "Vibe Coding", "Design Systems", "Prompt Engineering"]
 section: ai
 featured: true
 ---
