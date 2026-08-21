@@ -1379,6 +1379,53 @@ html:not(.js) .lmask-inner {
   color: #fb923c;
 }
 
+/* 参考文献引用：正文上标引用 + 参考文献反向链接 */
+.article-content sup {
+  font-size: 0.72em;
+  line-height: 0;
+  vertical-align: baseline;
+  position: relative;
+  top: -0.45em;
+}
+.article-content sup a,
+.article-content sup a:visited {
+  color: inherit;
+  text-decoration: none;
+  padding: 0 0.1em;
+  transition: color 0.15s ease;
+}
+.article-content sup a:hover {
+  color: #c2410c;
+}
+.dark .article-content sup a:hover {
+  color: #fb923c;
+}
+.article-content .ref-back {
+  color: inherit;
+  text-decoration: none;
+  font-size: 0.9em;
+  margin-left: 0.25em;
+  opacity: 0.65;
+  transition: opacity 0.15s ease;
+  vertical-align: baseline;
+}
+.article-content .ref-back:hover {
+  opacity: 1;
+  color: #c2410c;
+}
+.dark .article-content .ref-back:hover {
+  color: #fb923c;
+}
+/* 参考文献条目定位目标：滚动时留出顶部空间 */
+.article-content #ref-1,
+.article-content #ref-2,
+.article-content #ref-3,
+.article-content #ref-4,
+.article-content #ref-5,
+.article-content #ref-6 {
+  scroll-margin-top: 88px;
+}
+
 /* ===== Article TOC v3：右侧 sticky 目录 + 移动端折叠卡片 =====
    样式放在全局作用域（而非组件 scoped），因为目录项由 JS 动态创建，
    Astro 的 data-astro-cid 作用域属性不会打到动态节点上。 */
