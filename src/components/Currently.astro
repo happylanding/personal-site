@@ -279,8 +279,10 @@ const coding = {
 // LEARNING：优先从最近文章标签里找学习相关词（AI / 工具 / 语言），找不到就写长期主题
 const learningKeywords = ["AI", "ai", "astro", "tailwind", "css", "javascript", "node", "vue", "react", "python", "web"];
 const learning = (() => {
+  // 跳过已用于 READING/WRITING/CODING 的文章，避免同一篇在卡片里重复出现
+  const usedIds = new Set([book?.id, writing?.id, codeSource?.id].filter(Boolean));
   const seen = published.find((a) =>
-    (a.data.tags || []).some((tag) => learningKeywords.includes(tag))
+    !usedIds.has(a.id) && (a.data.tags || []).some((tag) => learningKeywords.includes(tag))
   );
   if (seen) {
     const tag = (seen.data.tags || []).find((x) => learningKeywords.includes(x));
