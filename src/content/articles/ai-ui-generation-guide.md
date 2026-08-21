@@ -27,7 +27,7 @@ featured: true
 - 纯黑背景 + 单一高饱和度酸性绿（Acid Green）或朱红色点缀。
 - 报纸式排版（极细分割线、零圆角、密集的多列文本）。
 
-如果你不加限制，AI 就会滑向这些**安全但平庸的默认值**，而非为你量身定制 [1]。
+如果你不加限制，AI 就会滑向这些**安全但平庸的默认值**，而非为你量身定制 <sup>[<a href="#ref-1" id="cite-1a">1</a>]</sup>。
 
 ### 2. 缺乏设计系统（Design System）的前置约束
 优秀的设计源于克制（Restraint）。人类设计师在画第一根线之前，会先确定调色板、排版比例（Type Scale）和间距系统。如果你直接让 AI "写一个带 Hero 区和功能介绍的落地页"，AI 会在写每个组件时随机发明样式，导致最终页面充满冲突的间距和杂乱的色彩。
@@ -37,7 +37,7 @@ AI 很容易滥用结构性元素来做装饰。例如，在不需要顺序的�
 
 ## 二、灵感落地的"两步走"工作流
 
-在与 AI 协作时，必须将"定规范"和"写代码"严格分开。这与 Anthropic 官方推荐的"分离设计维度"策略不谋而合 [2]。
+在与 AI 协作时，必须将"定规范"和"写代码"严格分开。这与 Anthropic 官方推荐的"分离设计维度"策略不谋而合 <sup>[<a href="#ref-2" id="cite-2">2</a>]</sup>。
 
 ### 第一步：让 AI 先输出《设计计划》（Design Plan）
 
@@ -68,7 +68,7 @@ AI 很容易滥用结构性元素来做装饰。例如，在不需要顺序的�
 ## 三、与 AI 协作设计的核心守则
 
 1. **克制原则（Restraint）**
-   把你的大胆尝试集中在一个地方。让页面有一个"签名元素"，而让周围的一切保持安静和纪律 [1]。
+   把你的大胆尝试集中在一个地方。让页面有一个"签名元素"，而让周围的一切保持安静和纪律 <sup>[<a href="#ref-1" id="cite-1b">1</a>]</sup>。
 2. **结构即信息，拒绝无意义装饰**
    如果 AI 给你加了 `01 / 02 / 03` 这样的编号，问它："这里的顺序真的携带了用户必须知道的信息吗？"如果不是，删掉它。
 3. **文案即设计（Copy is Design Material）**
@@ -104,16 +104,16 @@ AI 很容易滥用结构性元素来做装饰。例如，在不需要顺序的�
 ### 1. 学习如何制定设计系统（Design Systems）
 不要让 AI 瞎编规范，去看看大厂是如何定义颜色的 Token 和间距倍数的。
 - **Primer (GitHub)**：[primer.style](https://primer.style/)。重点学习它的 Primitives（基础变量），看它如何用数字命名颜色和间距。
-- **Awesome Design Systems**：[github.com/alexpate/awesome-design-systems](https://github.com/alexpate/awesome-design-systems) [3]。这是一个设计系统合集，挑一个你喜欢的品牌（如 Vercel 或 Shopify）深入阅读其文档。
+- **Awesome Design Systems**：[github.com/alexpate/awesome-design-systems](https://github.com/alexpate/awesome-design-systems) <sup>[<a href="#ref-3" id="cite-3">3</a>]</sup>。这是一个设计系统合集，挑一个你喜欢的品牌（如 Vercel 或 Shopify）深入阅读其文档。
 
 ### 2. 学习可落地的 UI 组件实现
 不要指望 AI 凭空写出完美无瑕的复杂组件，给它提供顶级开源库的代码结构作为参考。
-- **shadcn/ui**：[github.com/shadcn-ui/ui](https://github.com/shadcn-ui/ui) [4]。目前最火的 React 组件库之一，特点是**代码完全开放复制**。学习它是如何组合 Tailwind 类名的。
-- **Radix Primitives**：[github.com/radix-ui/primitives](https://github.com/radix-ui/primitives) [5]。学习如何处理无障碍访问（Accessibility）和焦点管理。
+- **shadcn/ui**：[github.com/shadcn-ui/ui](https://github.com/shadcn-ui/ui) <sup>[<a href="#ref-4" id="cite-4">4</a>]</sup>。目前最火的 React 组件库之一，特点是**代码完全开放复制**。学习它是如何组合 Tailwind 类名的。
+- **Radix Primitives**：[github.com/radix-ui/primitives](https://github.com/radix-ui/primitives) <sup>[<a href="#ref-5" id="cite-5">5</a>]</sup>。学习如何处理无障碍访问（Accessibility）和焦点管理。
 
 ### 3. 学习动效与微交互（Micro-interactions）
 动效是区分"廉价感"和"高级感"的关键。
-- **Framer Motion**：[github.com/motiondivision/motion](https://github.com/motiondivision/motion) [6]。学习如何使用 Spring 物理引擎代替传统的线性动画，这是让 UI 显得有质感的秘密。
+- **Framer Motion**：[github.com/motiondivision/motion](https://github.com/motiondivision/motion) <sup>[<a href="#ref-6" id="cite-6">6</a>]</sup>。学习如何使用 Spring 物理引擎代替传统的线性动画，这是让 UI 显得有质感的秘密。
 - **60fps.design**：[60fps.design](https://60fps.design)。观察顶级 App 的动画曲线和持续时间，然后将这些数值（如 `duration: 0.15`）写入给 AI 的提示词中。
 
 ## 总结
@@ -122,9 +122,9 @@ AI 是一个拥有无限素材库但缺乏"品味滤镜"的执行者。你的核
 
 ## 参考文献
 
-1. Manus AI. (2026). *Frontend Design Skill Guidelines*. Internal Sandbox Documentation.
-2. Anthropic. (2025). [Frontend Aesthetics: A Prompting Guide](https://platform.claude.com/cookbook/coding-prompting-for-frontend-aesthetics). Claude Cookbook.
-3. Alex Pate. (2026). [Awesome Design Systems](https://github.com/alexpate/awesome-design-systems). GitHub Repository.
-4. shadcn. (2026). [shadcn/ui](https://github.com/shadcn-ui/ui). GitHub Repository.
-5. WorkOS. (2026). [Radix Primitives](https://github.com/radix-ui/primitives). GitHub Repository.
-6. Motion Division. (2026). [Motion](https://github.com/motiondivision/motion). GitHub Repository.
+1. <span id="ref-1"></span>Manus AI. (2026). *Frontend Design Skill Guidelines*. Internal Sandbox Documentation. <a href="#cite-1a" class="ref-back">↑</a><a href="#cite-1b" class="ref-back">↑</a>
+2. <span id="ref-2"></span>Anthropic. (2025). [Frontend Aesthetics: A Prompting Guide](https://platform.claude.com/cookbook/coding-prompting-for-frontend-aesthetics). Claude Cookbook. <a href="#cite-2" class="ref-back">↑</a>
+3. <span id="ref-3"></span>Alex Pate. (2026). [Awesome Design Systems](https://github.com/alexpate/awesome-design-systems). GitHub Repository. <a href="#cite-3" class="ref-back">↑</a>
+4. <span id="ref-4"></span>shadcn. (2026). [shadcn/ui](https://github.com/shadcn-ui/ui). GitHub Repository. <a href="#cite-4" class="ref-back">↑</a>
+5. <span id="ref-5"></span>WorkOS. (2026). [Radix Primitives](https://github.com/radix-ui/primitives). GitHub Repository. <a href="#cite-5" class="ref-back">↑</a>
+6. <span id="ref-6"></span>Motion Division. (2026). [Motion](https://github.com/motiondivision/motion). GitHub Repository. <a href="#cite-6" class="ref-back">↑</a>

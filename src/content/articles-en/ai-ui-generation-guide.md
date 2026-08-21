@@ -28,7 +28,7 @@ When you give AI a reference image or say "I want a modern, high-end, minimalist
 - Pure black background + a single high-saturation acid green or vermilion accent.
 - Newspaper-style layout (hairline dividers, zero border-radius, dense multi-column text).
 
-Without constraints, AI slides into these **safe but mediocre defaults** instead of something tailored to you [1].
+Without constraints, AI slides into these **safe but mediocre defaults** instead of something tailored to you <sup>[<a href="#ref-1" id="cite-1a">1</a>]</sup>.
 
 ### 1.2 No Design System as a Front-Loaded Constraint
 Great design comes from restraint. Human designers pin down palette, type scale, and spacing *before* drawing the first line. If you ask AI to "write a landing page with a Hero section and feature highlights," AI invents styles for each component on the fly — and you end up with clashing spacing and chaotic color.
@@ -38,7 +38,7 @@ AI tends to abuse structural elements for decoration: adding oversized `01 / 02 
 
 ## 2. The Two-Step Workflow for Landing Inspiration
 
-When working with AI, **separate "defining the spec" from "writing the code."** This aligns with Anthropic's recommended "separation of design dimensions" strategy [2].
+When working with AI, **separate "defining the spec" from "writing the code."** This aligns with Anthropic's recommended "separation of design dimensions" strategy <sup>[<a href="#ref-2" id="cite-2">2</a>]</sup>.
 
 ### Step 1: Ask AI to Output a *Design Plan* First
 
@@ -67,7 +67,7 @@ Once the plan is confirmed, require AI to **strictly inherit those variables** i
 
 ## 3. Core Principles for AI-Assisted Design
 
-1. **Restraint.** Concentrate your bold experiments in one place. Give the page a single *signature element* and keep everything around it quiet and disciplined [1].
+1. **Restraint.** Concentrate your bold experiments in one place. Give the page a single *signature element* and keep everything around it quiet and disciplined <sup>[<a href="#ref-1" id="cite-1b">1</a>]</sup>.
 2. **Structure is information — reject meaningless decoration.** If AI adds `01 / 02 / 03`, ask: "Does this order actually carry information the user needs?" If not, delete it.
 3. **Copy is design material.** Don't let AI fill in `Lorem Ipsum`. Ask it to write copy grounded in the real product context. Buttons should state concrete actions ("Save Changes," not "Submit").
 4. **Motion must mean something.** Be wary of full-screen fades AI adds to show off. Require motion to serve the theme. Excessive meaningless animation is the biggest source of the "AI-generated" feel.
@@ -100,16 +100,16 @@ To keep improving your ability to translate inspiration into specs, don't just "
 ### 5.1 How Design Systems Are Made
 Don't let AI invent specs. See how big companies define color tokens and spacing multiples.
 - **Primer (GitHub)**: [primer.style](https://primer.style/). Focus on its *Primitives* — how it names colors and spacing with numbers.
-- **Awesome Design Systems**: [github.com/alexpate/awesome-design-systems](https://github.com/alexpate/awesome-design-systems) [3]. A curated collection — pick a brand you like (Vercel or Shopify) and read its docs deeply.
+- **Awesome Design Systems**: [github.com/alexpate/awesome-design-systems](https://github.com/alexpate/awesome-design-systems) <sup>[<a href="#ref-3" id="cite-3">3</a>]</sup>. A curated collection — pick a brand you like (Vercel or Shopify) and read its docs deeply.
 
 ### 5.2 Implementable UI Component Patterns
 Don't expect AI to conjure flawless complex components from nothing. Give it top-tier open-source structure as reference.
-- **shadcn/ui**: [github.com/shadcn-ui/ui](https://github.com/shadcn-ui/ui) [4]. One of the hottest React component libraries — its code is fully open to copy. Learn how it composes Tailwind classes.
-- **Radix Primitives**: [github.com/radix-ui/primitives](https://github.com/radix-ui/primitives) [5]. Learn how to handle accessibility and focus management.
+- **shadcn/ui**: [github.com/shadcn-ui/ui](https://github.com/shadcn-ui/ui) <sup>[<a href="#ref-4" id="cite-4">4</a>]</sup>. One of the hottest React component libraries — its code is fully open to copy. Learn how it composes Tailwind classes.
+- **Radix Primitives**: [github.com/radix-ui/primitives](https://github.com/radix-ui/primitives) <sup>[<a href="#ref-5" id="cite-5">5</a>]</sup>. Learn how to handle accessibility and focus management.
 
 ### 5.3 Motion & Micro-Interactions
 Motion is what separates "cheap" from "premium."
-- **Framer Motion**: [github.com/motiondivision/motion](https://github.com/motiondivision/motion) [6]. Learn to use spring physics instead of linear easing — the secret to UI that feels physical.
+- **Framer Motion**: [github.com/motiondivision/motion](https://github.com/motiondivision/motion) <sup>[<a href="#ref-6" id="cite-6">6</a>]</sup>. Learn to use spring physics instead of linear easing — the secret to UI that feels physical.
 - **60fps.design**: [60fps.design](https://60fps.design). Study real apps' animation curves and durations, then write those numbers (e.g., `duration: 0.15`) into your prompts.
 
 ## Conclusion
@@ -118,9 +118,9 @@ AI is an executor with an infinite asset library but no "taste filter." Your cor
 
 ## References
 
-1. Manus AI. (2026). *Frontend Design Skill Guidelines*. Internal Sandbox Documentation.
-2. Anthropic. (2025). [Frontend Aesthetics: A Prompting Guide](https://platform.claude.com/cookbook/coding-prompting-for-frontend-aesthetics). Claude Cookbook.
-3. Alex Pate. (2026). [Awesome Design Systems](https://github.com/alexpate/awesome-design-systems). GitHub Repository.
-4. shadcn. (2026). [shadcn/ui](https://github.com/shadcn-ui/ui). GitHub Repository.
-5. WorkOS. (2026). [Radix Primitives](https://github.com/radix-ui/primitives). GitHub Repository.
-6. Motion Division. (2026). [Motion](https://github.com/motiondivision/motion). GitHub Repository.
+1. <span id="ref-1"></span>Manus AI. (2026). *Frontend Design Skill Guidelines*. Internal Sandbox Documentation. <a href="#cite-1a" class="ref-back">↑</a><a href="#cite-1b" class="ref-back">↑</a>
+2. <span id="ref-2"></span>Anthropic. (2025). [Frontend Aesthetics: A Prompting Guide](https://platform.claude.com/cookbook/coding-prompting-for-frontend-aesthetics). Claude Cookbook. <a href="#cite-2" class="ref-back">↑</a>
+3. <span id="ref-3"></span>Alex Pate. (2026). [Awesome Design Systems](https://github.com/alexpate/awesome-design-systems). GitHub Repository. <a href="#cite-3" class="ref-back">↑</a>
+4. <span id="ref-4"></span>shadcn. (2026). [shadcn/ui](https://github.com/shadcn-ui/ui). GitHub Repository. <a href="#cite-4" class="ref-back">↑</a>
+5. <span id="ref-5"></span>WorkOS. (2026). [Radix Primitives](https://github.com/radix-ui/primitives). GitHub Repository. <a href="#cite-5" class="ref-back">↑</a>
+6. <span id="ref-6"></span>Motion Division. (2026). [Motion](https://github.com/motiondivision/motion). GitHub Repository. <a href="#cite-6" class="ref-back">↑</a>
