@@ -182,7 +182,7 @@ const totalChapters = chaptersMeta.length;
           </span>
         </div>
 
-        <div class={`book-reader ${isChineseContent ? "lang-zh" : "lang-en"} article-content max-w-none`}>
+        <div class={`book-reader ${isChineseContent ? "lang-zh" : "lang-en"} article-content`}>
           {chapters.map((c, i) => {
             const inline = !isLargeBook || i < INITIAL_CHAPTERS;
             return (
