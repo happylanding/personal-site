@@ -31,7 +31,8 @@ const text = {
   statsTools: "件效率工具",
   statsBooks: "本公版书",
   bioKicker: "HELLO · 自我介绍",
-  bioTitle: "嗨，我是 Galvin",
+  bioTitleEn: "Hi，",
+  bioTitleZh: "我是Galvin",
   bioRole: "终身学习者 · 数字经济从业者 · 工具折腾党",
   bioLocation: "坐标中国·南京",
   bioSignature: "把「终身学习」当主业，把「折腾」当副业。",
@@ -170,7 +171,10 @@ const articleTitle = (a: (typeof allArticles)[number]) => a.data.title;
 
           <div class="about-person-info">
             <p class="about-person-kicker">{text.bioKicker}</p>
-            <h2 class="about-person-name">{text.bioTitle}</h2>
+            <h2 class="about-person-name">
+              <span class="apn-en" aria-hidden="true">{text.bioTitleEn}</span>
+              <span class="apn-zh">{text.bioTitleZh}</span>
+            </h2>
 
             <ul class="about-person-roles">
               {roles.map((r: string) => (

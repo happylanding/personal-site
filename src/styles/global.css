@@ -840,6 +840,46 @@ html:not(.js) .lmask-inner {
   margin: 0 0 1rem;
 }
 
+/* 身份卡主标题：沿用 hero 版面座右铭中英文风格
+   - 英文「Hi，」：hero-motto 同款手写体（Caveat）
+   - 中文「我是Galvin」：hero-subtitle 同款钟齐硬笔行楷 + 渐变字 */
+.about-person-name {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.1em 0.12em;
+}
+
+.about-person-name .apn-en {
+  font-family: var(--font-hand);
+  font-weight: 600;
+  font-size: 1.25em;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.62);
+}
+
+.dark .about-person-name .apn-en {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.about-person-name .apn-zh {
+  font-family: var(--font-zhongqi);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  padding-bottom: 0.08em;
+  background: linear-gradient(120deg, #1f2937 0%, #374151 48%, #b45309 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.dark .about-person-name .apn-zh {
+  background: linear-gradient(120deg, #f9fafb 0%, #d1d5db 48%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 .about-person-roles {
   list-style: none;
   margin: 0 0 1.1rem;
