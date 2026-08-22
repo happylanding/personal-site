@@ -840,8 +840,8 @@ html:not(.js) .lmask-inner {
   margin: 0 0 1rem;
 }
 
-/* 身份卡主标题：沿用 hero 版面座右铭英文手写体风格
-   - 「Hi，」「I am」「Galvin」：hero-motto 同款手写体（Caveat），字体统一 */
+/* 身份卡主标题：改用「新罗马体」（Times New Roman）英文字体
+   - 「Hi,」「I am」「Galvin!」：Times New Roman 衬线体，更清晰不拥挤 */
 .about-person-name {
   display: flex;
   align-items: baseline;
@@ -850,10 +850,10 @@ html:not(.js) .lmask-inner {
 }
 
 .about-person-name .apn-en {
-  font-family: var(--font-hand);
-  font-weight: 600;
-  font-size: 1.25em;
-  line-height: 1;
+  font-family: "Times New Roman", Times, Georgia, var(--font-serif);
+  font-weight: 700;
+  font-size: 1.15em;
+  line-height: 1.1;
   color: rgba(0, 0, 0, 0.62);
 }
 
