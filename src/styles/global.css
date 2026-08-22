@@ -13,6 +13,19 @@
   font-display: swap;
 }
 
+/* ===== 钟齐志莽行书（硬笔行书，补充「我是」等身份卡字形） =====
+   原钟齐陈伟勋硬笔行楷简为 Hero 座右铭做了子集化，仅含「从好奇，到创造，」，
+   缺「我」「是」等字形会回退到系统衬线体导致中文字体不对。这里用同品牌（钟齐）
+   志莽行书补齐身份卡「我是」所需字形（OFL-1.1 授权，已按需子集化）。 */
+@font-face {
+  font-family: "钟齐志莽行书";
+  src: url("/fonts/font-zhongqi-hand.woff2") format("woff2"),
+       url("/fonts/font-zhongqi-hand.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ===== Dark mode: class strategy ===== */
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -24,6 +37,7 @@
   --font-mono: "Cascadia Code", "Consolas", monospace;
   --font-hand: "Caveat", cursive;
   --font-zhongqi: "钟齐陈伟勋硬笔行楷简", "Noto Serif SC", serif;
+  --font-zhongqi-hand: "钟齐志莽行书", "钟齐陈伟勋硬笔行楷简", "Noto Serif SC", serif;
 
   --color-accent: #333333;
   --color-accent-light: #666666;
@@ -841,8 +855,9 @@ html:not(.js) .lmask-inner {
 }
 
 /* 身份卡主标题：沿用 hero 版面座右铭中英文风格
-   - 英文「Hi，」：hero-motto 同款手写体（Caveat）
-   - 中文「我是Galvin」：hero-subtitle 同款钟齐硬笔行楷 + 渐变字 */
+   - 英文「Hi，」「Galvin」：hero-motto 同款手写体（Caveat）
+   - 中文「我是」：hero-subtitle 同款钟齐行楷 + 渐变字
+     （font-zhongqi 子集仅含 hero 标语字形，缺「我」「是」，故用同品牌志莽行书补齐） */
 .about-person-name {
   display: flex;
   align-items: baseline;
@@ -863,7 +878,7 @@ html:not(.js) .lmask-inner {
 }
 
 .about-person-name .apn-zh {
-  font-family: var(--font-zhongqi);
+  font-family: var(--font-zhongqi-hand);
   font-weight: 400;
   letter-spacing: -0.02em;
   padding-bottom: 0.08em;
