@@ -31,6 +31,8 @@ const articlesCollection = defineCollection({
     reviewUrl: z.string().optional(),
     /** 购买链接 */
     buyUrl: z.string().optional(),
+    /** 是否受版权保护：true 时不提供下载与在线阅读，仅展示购买链接 */
+    copyright: z.boolean().optional(),
     rating: z.number().min(0).max(5).optional(),
   }),
 });

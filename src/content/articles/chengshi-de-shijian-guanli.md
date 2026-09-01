@@ -5,8 +5,9 @@ date: 2026-09-01
 section: books
 tags: ["时间管理", "效率", "成长"]
 author: "粥左罗"
-epubUrl: "/books/chengshi-de-shijian-guanli.epub"
 readUrl: "/books/chengshi-de-shijian-guanli/read/"
+buyUrl: "https://search.dangdang.com/?key=%E6%88%90%E4%BA%8B%E7%9A%84%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86%20%E7%B2%A5%E5%B7%A6%E7%BD%97"
+copyright: true
 rating: 4
 featured: true
 draft: false
@@ -51,4 +52,4 @@ draft: false
 
 ---
 
-*本书 EPUB 版本来源于 Z-Library，仅供个人学习参考。*
+> **版权声明**：本书为受版权保护作品，本站不提供文件下载与在线阅读。如需阅读，请通过正规渠道购买正版支持作者。

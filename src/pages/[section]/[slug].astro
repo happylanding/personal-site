@@ -36,6 +36,7 @@ const dateStr = article.data.date.toLocaleDateString("zh-CN", {
   year: "numeric", month: "long", day: "numeric",
 });
 const isBook = section === "books";
+const isCopyright = isBook && !!article.data.copyright;
 const ogImage = article.data.ogImage || "/favicon.svg";
 
 // 同栏目内按时间排序，用于上一篇 / 下一篇
@@ -142,11 +143,22 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
     {isBook && (
       <div class="mt-12 p-6 rounded-xl border border-black/10 dark:border-white/10" data-reveal>
         <h3 class="font-bold font-serif mb-3">资源</h3>
-        <p class="text-xs text-black/40 dark:text-white/40 mb-4">
-          公版书支持在线阅读与下载；受版权保护的书可前往正规渠道购买正版
-        </p>
+        {isCopyright ? (
+          <div class="mb-4 p-4 rounded-lg bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30">
+            <p class="text-sm font-medium text-amber-800 dark:text-amber-300">
+              版权声明
+            </p>
+            <p class="text-sm text-amber-800/90 dark:text-amber-300/90 mt-1 leading-relaxed">
+              本书为受版权保护作品，本站不提供文件下载与在线阅读。如需阅读，请通过正规渠道购买正版支持作者。
+            </p>
+          </div>
+        ) : (
+          <p class="text-xs text-black/40 dark:text-white/40 mb-4">
+            公版书支持在线阅读与下载
+          </p>
+        )}
         <div class="flex flex-wrap gap-3">
-          {article.data.readUrl && (
+          {article.data.readUrl && !isCopyright && (
           <a
             href={article.data.readUrl}
             class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-black dark:bg-white text-white dark:text-black text-sm hover:opacity-80 transition-opacity"
@@ -154,6 +166,15 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
             <Icon name="bookOpen" class="w-4 h-4" />
             在线阅读
           </a>
+          )}
+          {article.data.readUrl && isCopyright && (
+          <span
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-black/10 dark:border-white/10 text-sm text-black/40 dark:text-white/40 cursor-not-allowed select-none"
+            title="本书受版权保护，本站不提供在线阅读与文件下载。如需阅读，请通过正规渠道购买正版支持作者。"
+          >
+            <Icon name="bookOpen" class="w-4 h-4" />
+            在线阅读
+          </span>
           )}
           {article.data.buyUrl && (
           <a
