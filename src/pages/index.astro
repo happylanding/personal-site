@@ -31,6 +31,8 @@ const text = {
 // Hero 眉标：节日优先、节气兜底的题记（构建时计算，静态输出）
 const term = getMotto();
 const termAccent = SEASON_COLORS[term.season];
+// 构建时是否为节日题记（节日有 kind 字段，节气有 index 字段）
+const termIsHoliday = "kind" in term;
 
 const allArticles = await getCollection("articles", ({ data }) => !data.draft);
 const sorted = allArticles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
@@ -61,7 +63,7 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
 
     <div class="hero-content">
       <!-- 时令 / 节日题记：节日优先、节气兜底（如：立秋 · 云天收夏色 / 七夕 · 金风玉露一相逢） -->
-      <p class="hero-eyebrow mb-8" style={`--term-accent:${termAccent}`}>
+      <p class="hero-eyebrow mb-8" style={`--term-accent:${termAccent}`} data-motto-kind={termIsHoliday ? "holiday" : "term"}>
         <span class="hero-term-dot" aria-hidden="true"></span>
         <span class="hero-term-name">{term.zh}</span>
         <span class="hero-term-sep" aria-hidden="true"></span>
@@ -316,10 +318,13 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
     }
 
     function apply() {
+      var browEl = document.querySelector(".hero-eyebrow");
+      if (!browEl) return;
+      // SSR 标记为节日（节日优先），保持节日题记不变，不做节气覆盖
+      if (browEl.dataset.mottoKind === "holiday") return;
       var nameEl = document.querySelector(".hero-term-name");
       var lineEl = document.querySelector(".hero-term-line");
-      var browEl = document.querySelector(".hero-eyebrow");
-      if (!nameEl || !lineEl || !browEl) return;
+      if (!nameEl || !lineEl) return;
       var idx = getCurrentTerm();
       nameEl.textContent = TERMS[idx][0];
       lineEl.textContent = TERMS[idx][1];
