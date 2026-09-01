@@ -2152,6 +2152,19 @@ body {
 .dark .book-reader {
   color: rgba(255, 255, 255, 0.9);
 }
+/* 桌面端（≥1024px，右侧存在目录栏）：正文列自适应填满，
+   不再受 38rem 舒适阅读宽度硬限制，与文章正文自适应方案（.article-content）保持一致；
+   仍以 min(100%, 58rem) 兜底避免超宽屏上行过长。 */
+@media (min-width: 1024px) {
+  .book-reader {
+    max-width: min(100%, 58rem) !important;
+  }
+  /* PDF 原图阅读：桌面端自适应左列宽度（覆盖 .max-w-3xl 固定 768px），
+     让整页图在宽屏下充分利用正文空间；移动端仍保持默认。 */
+  .pdf-reader {
+    max-width: min(100%, 58rem) !important;
+  }
+}
 .book-reader .book-chapter h2 {
   /* !important 覆盖 .article-content h2 的站点 serif 字体，保证章标题跟随书体 */
   font-family: var(--book-font) !important;
