@@ -141,18 +141,31 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
     <!-- Book-specific: format download section -->
     {isBook && (
       <div class="mt-12 p-6 rounded-xl border border-black/10 dark:border-white/10" data-reveal>
-        <h3 class="font-bold font-serif mb-3">下载</h3>
+        <h3 class="font-bold font-serif mb-3">资源</h3>
         <p class="text-xs text-black/40 dark:text-white/40 mb-4">
-          支持多种电子书格式，点击对应按钮下载
+          公版书支持在线阅读与下载；受版权保护的书可前往正规渠道购买正版
         </p>
         <div class="flex flex-wrap gap-3">
+          {article.data.readUrl && (
           <a
-            href={`/books/${slug}/read/`}
+            href={article.data.readUrl}
             class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-black dark:bg-white text-white dark:text-black text-sm hover:opacity-80 transition-opacity"
           >
             <Icon name="bookOpen" class="w-4 h-4" />
             在线阅读
           </a>
+          )}
+          {article.data.buyUrl && (
+          <a
+            href={article.data.buyUrl}
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-black dark:bg-white text-white dark:text-black text-sm hover:opacity-80 transition-opacity"
+          >
+            <Icon name="cart" class="w-4 h-4" />
+            购买此书
+          </a>
+          )}
           {article.data.epubUrl && (
             <a
               href={article.data.epubUrl}

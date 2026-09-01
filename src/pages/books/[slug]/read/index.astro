@@ -8,7 +8,11 @@ import ArticleTOC from "../../../../components/ArticleTOC.astro";
 import { SECTION_COLORS, SECTION_COLORS_DARK } from "../../../../lib/sections";
 
 export async function getStaticPaths() {
-  const books = await getCollection("articles", ({ data }) => !data.draft && data.section === "books");
+  // 仅公版书（frontmatter 带 readUrl）生成在线阅读页；受版权保护的书无正文 JSON，不生成
+  const books = await getCollection(
+    "articles",
+    ({ data }) => !data.draft && data.section === "books" && !!data.readUrl
+  );
   return books.map((b) => ({ params: { slug: b.id } }));
 }
 
