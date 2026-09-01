@@ -226,3 +226,110 @@ const counts = SECTION_ORDER.reduce<Record<string, number>>((acc, s) => {
     )}
   </section>
 </BaseLayout>
+
+<script>
+  /**
+   * 节气运行时校正（fix: 节气不再冻结在构建时刻）
+   *
+   * 背景：站点为静态构建（SSG），节气在 build 时用 new Date() 计算，
+   * 若长时间未重新部署，节气会冻结在「最后构建日」（如 8/22 立秋，
+   * 而 8/23 起已是处暑）。此处改为在浏览器端按当前北京时间实时重算，
+   * 保证任意访问时刻都展示「此刻真正对应的节气」。
+   *
+   * 算法与 src/lib/solarTerms.ts 完全一致（Meeus 太阳视黄经二分求交节时刻），
+   * 纯原生 JS、零依赖。计算基准取北京时间（UTC+8），与节气定义一致。
+   */
+  (function () {
+    "use strict";
+
+    // —— 二十四节气（自小寒起，顺序与 solarTerms.ts 的 SOLAR_TERMS 对齐）——
+    var TERMS = [
+      ["小寒", "雁北乡"], ["大寒", "征鸟厉疾"], ["立春", "东风解冻"], ["雨水", "草木萌动"],
+      ["惊蛰", "春雷始鸣"], ["春分", "昼夜均而寒暑平"], ["清明", "气清景明"], ["谷雨", "雨生百谷"],
+      ["立夏", "万物繁茂"], ["小满", "小得盈满"], ["芒种", "有芒之种"], ["夏至", "日长之至"],
+      ["小暑", "温风至"], ["大暑", "土润溽暑"], ["立秋", "云天收夏色"], ["处暑", "暑气渐消"],
+      ["白露", "白露为霜"], ["秋分", "秋色平分"], ["寒露", "露气寒冷"], ["霜降", "气肃而凝"],
+      ["立冬", "水始冰"], ["小雪", "虹藏不见"], ["大雪", "岁暮天寒"], ["冬至", "一阳来复"]
+    ];
+    var SEASONS = ["winter", "winter", "spring", "spring", "spring", "spring", "spring", "spring",
+      "summer", "summer", "summer", "summer", "summer", "summer", "autumn", "autumn",
+      "autumn", "autumn", "autumn", "autumn", "winter", "winter", "winter", "winter"];
+    var SEASON_COLORS = { spring: "#22c55e", summer: "#b45309", autumn: "#d97706", winter: "#0ea5e9" };
+
+    var TERM_LONGS = [285,300,315,330,345,0,15,30,45,60,75,90,105,120,135,150,165,180,195,210,225,240,255,270];
+
+    function julianDay(y, m, d, frac) {
+      frac = frac || 0;
+      if (m <= 2) { y -= 1; m += 12; }
+      var A = Math.floor(y / 100);
+      var B = 2 - A + Math.floor(A / 4);
+      return (Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + B - 1524.5 + frac);
+    }
+
+    function solarLongitude(jd) {
+      var T = (jd - 2451545.0) / 36525;
+      var L0 = 280.46646 + 36000.76983 * T + 0.0003032 * T * T;
+      var M = 357.52911 + 35999.05029 * T - 0.0001537 * T * T;
+      var Mr = (M * Math.PI) / 180;
+      var C = (1.914602 - 0.004817 * T - 0.000014 * T * T) * Math.sin(Mr) +
+              (0.019993 - 0.000101 * T) * Math.sin(2 * Mr) +
+              0.000289 * Math.sin(3 * Mr);
+      var trueLong = L0 + C;
+      var Omega = 125.04 - 1934.136 * T;
+      var deltaPsi = -0.00478 * Math.sin((Omega * Math.PI) / 180) - 0.00157 * Math.sin((2 * L0 * Math.PI) / 180);
+      return trueLong + deltaPsi;
+    }
+
+    function termBeijingTime(year, n) {
+      var targetMod = TERM_LONGS[n];
+      var startJD = julianDay(year, 1, 1);
+      var endJD = julianDay(year + 1, 1, 1);
+      var lonStart = solarLongitude(startJD);
+      var target = targetMod;
+      while (target < lonStart - 5) target += 360;
+      while (target - 360 > lonStart + 5) target -= 360;
+      var lo = startJD, hi = endJD;
+      for (var i = 0; i < 300; i++) {
+        var mid = (lo + hi) / 2;
+        if (solarLongitude(mid) < target) lo = mid; else hi = mid;
+      }
+      var jd = (lo + hi) / 2;
+      return (jd - 2440587.5) * 86400000;
+    }
+
+    // 取「北京时间」的当前时刻：epoch 不变，仅用 UTC+8 的日期判断所属年份
+    function currentBeijingDate() {
+      var now = new Date();
+      var bj = new Date(now.getTime() + 8 * 3600000);
+      return { y: bj.getUTCFullYear(), ts: now.getTime() };
+    }
+
+    function getCurrentTerm() {
+      var bj = currentBeijingDate();
+      var y = bj.y;
+      var ts = bj.ts;
+      var last = 23; // 默认冬至（处理年初小寒前的边界）
+      for (var n = 0; n < 24; n++) {
+        if (termBeijingTime(y, n) <= ts) last = n; else break;
+      }
+      return last;
+    }
+
+    function apply() {
+      var nameEl = document.querySelector(".hero-term-name");
+      var lineEl = document.querySelector(".hero-term-line");
+      var browEl = document.querySelector(".hero-eyebrow");
+      if (!nameEl || !lineEl || !browEl) return;
+      var idx = getCurrentTerm();
+      nameEl.textContent = TERMS[idx][0];
+      lineEl.textContent = TERMS[idx][1];
+      browEl.style.setProperty("--term-accent", SEASON_COLORS[SEASONS[idx]]);
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", apply);
+    } else {
+      apply();
+    }
+  })();
+</script>
