@@ -57,18 +57,29 @@ async function parseEpub(filePath) {
   if (!opfMatch) throw new Error("EPUB 缺少 container.xml / content.opf");
   const opfPath = opfMatch[1];
   const opf = await zip.file(opfPath).async("string");
-  const baseDir = opfPath.replace(/\/[^/]+$/, "");
+  const baseDir = opfPath.includes("/") ? opfPath.replace(/\/[^/]+$/, "") : "";
 
   // spine 阅读顺序（idref 列表）
   const spineIds = [...opf.matchAll(/<itemref[^>]*idref="([^"]+)"/g)].map((m) => m[1]);
-  // manifest: id -> href
+  // manifest: id -> href（兼容 href/id 任意顺序）
   const manifest = {};
-  for (const m of opf.matchAll(/<item[^>]*id="([^"]+)"[^>]*href="([^"]+)"/g)) manifest[m[1]] = m[2];
+  // 用单条宽松正则匹配整个 <item> 标签，再从中提取 id 与 href
+  for (const tag of opf.matchAll(/<item[^>]*>/g)) {
+    const s = tag[0];
+    const id = (s.match(/\bid="([^"]+)"/) || [, ""])[1];
+    const href = (s.match(/\bhref="([^"]+)"/) || [, ""])[1];
+    if (id && href) manifest[id] = href;
+  }
 
-  // 定位 toc.ncx
-  const ncxHref =
-    [...opf.matchAll(/<item[^>]*media-type="application\/x-dtbncx\+xml"[^>]*href="([^"]+)"/g)].map((m) => m[1])[0] ||
-    [...opf.matchAll(/<item[^>]*href="([^"]+\.ncx)"[^>]*>/g)].map((m) => m[1])[0];
+  // 定位 toc.ncx（兼容各种属性顺序）
+  const ncxHref = (() => {
+    for (const tag of opf.matchAll(/<item[^>]*>/g)) {
+      const s = tag[0];
+      const href = (s.match(/\bhref="([^"]+)"/) || [, ""])[1];
+      if (href && /\.ncx$/i.test(href)) return href;
+    }
+    return null;
+  })();
   let toc = [];
   if (ncxHref) {
     const ncxPath = ncxHref.startsWith("/") ? ncxHref.slice(1) : baseDir ? `${baseDir}/${ncxHref}` : ncxHref;
