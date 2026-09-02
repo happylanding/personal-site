@@ -3,7 +3,7 @@ title: "做自己的时间买手：把时间看得比钱更贵"
 description: "读完《成事的时间管理》'做自己的时间买手'一章的感悟。我们总在计算花了多少钱，却极少清算浪费了多少时间。把时间价值标定得比金钱更高，才能从认知封锁中挣脱出来。"
 date: 2026-09-02
 tags: ["时间管理", "效率", "阅读感悟"]
-section: insights
+section: books
 hidden: true
 draft: false
 ---

@@ -35,7 +35,9 @@ const displayTags = article.data.tags;
 const dateStr = article.data.date.toLocaleDateString("zh-CN", {
   year: "numeric", month: "long", day: "numeric",
 });
-const isBook = section === "books";
+// 仅「正式书籍」详情页按书本形态渲染（阅读感悟/资源区等书页专属 UI）。
+// 隐藏的阅读感悟附属文章（hidden: true，仅挂载到书页）虽归入 books 栏目，但按普通文章展示。
+const isBook = section === "books" && !article.data.hidden;
 const isCopyright = isBook && !!article.data.copyright;
 const ogImage = article.data.ogImage || "/favicon.svg";
 

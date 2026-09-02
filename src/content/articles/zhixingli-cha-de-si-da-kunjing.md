@@ -3,7 +3,7 @@ title: "执行力差，往往败在四个心结上"
 description: "读完《成事的时间管理》关于'执行力差的四大原因'的感悟。执行力差不是懒惰或拖延，而是心理防御机制与缺乏工程化思维叠加的结果。把宏大愿景翻译成最小可行性动作，跑起来风自然会来。"
 date: 2026-09-02
 tags: ["执行力", "成长", "阅读感悟"]
-section: insights
+section: books
 hidden: true
 draft: false
 ---

@@ -3,7 +3,7 @@ title: "事来则应，事去则静：降低时间切换的摩擦成本"
 description: "读完《成事的时间管理》的感悟。最稀缺的不是时间而是精力与状态，高效的关键在于降低任务切换时的摩擦成本——事来则应，事去则静。"
 date: 2026-09-02
 tags: ["时间管理", "专注", "阅读感悟"]
-section: insights
+section: books
 hidden: true
 draft: false
 ---
