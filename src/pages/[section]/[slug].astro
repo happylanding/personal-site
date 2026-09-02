@@ -63,7 +63,7 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
     }}
   >
     <header class="mb-10">
-      {article.data.ogImage && (
+      {!isBook && article.data.ogImage && (
         <img
           src={article.data.ogImage.replace(/\.png$/, ".webp")}
           alt={displayTitle}
@@ -113,11 +113,6 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
         </div>
       )}
 
-      {isBook && article.data.coverImage && (
-        <div class="mt-6">
-          <img src={article.data.coverImage} alt={displayTitle} class="w-32 rounded-lg shadow-md" loading="lazy" decoding="async" />
-        </div>
-      )}
     </header>
 
     <div id="article-grid" class="article-grid lg:grid lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_240px] lg:gap-10 xl:gap-14">
