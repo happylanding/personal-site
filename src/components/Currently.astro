@@ -119,7 +119,7 @@ const byUpdated = (a, b) => {
 };
 
 // 数据源：已发布文章，按更新时间倒序
-const published = (await getCollection("articles", ({ data }) => !data.draft)).sort(byUpdated);
+const published = (await getCollection("articles", ({ data }) => !data.draft && !data.hidden)).sort(byUpdated);
 const books = published.filter(isBook);
 const posts = published.filter((a) => !isBook(a));
 

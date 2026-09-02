@@ -13,7 +13,7 @@ const columnNames: Record<string, string> = {
   books: "阅读思考",
 };
 
-const allArticles = await getCollection("articles", ({ data }) => !data.draft);
+const allArticles = await getCollection("articles", ({ data }) => !data.draft && !data.hidden);
 const sorted = allArticles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
 type YearGroups = Record<string, typeof sorted>;

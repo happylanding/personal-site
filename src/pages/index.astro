@@ -34,7 +34,7 @@ const termAccent = SEASON_COLORS[term.season];
 // 构建时是否为节日题记（节日有 kind 字段，节气有 index 字段）
 const termIsHoliday = "kind" in term;
 
-const allArticles = await getCollection("articles", ({ data }) => !data.draft);
+const allArticles = await getCollection("articles", ({ data }) => !data.draft && !data.hidden);
 const sorted = allArticles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 const latest = sorted.slice(0, 5);
 const featured = sorted.filter((a) => a.data.featured).slice(0, 4);

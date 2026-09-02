@@ -11,7 +11,7 @@ const columnNames: Record<string, string> = {
 
 export async function GET() {
   const allArticles = await getCollection("articles", function (entry) {
-    return !entry.data.draft;
+    return !entry.data.draft && !entry.data.hidden;
   });
 
   const searchData = allArticles.map(function (post) {

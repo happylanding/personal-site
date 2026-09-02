@@ -19,7 +19,7 @@ export async function getStaticPaths() {
 
 const { section } = Astro.params;
 
-const allArticles = await getCollection("articles", ({ data }) => !data.draft);
+const allArticles = await getCollection("articles", ({ data }) => !data.draft && !data.hidden);
 const sectionArticles = allArticles
   .filter((a) => a.data.section === section)
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());

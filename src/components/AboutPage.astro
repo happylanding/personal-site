@@ -80,11 +80,11 @@ const text = {
 const prefix = "";
 
 // ---- 动态统计 ----
-const allArticles = await getCollection("articles", ({ data }) => !data.draft);
+const allArticles = await getCollection("articles", ({ data }) => !data.draft && !data.hidden);
 const bookCount = allArticles.filter((a) => a.data.author).length;
 const articleCount = allArticles.length;
 const columnCount = SECTION_ORDER.length;
-const tools = await getCollection("tools", ({ data }) => !data.draft);
+const tools = await getCollection("tools", ({ data }) => !data.draft && !data.hidden);
 const toolCount = tools.length;
 
 const stats: Array<{ value: number; unit: string; icon: "fileText" | "listTree" | "toolbox" | "bookOpen" }> = [

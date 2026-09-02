@@ -12,6 +12,8 @@ const articlesCollection = defineCollection({
     /** 所属专栏 */
     section: z.enum(["insights", "ai", "tips", "books"]).default("tips"),
     draft: z.boolean().default(false),
+    /** 不在任何栏目/列表/归档/搜索中展示，仅保留独立详情页（用于挂载到书本详情页「阅读感悟」的附属内容） */
+    hidden: z.boolean().default(false),
     featured: z.boolean().default(false),
     /** 文章封面 / 社交分享图（可选） */
     ogImage: z.string().optional(),
@@ -29,6 +31,8 @@ const articlesCollection = defineCollection({
     readUrl: z.string().optional(),
     /** 书评文章链接 */
     reviewUrl: z.string().optional(),
+    /** 阅读感悟文章 slug 列表（一本书记载站主对其的独立读后感文章） */
+    reflectionSlugs: z.array(z.string()).optional(),
     /** 购买链接 */
     buyUrl: z.string().optional(),
     /** 是否受版权保护：true 时不提供下载与在线阅读，仅展示购买链接 */

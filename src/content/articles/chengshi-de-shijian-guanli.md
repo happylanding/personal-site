@@ -10,6 +10,7 @@ coverImage: "/images/books/chengshi-de-shijian-guanli.jpg"
 copyright: true
 rating: 4
 featured: true
+reflectionSlugs: ["shi-er-ying-jing-shijian-qiehuan", "zhixingli-cha-de-si-da-kunjing", "zuo-ziji-de-shijian-maishou"]
 draft: false
 ---
 

@@ -39,8 +39,19 @@ const isBook = section === "books";
 const isCopyright = isBook && !!article.data.copyright;
 const ogImage = article.data.ogImage || "/favicon.svg";
 
-// 同栏目内按时间排序，用于上一篇 / 下一篇
-const sectionArticles = allArticles
+// 书本详情页的「阅读感悟」：通过书 frontmatter 的 reflectionSlugs（站主独立读后感文章的 slug 数组）
+// 解析出对应的已发布文章。一本书可挂多篇；若为空则整块隐藏。
+// 感悟文章不限定栏目，只要存在其 slug 对应文章即可，链接按其实际栏目+slug 生成。
+const reflectionSlugs = (article.data.reflectionSlugs || []) as string[];
+const reflections = isBook
+  ? reflectionSlugs
+      .map((rslug) => allArticles.find((a) => a.id === rslug))
+      .filter((a): a is NonNullable<typeof a> => !!a && !a.data.draft)
+  : [];
+
+// 同栏目内按时间排序，用于上一篇 / 下一篇（隐藏附属文章不参与上下篇）
+const nonHidden = allArticles.filter((a) => !a.data.hidden);
+const sectionArticles = nonHidden
   .filter((a) => a.data.section === section)
   .sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
 const idx = sectionArticles.findIndex((a) => a.id === slug);
@@ -133,6 +144,65 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
         />
       </div>
     </div>
+
+    <!-- Book-specific: 阅读感悟（正文之后、资源区之前；无感悟文章则整块隐藏） -->
+    {isBook && reflections.length > 0 && (
+      <section class="mt-12" data-reveal>
+        <div class="flex items-center gap-2 mb-4">
+          <h3 class="font-bold font-serif text-xl">阅读感悟</h3>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-black/50 dark:text-white/60">
+            {reflections.length} 篇
+          </span>
+        </div>
+        <div class="space-y-4">
+          {reflections
+            .slice()
+            .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+            .map((ref) => {
+              const refDate = ref.data.date.toLocaleDateString("zh-CN", {
+                year: "numeric", month: "long", day: "numeric",
+              });
+              const refPath = `/${ref.data.section}/${ref.id}`;
+              return (
+                <a
+                  href={refPath}
+                  class="group block p-5 rounded-xl border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors relative overflow-hidden"
+                  data-spotlight
+                >
+                  <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0 mt-1 text-[11px] px-2 py-1 rounded-md bg-black/[0.04] dark:bg-white/[0.06] inline-flex items-center gap-1.5 text-black/50 dark:text-white/70">
+                      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" transform="translate(3 0)"/>
+                        <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z" transform="translate(-9 0)"/>
+                      </svg>
+                      阅读感悟
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <h4 class="font-bold font-serif group-hover:text-black dark:group-hover:text-white transition-colors hover-scale-text">
+                        {ref.data.title}
+                      </h4>
+                      {ref.data.description && (
+                        <p class="text-sm text-black/45 dark:text-white/55 leading-relaxed mt-1 line-clamp-2">
+                          {ref.data.description}
+                        </p>
+                      )}
+                      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-black/40 dark:text-white/50 font-mono">
+                        <time datetime={ref.data.date.toISOString()}>{refDate}</time>
+                        {ref.data.tags.slice(0, 3).map((tag: string) => (
+                          <span class="text-[12px] text-black/45 dark:text-white/60">#{tag}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <svg class="flex-shrink-0 w-5 h-5 mt-2 text-black/25 dark:text-white/25 group-hover:text-black/60 dark:group-hover:text-white/60 group-hover:translate-x-0.5 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                    </svg>
+                  </div>
+                </a>
+              );
+            })}
+        </div>
+      </section>
+    )}
 
     <!-- Book-specific: format download section -->
     {isBook && (

@@ -4,7 +4,7 @@ import Breadcrumb from "../../components/Breadcrumb.astro";
 import ScrollReveal from "../../components/ScrollReveal.astro";
 import { getCollection } from "astro:content";
 
-const allArticles = await getCollection("articles", ({ data }) => !data.draft);
+const allArticles = await getCollection("articles", ({ data }) => !data.draft && !data.hidden);
 const tagMap = new Map<string, number>();
 allArticles.forEach((a) => {
   a.data.tags.forEach((tag: string) => {
