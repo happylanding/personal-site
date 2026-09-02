@@ -7,6 +7,7 @@ tags: ["哲学", "斯多葛", "经典"]
 author: "马可·奥勒留 (Marcus Aurelius)"
 pdfUrl: "/books/meditations.pdf"
 readUrl: "/books/meditations/read/"
+coverImage: "/images/books/meditations.jpg"
 rating: 5
 featured: true
 draft: false

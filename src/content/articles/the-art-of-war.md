@@ -7,6 +7,7 @@ tags: ["经典", "战略", "哲学"]
 author: "孙武 (Sun Tzu)"
 epubUrl: "/books/the-art-of-war.epub"
 readUrl: "/books/the-art-of-war/read/"
+coverImage: "/images/books/the-art-of-war.jpg"
 rating: 5
 featured: true
 draft: false

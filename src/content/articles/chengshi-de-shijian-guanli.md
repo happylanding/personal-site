@@ -6,7 +6,7 @@ section: books
 tags: ["时间管理", "效率", "成长"]
 author: "粥左罗"
 readUrl: "/books/chengshi-de-shijian-guanli/read/"
-buyUrl: "https://search.dangdang.com/?key=%E6%88%90%E4%BA%8B%E7%9A%84%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86%20%E7%B2%A5%E5%B7%A6%E7%BD%97"
+coverImage: "/images/books/chengshi-de-shijian-guanli.jpg"
 copyright: true
 rating: 4
 featured: true

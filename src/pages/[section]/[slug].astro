@@ -176,17 +176,6 @@ const nextArticle = idx >= 0 && idx < sectionArticles.length - 1 ? sectionArticl
             在线阅读
           </span>
           )}
-          {article.data.buyUrl && (
-          <a
-            href={article.data.buyUrl}
-            target="_blank"
-            rel="noopener"
-            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-black dark:bg-white text-white dark:text-black text-sm hover:opacity-80 transition-opacity"
-          >
-            <Icon name="cart" class="w-4 h-4" />
-            购买此书
-          </a>
-          )}
           {article.data.epubUrl && (
             <a
               href={article.data.epubUrl}

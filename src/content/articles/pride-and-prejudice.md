@@ -7,6 +7,7 @@ tags: ["经典", "文学", "小说"]
 author: "简·奥斯汀 (Jane Austen)"
 epubUrl: "/books/pride-prejudice.epub"
 readUrl: "/books/pride-and-prejudice/read/"
+coverImage: "/images/books/pride-and-prejudice.jpg"
 rating: 5
 featured: true
 draft: false
