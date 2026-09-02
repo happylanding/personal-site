@@ -36,7 +36,10 @@ const termIsHoliday = "kind" in term;
 
 const allArticles = await getCollection("articles", ({ data }) => !data.draft && !data.hidden);
 const sorted = allArticles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
-const latest = sorted.slice(0, 5);
+const latest = sorted
+  // 「最新文章」只列真正的文章，书籍（section:books，书库/在线阅读页）不算文章，不进此栏
+  .filter((a) => a.data.section !== "books")
+  .slice(0, 5);
 const featured = sorted.filter((a) => a.data.featured).slice(0, 4);
 
 // Count per section
