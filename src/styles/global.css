@@ -546,27 +546,6 @@ html:not(.js) .lmask-inner {
   color: rgba(255, 255, 255, 0.66);
 }
 
-.about-hero-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-size: 0.92rem;
-  color: rgba(0, 0, 0, 0.42);
-  text-decoration: none;
-  transition: color 0.25s ease;
-}
-
-.dark .about-hero-cta {
-  color: rgba(255, 255, 255, 0.46);
-}
-
-.about-hero-cta:hover {
-  color: #b45309;
-}
-
-.dark .about-hero-cta:hover {
-  color: #f59e0b;
-}
 
 /* ---- 数据卡 ---- */
 .about-stats {
@@ -992,173 +971,15 @@ html:not(.js) .lmask-inner {
   }
 }
 
-/* ---- 旅程时间线 ---- */
-.about-journey {
-  margin: 0 0 4rem;
-}
-
 .about-journey-head {
   margin-bottom: 2.2rem;
 }
-
 .about-journey-kicker {
   display: flex;
   align-items: center;
   gap: 0.6rem;
   margin-bottom: 0.9rem;
 }
-
-.about-journey-title {
-  font-family: var(--font-serif);
-  font-size: clamp(1.5rem, 3vw, 2.1rem);
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  line-height: 1.3;
-  margin: 0 0 0.7rem;
-}
-
-.about-journey-quote {
-  font-family: var(--font-serif);
-  font-size: 1.1rem;
-  line-height: 1.7;
-  color: rgba(0, 0, 0, 0.55);
-  max-width: 40rem;
-  margin: 0;
-}
-
-.dark .about-journey-quote {
-  color: rgba(255, 255, 255, 0.62);
-}
-
-/* 时间线本体：左列节点，右侧卡片 */
-.about-timeline {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 0.4rem;
-}
-
-.about-timeline-item {
-  display: grid;
-  grid-template-columns: minmax(3.2rem, auto) 1fr;
-  gap: 1rem;
-  align-items: stretch;
-}
-
-.about-timeline-node {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 1.05rem;
-}
-
-/* ===== 时间线圆点呼吸灯（依次呼吸 · 同频 · 轻量） =====
- * 参考首页节气/节日点呼吸灯，幅度略大一点，简单干净不浮夸：
- *  - 呼吸：小→大→小 + 亮度/不透明度增强，无额外光晕、星芒
- *  - 每个节点用 --dot-i 错峰延迟，按 0→1→2→3 顺序依次点亮，节奏一致不乱频
- */
-@keyframes about-dot-breathe {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.6;
-  }
-  50% {
-    transform: scale(1.4);
-    opacity: 1;
-  }
-}
-
-.about-timeline-dot {
-  position: relative;
-  width: 11px;
-  height: 11px;
-  border-radius: 9999px;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  box-shadow: 0 0 0 4px rgba(180, 83, 9, 0.12);
-  flex-shrink: 0;
-  z-index: 1;
-  animation: about-dot-breathe 2.6s ease-in-out infinite;
-  animation-delay: calc(var(--dot-i, 0) * 0.65s);
-}
-
-.dark .about-timeline-dot {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.14);
-}
-
-/* 依次呼吸：第 2 个起依次延迟 0.65s，从顶部按顺序点亮，不乱频率 */
-.about-timeline-item:nth-child(1) { --dot-i: 0; }
-.about-timeline-item:nth-child(2) { --dot-i: 1; }
-.about-timeline-item:nth-child(3) { --dot-i: 2; }
-.about-timeline-item:nth-child(4) { --dot-i: 3; }
-.about-timeline-item:nth-child(5) { --dot-i: 4; }
-.about-timeline-item:nth-child(6) { --dot-i: 5; }
-
-/* 关闭动效：尊重系统减弱动效设置 */
-@media (prefers-reduced-motion: reduce) {
-  .about-timeline-dot {
-    animation: none !important;
-  }
-}
-
-/* 连接线：覆盖在节点下方 */
-.about-timeline-item::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: linear-gradient(180deg, rgba(180, 83, 9, 0.4), rgba(180, 83, 9, 0.06));
-}
-
-.dark .about-timeline-item::before {
-  background: linear-gradient(180deg, rgba(245, 158, 11, 0.4), rgba(245, 158, 11, 0.06));
-}
-
-.about-timeline-item:last-child::before {
-  background: linear-gradient(180deg, rgba(180, 83, 9, 0.4), transparent);
-}
-
-.dark .about-timeline-item:last-child::before {
-  background: linear-gradient(180deg, rgba(245, 158, 11, 0.4), transparent);
-}
-
-/* 节点列居中连接线（节点列宽 3.2rem，圆心在其中心） */
-.about-timeline-item::before {
-  left: calc(1.6rem - 0.5px);
-}
-
-.about-timeline-card {
-  padding: 1.05rem 1.3rem;
-  border-radius: 0.9rem;
-  font-size: 0.98rem;
-  line-height: 1.7;
-  color: rgba(0, 0, 0, 0.68);
-  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1), border-color 0.3s, box-shadow 0.3s;
-}
-
-.dark .about-timeline-card {
-  color: rgba(255, 255, 255, 0.72);
-}
-
-.about-timeline-card:hover {
-  border-color: rgba(180, 83, 9, 0.4);
-  transform: translateX(3px);
-}
-
-.dark .about-timeline-card:hover {
-  border-color: rgba(245, 158, 11, 0.45);
-}
-
-@media (min-width: 768px) {
-  .about-timeline-card {
-    font-size: 1.02rem;
-  }
-}
-
 /* ---- 专栏区 ---- */
 .about-columns {
   margin: 0 0 4rem;
@@ -1277,32 +1098,15 @@ html:not(.js) .lmask-inner {
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* 移动端：时间线节点列收紧 */
-@media (max-width: 479px) {
-  .about-timeline-item {
-    grid-template-columns: 2.6rem 1fr;
-    gap: 0.7rem;
-  }
-  .about-timeline-item::before {
-    left: calc(1.3rem - 0.5px);
-  }
-  .about-timeline-card {
-    font-size: 0.94rem;
+/* 关闭动效：CTA 按钮 hover 上浮还原 */
+@media (prefers-reduced-motion: reduce) {
+  .about-cta-btn:hover,
+  .about-cta-btn-static:hover {
+    transform: none;
   }
 }
 
-/* 关闭动效：时间线卡片 hover 位移/CTA 上浮等还原 */
-@media (prefers-reduced-motion: reduce) {
-  .about-timeline-card:hover {
-    transform: none;
-  }
-  .about-cta-btn:hover {
-    transform: none;
-  }
-  .about-hero-cta:hover {
-    color: inherit;
-  }
-}
+
 
 /* ===== Hover micro-interactions (Effect B) ===== */
 .hover-lift {
