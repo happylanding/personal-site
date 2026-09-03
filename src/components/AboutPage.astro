@@ -24,7 +24,6 @@ const text = {
   heroKicker: "ABOUT ME · 关于我",
   heroSubtitle: "从好奇，到创造",
   heroIntro: "这里是我的数字小窝——记录思考、折腾工具、分享成长，顺便把故事讲得有趣一点。",
-  heroCta: "往下翻，看看我的故事",
   statsLabel: "这个窝里 · 攒下的一点家当",
   statsArticles: "篇文章",
   statsColumns: "个专栏",
@@ -38,15 +37,6 @@ const text = {
   bioLocation: "坐标中国·南京",
   bioSignature: "把「终身学习」当主业，把「折腾」当副业。",
   galleryLabel: "精选文章",
-  journeyKicker: "MY STORY · 一段旅程",
-  journeyTitle: "我是怎么走到今天的",
-  journeyQuote: "从记录到成长，再到分享——每一步都在这里留下痕迹，顺便把故事讲得有趣一点。",
-  journeyChapters: [
-    "第一次摸到代码，发现互联网是个大游乐场，于是动手搭了自己的数字小窝",
-    "一头扎进数字经济，天天琢磨 AI 和效率工具能擦出什么火花",
-    "坚持阅读与写作，把脑中的想法沉淀成能复用的知识宝藏",
-    "和你相遇——欢迎光临我的世界，别客气，随便逛",
-  ],
   exploreColumns: "探索专栏",
   columnsDesc: "四个方向，构建个人知识体系",
   columnsName: {
@@ -94,7 +84,6 @@ const stats: Array<{ value: number; unit: string; icon: "fileText" | "listTree" 
   { value: bookCount, unit: text.statsBooks, icon: "bookOpen" },
 ];
 
-const journeyChapters = text.journeyChapters;
 const roles = text.bioRole.split("·").map((s) => s.trim()).filter(Boolean);
 const email = "cgaojiacheng@gmail.com";
 const xLink = "https://x.com/galvin0119";
@@ -129,10 +118,6 @@ const articleTitle = (a: (typeof allArticles)[number]) => a.data.title;
       <span class="lmask-inner" style="--lmask-delay:0.22s">{text.heroIntro}</span>
     </p>
 
-    <a href="#about-journey" class="about-hero-cta group" aria-label={text.heroCta}>
-      <span>{text.heroCta}</span>
-      <Icon name="chevronDown" class="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
-    </a>
   </header>
 
   <!-- ============ 数据卡：磨砂玻璃 + 数字滚动 ============ -->
@@ -216,31 +201,6 @@ const articleTitle = (a: (typeof allArticles)[number]) => a.data.title;
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- ============ 旅程时间线 ============ -->
-  <section class="about-journey" id="about-journey" aria-label={text.journeyTitle}>
-    <div class="about-journey-head" data-reveal>
-      <div class="about-journey-kicker">
-        <span class="about-kicker">{text.journeyKicker}</span>
-        <span class="about-kicker-bar" aria-hidden="true"></span>
-      </div>
-      <h2 class="about-journey-title">{text.journeyTitle}</h2>
-      <p class="about-journey-quote">{text.journeyQuote}</p>
-    </div>
-
-    <ol class="about-timeline" data-reveal-stagger>
-      {journeyChapters.map((c: string) => (
-        <li class="about-timeline-item" data-tilt>
-          <span class="about-timeline-node" aria-hidden="true">
-            <span class="about-timeline-dot"></span>
-          </span>
-          <div class="about-timeline-card glass-card">
-            <p>{c}</p>
-          </div>
-        </li>
-      ))}
-    </ol>
   </section>
 
   <!-- ============ 专栏导航 ============ -->
